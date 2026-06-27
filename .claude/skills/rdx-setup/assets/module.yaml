@@ -1,0 +1,25 @@
+code: rdx
+name: "Rust Dev eXpert"
+description: "Injects Rust engineering expertise into Developer (Amelia), Architect (Winston), and PM (John) agents via layered KB rules — Always-on Core, Risk Router, Conditional Packs, and Governance."
+module_version: 1.0.0
+default_selected: false
+agents: []
+variables: []
+module_greeting: >
+  Rust Dev eXpert (RDX) module installed successfully.
+
+  What changed:
+  - Amelia (Developer) now always loads CORE-001..CORE-018 and the Risk Router.
+    She must consult the router before writing any story code, and load the
+    matching conditional pack (async, unsafe, FFI, etc.) when triggered.
+  - Winston (Architect) now enforces strict Rust contracts: CORE-005 (encode
+    invariants in types), CORE-006 (choose abstractions intentionally), and the
+    full governance boundary rules for public API / SemVer / FFI / DB.
+  - John (PM) now enforces "Contract before code" (CORE-001) in every PRD and
+    story, protects governance artifacts, and grades Developer behavior against
+    the Risk Router — not just the output artifact.
+
+  KB sections installed at: {project-root}/_bmad/rust-kb/
+  Agent overrides written to: {project-root}/_bmad/custom/
+
+  Restart any active agent sessions for changes to take effect.

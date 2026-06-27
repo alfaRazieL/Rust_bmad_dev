@@ -1,0 +1,30 @@
+{
+  "name": "rdx",
+  "owner": {
+    "name": "alfaRazieL"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/alfaRazieL/Rust_bmad_dev",
+  "repository": "https://github.com/alfaRazieL/Rust_bmad_dev",
+  "keywords": [
+    "bmad",
+    "rust",
+    "developer",
+    "engineering",
+    "knowledge-base"
+  ],
+  "plugins": [
+    {
+      "name": "rdx",
+      "source": "./",
+      "description": "Injects Rust engineering expertise into Developer (Amelia), Architect (Winston), and PM (John) agents via layered KB rules — Always-on Core, Risk Router, Conditional Packs, and Governance.",
+      "version": "1.0.0",
+      "author": {
+        "name": "alfaRazieL"
+      },
+      "skills": [
+        "./rdx-setup"
+      ]
+    }
+  ]
+}
