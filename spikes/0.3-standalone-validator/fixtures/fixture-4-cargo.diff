@@ -1,0 +1,7 @@
+diff --git a/Cargo.toml b/Cargo.toml
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -5,3 +5,4 @@
+ [dependencies]
+ serde = "1.0"
++tokio = "1.40"

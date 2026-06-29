@@ -1,0 +1,7 @@
+diff --git a/src/lib.rs b/src/lib.rs
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1,2 +1,5 @@
++/// This sync function pairs with the async runner in worker.rs.
++/// It does NOT use async itself.
+ pub fn helper() -> i32 { 42 }

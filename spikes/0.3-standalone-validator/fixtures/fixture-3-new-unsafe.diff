@@ -1,0 +1,8 @@
+diff --git a/src/ffi.rs b/src/ffi.rs
+--- a/src/ffi.rs
++++ b/src/ffi.rs
+@@ -1,3 +1,8 @@
+ pub fn safe_wrapper(ptr: *const u8) -> u8 {
+-    0
++    unsafe { *ptr }
+ }
