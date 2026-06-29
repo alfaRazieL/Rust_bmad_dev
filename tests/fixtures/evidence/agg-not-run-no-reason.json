@@ -1,0 +1,6 @@
+{
+  "_doc": "Aggregator fixture for T-L1-AGG-003 — NOT_RUN without reason promoted to FAIL",
+  "rules": [
+    {"rule_id": "CORE-011", "category": 1, "verdict": "NOT_RUN", "severity": "INFO"}
+  ]
+}

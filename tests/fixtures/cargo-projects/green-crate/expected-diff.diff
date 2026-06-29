@@ -1,0 +1,12 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index 1111111..2222222 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -3,6 +3,7 @@
+ //! Used by the L3 integration driver. Should compile under any recent
+ //! stable Rust if cargo is available in the test environment.
+
++/// add returns the sum of two `i32` values.
+ pub fn add(a: i32, b: i32) -> i32 {
+     a + b
+ }

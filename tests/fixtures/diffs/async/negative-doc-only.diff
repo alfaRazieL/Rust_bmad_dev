@@ -1,0 +1,11 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index 1111111..2222222 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1,3 +1,7 @@
+ pub mod lib_root {
++    /// This module is synchronous. The word async fn appears only in this
++    /// documentation paragraph; nothing is spawned and nothing awaits anything.
++    /// See also tokio::spawn (we don't use it here).
++    pub const NOTE: &str = "no async";
+ }

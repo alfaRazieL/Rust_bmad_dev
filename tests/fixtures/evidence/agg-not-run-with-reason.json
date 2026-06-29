@@ -1,0 +1,7 @@
+{
+  "_doc": "Aggregator fixture for T-L1-AGG-002 — NOT_RUN with reason in Mode 0 does NOT block",
+  "mode": "MODE_0",
+  "rules": [
+    {"rule_id": "CORE-011", "category": 1, "verdict": "NOT_RUN", "severity": "INFO", "reason": "cargo audit offline"}
+  ]
+}

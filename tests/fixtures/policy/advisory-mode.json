@@ -1,0 +1,6 @@
+{
+  "_doc": "Policy fixture for T-L1-POL-001 — advisory mode short-circuits to exit 0",
+  "mode": "MODE_0",
+  "advisory": true,
+  "accepted_not_run_reasons": []
+}

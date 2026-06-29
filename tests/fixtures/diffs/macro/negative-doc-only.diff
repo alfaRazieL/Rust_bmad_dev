@@ -1,0 +1,9 @@
+diff --git a/docs/macros.md b/docs/macros.md
+index 1111111..2222222 100644
+--- a/docs/macros.md
++++ b/docs/macros.md
+@@ -1,3 +1,5 @@
+ # Macros
+
++This crate does not use macro_rules! or proc_macro. This doc only mentions
++the build.rs concept for reference.

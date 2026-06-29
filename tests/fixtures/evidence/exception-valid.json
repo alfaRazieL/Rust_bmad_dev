@@ -1,0 +1,8 @@
+{
+  "rule_id": "CORE-007",
+  "reason": "explicit boundary expansion authorised by tech-lead",
+  "scope": "src/auth/login.rs",
+  "expires_at": "2026-12-31T00:00:00Z",
+  "authorized_by": "tech-lead@example.com",
+  "story_ref": "STORY-AUTH-042"
+}

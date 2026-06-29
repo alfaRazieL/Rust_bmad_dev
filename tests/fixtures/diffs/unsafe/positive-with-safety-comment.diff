@@ -1,0 +1,13 @@
+diff --git a/src/ptr_ops.rs b/src/ptr_ops.rs
+index 1111111..2222222 100644
+--- a/src/ptr_ops.rs
++++ b/src/ptr_ops.rs
+@@ -1,3 +1,8 @@
+ pub mod ptr_ops {
++    pub fn write_at(addr: *mut u8, value: u8) {
++        // SAFETY: caller guarantees addr is non-null and points to a u8.
++        unsafe {
++            *addr = value;
++        }
++    }
+ }

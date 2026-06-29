@@ -1,0 +1,8 @@
+diff --git a/docs/db.md b/docs/db.md
+index 1111111..2222222 100644
+--- a/docs/db.md
++++ b/docs/db.md
+@@ -1,3 +1,4 @@
+ # DB
+
++This doc mentions sqlx and migrations only for context. No SQL or driver code lives here.

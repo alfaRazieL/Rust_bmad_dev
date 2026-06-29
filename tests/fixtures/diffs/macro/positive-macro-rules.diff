@@ -1,0 +1,13 @@
+diff --git a/src/macros.rs b/src/macros.rs
+index 1111111..2222222 100644
+--- a/src/macros.rs
++++ b/src/macros.rs
+@@ -1,3 +1,9 @@
+ pub mod macros {
++    macro_rules! square {
++        ($x:expr) => { $x * $x };
++    }
++    pub fn use_it() -> i32 {
++        square!(7)
++    }
+ }

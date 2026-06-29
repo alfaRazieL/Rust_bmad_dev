@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L2-CORE015-002 — agent's documented suppression covers the missing pack",
+  "agent_activated_packs": [],
+  "router_suppressions": ["async"]
+}

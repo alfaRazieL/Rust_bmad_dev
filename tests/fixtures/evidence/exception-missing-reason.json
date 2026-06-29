@@ -1,0 +1,6 @@
+{
+  "rule_id": "CORE-007",
+  "scope": "src/auth/login.rs",
+  "expires_at": "2026-12-31T00:00:00Z",
+  "authorized_by": "tech-lead@example.com"
+}

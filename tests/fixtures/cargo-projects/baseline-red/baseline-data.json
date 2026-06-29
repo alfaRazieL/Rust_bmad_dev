@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L3-CRATE-003 dual-run input — base red, head red, same signature",
+  "base": {"passed": false, "error_signature": "E0308: type mismatch in src/lib.rs:42"},
+  "head": {"passed": false, "error_signature": "E0308: type mismatch in src/lib.rs:42"}
+}

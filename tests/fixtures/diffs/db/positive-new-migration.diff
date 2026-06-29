@@ -1,0 +1,10 @@
+diff --git a/migrations/0042_add_users.sql b/migrations/0042_add_users.sql
+new file mode 100644
+index 0000000..a1b2c3d
+--- /dev/null
++++ b/migrations/0042_add_users.sql
+@@ -0,0 +1,5 @@
++BEGIN;
++CREATE TABLE users (id BIGSERIAL PRIMARY KEY, name TEXT NOT NULL);
++COMMIT;
++

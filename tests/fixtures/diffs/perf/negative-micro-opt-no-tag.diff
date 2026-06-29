@@ -1,0 +1,12 @@
+diff --git a/src/hot.rs b/src/hot.rs
+index 1111111..2222222 100644
+--- a/src/hot.rs
++++ b/src/hot.rs
+@@ -1,5 +1,5 @@
+ pub fn sum(slice: &[u32]) -> u64 {
+-    let mut total: u64 = 0;
+-    for &x in slice { total += x as u64; }
++    let mut total: u64 = 0;
++    for &x in slice { total = total.wrapping_add(x as u64); }
+     total
+ }

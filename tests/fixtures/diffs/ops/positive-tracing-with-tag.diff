@@ -1,0 +1,10 @@
+diff --git a/src/log.rs b/src/log.rs
+index 1111111..2222222 100644
+--- a/src/log.rs
++++ b/src/log.rs
+@@ -1,3 +1,6 @@
+ pub mod log {
++    pub fn boot() {
++        tracing::info!("service booted");
++    }
+ }
