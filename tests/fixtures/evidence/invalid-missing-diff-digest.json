@@ -1,0 +1,12 @@
+{
+  "rdx_schema_version": "v1",
+  "story_id": "STORY-EXAMPLE-002",
+  "head_sha": "0123456789abcdef0123456789abcdef01234567",
+  "base_sha": "fedcba9876543210fedcba9876543210fedcba98",
+  "mode": "MODE_1",
+  "rules": {},
+  "aggregate": {
+    "verdict": "PASS",
+    "exit_code": 0
+  }
+}

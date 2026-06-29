@@ -1,0 +1,96 @@
+{
+  "rdx_authority_version": "v1",
+  "source_of_truth": "RDX_TEST_STRATEGY.md §5 + RDX_TEST_TRACEABILITY_MATRIX.md authority columns",
+  "actors": {
+    "LLM": "Implementation agent (Amelia / Architect). Cooperative; never an authority on Cat-1.",
+    "Validator": "rdx-validator process — deterministic tool output.",
+    "Evaluator": "rdx-judgment evaluator skill (Cat-3 reviewer).",
+    "Specialist": "Human owner mapped via CODEOWNERS (Cat-4 sign-off).",
+    "CI": "Trusted re-runner that loads the validator from base/release per §7."
+  },
+  "authority_levels": {
+    "WRITE": "May produce this value; downstream consumers treat it as authoritative.",
+    "READ": "May consume this value but not produce it.",
+    "VERIFY": "Re-computes / cross-checks the value but is not its primary writer.",
+    "FORBIDDEN": "Must not produce this value under any condition."
+  },
+  "fields": {
+    "verdict_cat1": {
+      "LLM": "FORBIDDEN",
+      "Validator": "WRITE",
+      "Evaluator": "FORBIDDEN",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "verdict_cat2": {
+      "LLM": "FORBIDDEN",
+      "Validator": "WRITE",
+      "Evaluator": "FORBIDDEN",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "verdict_cat3": {
+      "LLM": "READ",
+      "Validator": "READ",
+      "Evaluator": "WRITE",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "verdict_cat4": {
+      "LLM": "FORBIDDEN",
+      "Validator": "READ",
+      "Evaluator": "FORBIDDEN",
+      "Specialist": "WRITE",
+      "CI": "VERIFY"
+    },
+    "diff_digest": {
+      "LLM": "READ",
+      "Validator": "WRITE",
+      "Evaluator": "READ",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "head_sha": {
+      "LLM": "READ",
+      "Validator": "WRITE",
+      "Evaluator": "READ",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "exception_grant": {
+      "LLM": "READ",
+      "Validator": "READ",
+      "Evaluator": "READ",
+      "Specialist": "WRITE",
+      "CI": "VERIFY"
+    },
+    "approval_signature": {
+      "LLM": "FORBIDDEN",
+      "Validator": "READ",
+      "Evaluator": "READ",
+      "Specialist": "WRITE",
+      "CI": "VERIFY"
+    },
+    "command_evidence": {
+      "LLM": "FORBIDDEN",
+      "Validator": "WRITE",
+      "Evaluator": "READ",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    },
+    "story_tag": {
+      "LLM": "WRITE",
+      "Validator": "READ",
+      "Evaluator": "READ",
+      "Specialist": "READ",
+      "CI": "READ"
+    },
+    "router_activation": {
+      "LLM": "READ",
+      "Validator": "WRITE",
+      "Evaluator": "READ",
+      "Specialist": "READ",
+      "CI": "VERIFY"
+    }
+  }
+}

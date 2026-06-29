@@ -70,51 +70,51 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 
 ### Entry gate (tests must exist before implementation)
 
-- [ ] T-L0-SCHEMA-001..004 specs written (schemas to validate)
-- [ ] T-L0-ROUTER-001 spec written
-- [ ] T-L0-DRIFT-001/002 specs written
-- [ ] T-L0-STATUS-001/002 specs written
-- [ ] T-L0-RULE-IDS-001 spec written
-- [ ] `tests/contracts/` directory + READMEs in place
+- [x] T-L0-SCHEMA-001..004 specs written (schemas to validate)
+- [x] T-L0-ROUTER-001 spec written
+- [x] T-L0-DRIFT-001/002 specs written
+- [x] T-L0-STATUS-001/002 specs written
+- [x] T-L0-RULE-IDS-001 spec written
+- [x] `tests/contracts/` directory + READMEs in place
 
 ### Implementation tasks
 
 #### 1.1 Rule model — Category 1/2/3/4
 
-- [ ] Canonical mapping (rule ID → applicability / detection / evidence / authority / blocking semantics / exception policy) authored at `tests/contracts/rule-check-map.json`
-- [ ] Tests T-L0-DRIFT-002 references this file
+- [x] Canonical mapping (rule ID → applicability / detection / evidence / authority / blocking semantics / exception policy) authored at `tests/contracts/rule-check-map.json`
+- [x] Tests T-L0-DRIFT-002 references this file
 
 #### 1.2 Machine-readable Router mapping
 
-- [ ] `router-rules.json` authored with per-pack: positive signals, file-path signals, negative signals, confidence class, activation policy, related rule IDs, validation family
-- [ ] Activation classes implemented: `AUTO_ACTIVATE`, `AUTO_SUGGEST`, `STORY_TAG_REQUIRED`, `REVIEW_REQUIRED`
-- [ ] Tests T-L0-ROUTER-001 + T-L0-DRIFT-001 cover this
+- [x] `router-rules.json` authored with per-pack: positive signals, file-path signals, negative signals, confidence class, activation policy, related rule IDs, validation family
+- [x] Activation classes implemented: `AUTO_ACTIVATE`, `AUTO_SUGGEST`, `STORY_TAG_REQUIRED`, `REVIEW_REQUIRED`
+- [x] Tests T-L0-ROUTER-001 + T-L0-DRIFT-001 cover this
 
 #### 1.3 Drift prevention
 
-- [ ] `tests/contracts/drift-check.py` written (passes on first commit)
-- [ ] CI workflow runs drift check on every PR to KB or mapping files
+- [x] `tests/contracts/drift-check.py` written (passes on first commit)
+- [x] CI workflow runs drift check on every PR to KB or mapping files
 
 #### 1.4 Evidence Schema v1
 
-- [ ] `rdx-evidence.v1.schema.json` authored covering all fields from `RDX_TEST_STRATEGY.md` §5 + traceability matrix authority columns
-- [ ] Tests T-L0-SCHEMA-001..004 cover schema correctness + Cat-1 self-attestation rejection
+- [x] `rdx-evidence.v1.schema.json` authored covering all fields from `RDX_TEST_STRATEGY.md` §5 + traceability matrix authority columns
+- [x] Tests T-L0-SCHEMA-001..004 cover schema correctness + Cat-1 self-attestation rejection
 
 #### 1.5 Authority boundaries
 
-- [ ] `authority-matrix.json` authored with (field × actor) cells
-- [ ] Test T-L0-STATUS-002 verifies completeness
-- [ ] Status definitions JSON authored with all 14 verdicts + 3 severities + exit-code mapping
-- [ ] T-L0-STATUS-001 verifies
+- [x] `authority-matrix.json` authored with (field × actor) cells
+- [x] Test T-L0-STATUS-002 verifies completeness
+- [x] Status definitions JSON authored with all 14 verdicts + 3 severities + exit-code mapping
+- [x] T-L0-STATUS-001 verifies
 
 ### Exit gate
 
-- [ ] All 10 L0 tests green
-- [ ] CI drift check operational
-- [ ] No KB/mapping drift detected
-- [ ] No rule-ID duplicates
-- [ ] Status taxonomy locked
-- [ ] Authority matrix complete
+- [x] All 10 L0 tests green
+- [x] CI drift check operational
+- [x] No KB/mapping drift detected
+- [x] No rule-ID duplicates
+- [x] Status taxonomy locked
+- [x] Authority matrix complete
 
 ---
 
@@ -538,3 +538,4 @@ Clearly state:
 | 2026-06-29 | 0.3 | Standalone validator prototype | x | `spikes/0.3-standalone-validator/` |
 | 2026-06-29 | 0 | Phase 0 gate | CONDITIONAL GO | Pending items rescheduled to Phase 3 / 6 / 7 |
 | 2026-06-29 | Test design | Test strategy + matrix + YAML + tested plan | x | This file + companions |
+| 2026-06-29 | Phase 1 | Contracts & SSoT complete | x | Commit `c34631c` (red tests) + impl commit; 13 L0 tests green; closed T-L0-SCHEMA-001..004, T-L0-ROUTER-001, T-L0-DRIFT-001/002, T-L0-STATUS-001/002, T-L0-RULE-IDS-001; CI workflow `.github/workflows/rdx-l0-contracts.yml` |

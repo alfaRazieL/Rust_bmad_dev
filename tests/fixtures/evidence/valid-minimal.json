@@ -1,0 +1,57 @@
+{
+  "rdx_schema_version": "v1",
+  "story_id": "STORY-EXAMPLE-001",
+  "head_sha": "0123456789abcdef0123456789abcdef01234567",
+  "base_sha": "fedcba9876543210fedcba9876543210fedcba98",
+  "diff_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mode": "MODE_1",
+  "router_activations": [
+    {
+      "pack": "async",
+      "activation_policy": "AUTO_ACTIVATE",
+      "active": false,
+      "signals": []
+    }
+  ],
+  "rules": {
+    "CORE-011": {
+      "category": 1,
+      "verdict": "PASS",
+      "severity": "INFO",
+      "author": "VALIDATOR",
+      "message": "cargo check exited 0",
+      "evidence": [
+        {
+          "command": "cargo check --workspace --all-targets",
+          "exit_code": 0,
+          "output_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+          "duration_ms": 14210,
+          "tool": "cargo",
+          "tool_version": "1.78.0"
+        }
+      ]
+    },
+    "CORE-007": {
+      "category": 1,
+      "verdict": "NOT_APPLICABLE",
+      "severity": "INFO",
+      "author": "VALIDATOR",
+      "message": "no protected files touched"
+    }
+  },
+  "exceptions": [],
+  "approvals": [],
+  "aggregate": {
+    "verdict": "PASS",
+    "exit_code": 0,
+    "blocking_count": 0,
+    "warning_count": 0,
+    "info_count": 2
+  },
+  "validator": {
+    "name": "rdx-validator",
+    "version": "0.1.0",
+    "source": "TARGET_BRANCH"
+  },
+  "generated_at": "2026-06-29T12:00:00Z"
+}

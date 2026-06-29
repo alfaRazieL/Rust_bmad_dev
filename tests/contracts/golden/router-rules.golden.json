@@ -1,0 +1,667 @@
+{
+  "rdx_router_version": "v1",
+  "kb_source": ".claude/skills/rdx-setup/assets/kb-sections/section-5-router.md",
+  "packs": {
+    "async": {
+      "label": "Async and concurrency",
+      "kb_section": "6.1",
+      "positive_signals": [
+        "async fn",
+        ".await",
+        "impl Future",
+        "impl Stream",
+        "tokio::spawn",
+        "select!",
+        "channel",
+        "mpsc::",
+        "JoinHandle",
+        "Mutex across .await"
+      ],
+      "negative_signals": [
+        "purely synchronous code",
+        "docs-only mention of async",
+        "no changed await or task lifecycle"
+      ],
+      "path_signals": [
+        "**/*.rs"
+      ],
+      "confidence_class": "STRONG",
+      "activation_policy": "AUTO_ACTIVATE",
+      "escalation_triggers": [
+        "custom Future/Waker/executor",
+        "lock-free or atomic synchronization",
+        "public async trait/runtime API"
+      ],
+      "related_rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ],
+      "validation_family": [
+        "compile-at-spawn-boundaries",
+        "async-behavior-tests",
+        "cancellation-shutdown-tests",
+        "concurrency-review"
+      ]
+    },
+    "unsafe": {
+      "label": "Unsafe and memory",
+      "kb_section": "6.2",
+      "positive_signals": [
+        "unsafe fn",
+        "unsafe {",
+        "unsafe impl",
+        "MaybeUninit",
+        "ManuallyDrop",
+        "Pin<",
+        "NonNull",
+        "transmute",
+        "AtomicUsize",
+        "AtomicPtr",
+        "asm!",
+        "global_asm!",
+        "naked_asm!"
+      ],
+      "negative_signals": [
+        "borrow-checker fix with no UB-relevant unsafe surface",
+        "consuming reviewed safe abstraction without touching invariants"
+      ],
+      "path_signals": [
+        "**/*.rs"
+      ],
+      "confidence_class": "STRONG",
+      "activation_policy": "AUTO_ACTIVATE",
+      "escalation_triggers": [
+        "public safe abstraction backed by unsafe",
+        "manual Send/Sync",
+        "atomics/lock-free synchronization",
+        "Miri/sanitizer coverage blocked"
+      ],
+      "related_rule_ids": [
+        "RP-UNSAFE-001",
+        "RP-UNSAFE-002",
+        "RP-UNSAFE-003",
+        "RP-UNSAFE-004",
+        "RP-UNSAFE-005",
+        "RP-UNSAFE-006",
+        "RP-UNSAFE-007",
+        "RP-UNSAFE-008",
+        "RP-UNSAFE-009",
+        "RP-UNSAFE-010",
+        "RP-UNSAFE-011"
+      ],
+      "validation_family": [
+        "unsafe-review",
+        "local-safety-contract-review",
+        "compile-lint-gates",
+        "miri-where-applicable",
+        "loom-for-modeled-atomics"
+      ]
+    },
+    "ffi": {
+      "label": "FFI and plugin ABI",
+      "kb_section": "6.3",
+      "positive_signals": [
+        "extern \"C\"",
+        "extern \"system\"",
+        "#[no_mangle]",
+        "#[export_name]",
+        "cdylib",
+        "staticlib",
+        "bindgen",
+        "cbindgen",
+        "libloading",
+        "*const c_char",
+        "*mut c_void"
+      ],
+      "negative_signals": [
+        "pure Rust module boundary",
+        "public Rust API/SemVer with no foreign ABI",
+        "ordinary dependency linking"
+      ],
+      "path_signals": [
+        "**/build.rs",
+        "**/wrapper.h",
+        "**/bindings.rs"
+      ],
+      "confidence_class": "STRONG",
+      "activation_policy": "AUTO_ACTIVATE",
+      "escalation_triggers": [
+        "cross-language unwinding",
+        "callbacks with reentrancy/thread/unload concerns",
+        "independently built plugins",
+        "security-sensitive native boundary"
+      ],
+      "related_rule_ids": [
+        "RP-FFI-001",
+        "RP-FFI-002",
+        "RP-FFI-003",
+        "RP-FFI-004",
+        "RP-FFI-005",
+        "RP-FFI-006",
+        "RP-FFI-007"
+      ],
+      "validation_family": [
+        "abi-layout-review",
+        "header-or-binding-diff-review",
+        "panic-containment-tests",
+        "target-matrix-checks"
+      ]
+    },
+    "macro": {
+      "label": "Macros, build scripts, and generated code",
+      "kb_section": "6.4",
+      "positive_signals": [
+        "macro_rules!",
+        "proc_macro",
+        "#[proc_macro_derive",
+        "#[proc_macro_attribute",
+        "build.rs",
+        "include!(concat!(env!(\"OUT_DIR\")",
+        "OUT_DIR",
+        "cargo:rerun-if",
+        "bindgen::Builder",
+        "cbindgen::Builder"
+      ],
+      "negative_signals": [
+        "ordinary functions/modules express the behavior",
+        "generated artifacts not touched",
+        "FFI-only generated bindings with no macro/build change"
+      ],
+      "path_signals": [
+        "**/build.rs",
+        "**/*.rs"
+      ],
+      "confidence_class": "STRONG",
+      "activation_policy": "AUTO_ACTIVATE",
+      "escalation_triggers": [
+        "public macro API",
+        "proc macros consuming user input",
+        "cross-compilation-sensitive codegen",
+        "checked-in generated artifacts"
+      ],
+      "related_rule_ids": [
+        "RP-MACRO-001",
+        "RP-MACRO-002",
+        "RP-MACRO-003",
+        "RP-MACRO-004"
+      ],
+      "validation_family": [
+        "expansion-review",
+        "compile-pass-fail-macro-tests",
+        "generated-artifact-drift-checks",
+        "build-script-rerun-review"
+      ]
+    },
+    "api": {
+      "label": "Public API, SemVer, and documentation",
+      "kb_section": "6.5",
+      "positive_signals": [
+        "pub fn",
+        "pub struct",
+        "pub enum",
+        "pub trait",
+        "pub use",
+        "#[deprecated",
+        "pub mod"
+      ],
+      "negative_signals": [
+        "private application or prototype",
+        "pub(crate)/module-only visibility",
+        "docs with no public contract change",
+        "public-looking generated code that is not exported"
+      ],
+      "path_signals": [
+        "**/lib.rs",
+        "**/src/lib.rs"
+      ],
+      "story_tags": [
+        "publish=true",
+        "library-crate",
+        "stable-cli-contract"
+      ],
+      "confidence_class": "MEDIUM",
+      "activation_policy": "STORY_TAG_REQUIRED",
+      "escalation_triggers": [
+        "published or publishable crate",
+        "stable SDK or framework extension trait",
+        "deprecation/removal/yank",
+        "downstream breakage evidence"
+      ],
+      "related_rule_ids": [
+        "RP-API-001",
+        "RP-API-002",
+        "RP-API-003",
+        "RP-API-004",
+        "RP-API-005",
+        "RP-API-006",
+        "RP-API-007",
+        "RP-API-008",
+        "RP-API-009",
+        "RP-API-010",
+        "RP-API-011",
+        "RP-API-012",
+        "RP-API-013",
+        "RP-API-014",
+        "RP-API-015",
+        "RP-API-016",
+        "RP-API-017",
+        "RP-API-018"
+      ],
+      "validation_family": [
+        "api-review",
+        "downstream-compile-checks",
+        "semver-release-review",
+        "rustdoc-doctest-review"
+      ]
+    },
+    "cargo": {
+      "label": "Cargo, features, workspace, toolchain, and dependencies",
+      "kb_section": "6.6",
+      "positive_signals": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "rust-toolchain",
+        "rust-toolchain.toml",
+        "[features]",
+        "[workspace]",
+        "[patch.",
+        "[replace]",
+        "rust-version",
+        "resolver = "
+      ],
+      "negative_signals": [
+        "code-only patch with no manifest/feature/dep/lockfile/toolchain impact",
+        "cargo profile-only tuning",
+        "duplicate resolved versions without identity/feature/size/policy evidence"
+      ],
+      "path_signals": [
+        "**/Cargo.toml",
+        "**/Cargo.lock",
+        "rust-toolchain",
+        "rust-toolchain.toml",
+        ".cargo/config.toml"
+      ],
+      "confidence_class": "STRONG",
+      "activation_policy": "AUTO_ACTIVATE",
+      "escalation_triggers": [
+        "toolchain/resolver change",
+        "workspace-wide dependency policy change",
+        "native links / -sys boundary",
+        "MSRV or target matrix change",
+        "dependency compromise or yanked-only resolution"
+      ],
+      "related_rule_ids": [
+        "RP-CARGO-001",
+        "RP-CARGO-002",
+        "RP-CARGO-003",
+        "RP-CARGO-004",
+        "RP-CARGO-005",
+        "RP-CARGO-006",
+        "RP-CARGO-007",
+        "RP-CARGO-008",
+        "RP-CARGO-009"
+      ],
+      "validation_family": [
+        "manifest-lockfile-review",
+        "resolved-graph-review",
+        "feature-matrix-checks",
+        "target-msrv-checks",
+        "lint-policy-checks"
+      ]
+    },
+    "testing": {
+      "label": "Testing beyond the core loop",
+      "kb_section": "6.7",
+      "positive_signals": [
+        "proptest",
+        "quickcheck",
+        "cargo fuzz",
+        "loom::",
+        "miri",
+        "compile_fail",
+        "#[should_panic"
+      ],
+      "negative_signals": [
+        "ordinary compile + behavior tests already cover acceptance",
+        "tool names appear only in docs or CI comments",
+        "advanced test tools loaded as ritual"
+      ],
+      "path_signals": [
+        "fuzz/**",
+        "tests/loom/**",
+        "**/compile_fail/**"
+      ],
+      "story_tags": [
+        "miri-required",
+        "loom-required",
+        "fuzz-required",
+        "high-assurance",
+        "advanced-testing"
+      ],
+      "confidence_class": "MEDIUM",
+      "activation_policy": "STORY_TAG_REQUIRED",
+      "escalation_triggers": [
+        "unsafe or FFI memory boundary",
+        "lock-free/schedule-sensitive concurrency",
+        "parser/security boundary",
+        "production incident repro",
+        "high-assurance/regulatory scope"
+      ],
+      "related_rule_ids": [
+        "RP-TEST-001",
+        "RP-TEST-002",
+        "RP-TEST-003",
+        "RP-TEST-004"
+      ],
+      "validation_family": [
+        "risk-based-validation-plan",
+        "deterministic-regression-corpus",
+        "fuzz-property-tests",
+        "compile-fail-tests",
+        "miri-loom-sanitizer-evidence"
+      ]
+    },
+    "data-security-io": {
+      "label": "Data, security, and external I/O",
+      "kb_section": "6.8",
+      "positive_signals": [
+        "serde::",
+        "Deserialize",
+        "Serialize",
+        "serde_json",
+        "regex::",
+        "rustls",
+        "openssl",
+        "ring::",
+        "sha2::",
+        "std::fs",
+        "std::net",
+        "std::process::Command",
+        "reqwest",
+        "hyper::",
+        "tokio::net"
+      ],
+      "negative_signals": [
+        "purely internal trusted values with no boundary change",
+        "compile-only generated types with no data contract",
+        "DB/queue/migration behaviour belongs in db pack",
+        "runtime config parsing belongs in time-config-client pack"
+      ],
+      "path_signals": [
+        "**/*.rs"
+      ],
+      "confidence_class": "MEDIUM",
+      "activation_policy": "AUTO_SUGGEST",
+      "escalation_triggers": [
+        "auth, crypto, session tokens or key material",
+        "user-supplied URL/path/subprocess/network target",
+        "credentials or PII",
+        "high-volume untrusted input",
+        "archive expansion",
+        "supply-chain/build-time dependency trust boundary"
+      ],
+      "related_rule_ids": [
+        "RP-DATA-001",
+        "RP-DATA-002",
+        "RP-DATA-003",
+        "RP-DATA-004",
+        "RP-DATA-005",
+        "RP-DATA-006",
+        "RP-DATA-007",
+        "RP-DATA-008",
+        "RP-DATA-009",
+        "RP-SEC-001",
+        "RP-SEC-002",
+        "RP-SEC-003",
+        "RP-SEC-004",
+        "RP-SEC-005",
+        "RP-SEC-006",
+        "RP-IO-001",
+        "RP-IO-002",
+        "RP-IO-003",
+        "RP-IO-004",
+        "RP-IO-005",
+        "RP-IO-006",
+        "RP-IO-007",
+        "RP-IO-008"
+      ],
+      "validation_family": [
+        "boundary-and-negative-tests",
+        "parser-fuzz-adversarial-tests",
+        "redaction-tests",
+        "security-review",
+        "i-o-integration-and-fault-tests"
+      ]
+    },
+    "db": {
+      "label": "Database, messaging, and distributed state",
+      "kb_section": "6.9",
+      "positive_signals": [
+        "sqlx::",
+        "diesel::",
+        "tokio_postgres",
+        "rusqlite",
+        "sea_orm",
+        "redis::",
+        "lapin::",
+        "rdkafka::",
+        "rabbitmq",
+        "BEGIN;",
+        "COMMIT;",
+        "ROLLBACK"
+      ],
+      "negative_signals": [
+        "in-memory-only collections",
+        "local file/cache persistence without DB or queue semantics",
+        "HTTP/API client calls with no durable state",
+        "docs-only mentions"
+      ],
+      "path_signals": [
+        "**/migrations/**",
+        "**/schema.sql",
+        "**/*.sql",
+        "**/diesel.toml"
+      ],
+      "confidence_class": "MEDIUM",
+      "activation_policy": "AUTO_SUGGEST",
+      "escalation_triggers": [
+        "production schema migration",
+        "rollback or mixed-version deploy",
+        "exactly-once claims",
+        "poison-message handling",
+        "money/time/nullability mapping"
+      ],
+      "related_rule_ids": [
+        "RP-DB-001",
+        "RP-DB-002",
+        "RP-DB-003",
+        "RP-DB-004",
+        "RP-DB-005",
+        "RP-DB-006"
+      ],
+      "validation_family": [
+        "db-integration-tests",
+        "transaction-rollback-tests",
+        "duplicate-delivery-replay-tests",
+        "migration-expand-contract-validation"
+      ]
+    },
+    "time-config-client": {
+      "label": "Time, configuration, and API clients",
+      "kb_section": "6.10",
+      "positive_signals": [
+        "Duration::from_",
+        "Instant::now",
+        "SystemTime::now",
+        "tokio::time::sleep",
+        "tokio::time::timeout",
+        "retry_backoff",
+        "config::Config",
+        "figment",
+        "envy::",
+        "notify::",
+        "reqwest::Client",
+        "hyper::client"
+      ],
+      "negative_signals": [
+        "pure computation with no clock/config/external-client boundary",
+        "one-off constant config with no validation/reload behaviour",
+        "ordinary unit tests with no timing oracle",
+        "API client mention with no changed call/retry/deadline behaviour"
+      ],
+      "path_signals": [
+        "**/config.rs",
+        "**/client.rs"
+      ],
+      "confidence_class": "MEDIUM",
+      "activation_policy": "AUTO_SUGGEST",
+      "escalation_triggers": [
+        "dynamic config reload",
+        "credential/cert hot reload",
+        "process-wide env mutation in tests/runtime",
+        "external API mutation retries",
+        "deadline/cancellation affects correctness"
+      ],
+      "related_rule_ids": [
+        "RP-TIME-001",
+        "RP-TIME-002",
+        "RP-TIME-003",
+        "RP-TIME-004",
+        "RP-TIME-005",
+        "RP-TIME-006",
+        "RP-TIME-007"
+      ],
+      "validation_family": [
+        "config-validation-reload-tests",
+        "timeout-retry-backoff-tests",
+        "deterministic-time-tests",
+        "environment-isolation-review",
+        "api-client-fault-tests"
+      ]
+    },
+    "ops": {
+      "label": "Operations, observability, and rollback",
+      "kb_section": "6.10",
+      "positive_signals": [
+        "tracing::",
+        "tracing_subscriber",
+        "prometheus::",
+        "metrics::",
+        "opentelemetry",
+        "signal::ctrl_c",
+        "tokio::signal",
+        "health_check",
+        "readiness",
+        "liveness"
+      ],
+      "negative_signals": [
+        "local prototype, one-shot CLI, library-only change with no deployment/operator contract",
+        "ordinary debug logging with no telemetry pipeline",
+        "production observability not activated merely because code has main",
+        "generic cleanup covered by CORE-009"
+      ],
+      "path_signals": [
+        "**/k8s/**",
+        "**/deploy/**",
+        "**/Dockerfile"
+      ],
+      "story_tags": [
+        "production-service",
+        "operator-facing",
+        "rollback-required"
+      ],
+      "confidence_class": "WEAK",
+      "activation_policy": "STORY_TAG_REQUIRED",
+      "escalation_triggers": [
+        "production rollout or rollback risk",
+        "telemetry can block request paths or grow unbounded",
+        "high-cardinality or sensitive metrics",
+        "signal/shutdown affects in-flight work"
+      ],
+      "related_rule_ids": [
+        "RP-OPS-001",
+        "RP-OPS-002",
+        "RP-OPS-003",
+        "RP-OPS-004",
+        "RP-OPS-005",
+        "RP-OPS-006",
+        "RP-OPS-007",
+        "RP-OPS-008",
+        "RP-OPS-009"
+      ],
+      "validation_family": [
+        "ops-review",
+        "service-integration-tests",
+        "shutdown-drain-tests",
+        "telemetry-cardinality-redaction-checks",
+        "release-rollback-gate-review"
+      ]
+    },
+    "perf": {
+      "label": "Performance, portability, no_std, WASM, and embedded",
+      "kb_section": "6.11",
+      "positive_signals": [
+        "#[no_std]",
+        "no_std",
+        "wasm32",
+        "target_arch",
+        "target_feature",
+        "criterion::",
+        "iai::",
+        "std::simd",
+        "core::arch",
+        "GlobalAlloc"
+      ],
+      "negative_signals": [
+        "cosmetic style refactor",
+        "cold code with no performance claim",
+        "correctness-only bugfix unless it changes a measured path",
+        "cookbook micro-optimisations without baseline evidence"
+      ],
+      "path_signals": [
+        "benches/**",
+        "**/*.bench.rs"
+      ],
+      "story_tags": [
+        "perf-budget",
+        "no_std",
+        "wasm",
+        "embedded",
+        "hot-path",
+        "binary-size-budget"
+      ],
+      "confidence_class": "WEAK",
+      "activation_policy": "STORY_TAG_REQUIRED",
+      "escalation_triggers": [
+        "hard SLA or resource budget",
+        "no_std/embedded/WASM target support",
+        "unsafe/SIMD/intrinsics",
+        "custom allocator",
+        "benchmark numbers drive acceptance"
+      ],
+      "related_rule_ids": [
+        "RP-PERF-001",
+        "RP-PERF-002",
+        "RP-PERF-003",
+        "RP-PERF-004",
+        "RP-PERF-005",
+        "RP-PERF-006",
+        "RP-PERF-007",
+        "RP-PERF-008"
+      ],
+      "validation_family": [
+        "baseline-and-before-after-benchmarks",
+        "profiler-allocation-codegen-evidence",
+        "target-matrix-or-cross-compilation-checks",
+        "portability-review"
+      ]
+    }
+  }
+}
