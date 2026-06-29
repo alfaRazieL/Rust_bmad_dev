@@ -78,14 +78,15 @@ def test_t_l4_menu_002_foreign_customization_preserved():
         for p in after_user["principles"]
     )
 
-    # Second merge: write the intermediate as a TOML doc and re-merge RDX override.
-    # The shim is single-pass; emulate chain merge by re-applying menu rules.
-    from tests.bmad._helpers.resolver_shim import _merge_menu, _merge_string_array
+    # Second merge: RDX override applied on top of (base + user).
+    # Order matters — RDX is the LAST override so its DS entry wins.
+    from tests.bmad._helpers.resolver_shim import _load, _merge_menu, _merge_string_array
 
-    rdx_doc = resolve(BASE, RDX_OVERRIDE)
-    merged_menu = _merge_menu(rdx_doc["menu"], after_user["menu"])
+    rdx_doc = _load(RDX_OVERRIDE)
+    rdx_agent = rdx_doc.get("agent", {})
+    merged_menu = _merge_menu(after_user.get("menu", []), rdx_agent.get("menu", []))
     merged_principles = _merge_string_array(
-        rdx_doc["principles"], after_user["principles"]
+        after_user.get("principles", []), rdx_agent.get("principles", [])
     )
 
     assert _menu_codes(merged_menu) == _menu_codes(expected["expected_menu"])

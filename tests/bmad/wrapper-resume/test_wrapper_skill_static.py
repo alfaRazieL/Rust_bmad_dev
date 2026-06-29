@@ -52,20 +52,18 @@ def test_t_l4_wr_001_happy_path_structure(parsed_wrapper):
     expected = json.loads((HERE / "happy-path" / "expected.json").read_text())
     body = parsed_wrapper.body
 
-    # BEFORE marker step: must appear before the child-invocation step.
+    # Required content markers.
     assert "BEFORE" in body, "wrapper must record a BEFORE marker prior to child"
-    # Child invocation: must reference bmad-dev-story.
     assert "bmad-dev-story" in body, "wrapper must invoke bmad-dev-story child skill"
-    # AFTER marker step: must appear after child.
     assert "AFTER" in body, "wrapper must record an AFTER marker post-child"
-    # Validator + report steps must exist.
     assert "rdx-validator" in body or "validator" in body
     assert "report" in body.lower()
 
-    # Ordering check on first occurrence.
-    idx_before = body.index("BEFORE")
-    idx_child = body.index("bmad-dev-story")
-    idx_after = body.index("AFTER")
+    # Ordering check based on step-section headers, not first-occurrence of
+    # words that may appear in introductory prose.
+    idx_before = body.index("BEFORE marker")
+    idx_child = body.index("Invoke child skill")
+    idx_after = body.index("AFTER marker")
     assert idx_before < idx_child < idx_after, (
         f"step ordering must be BEFORE({idx_before}) < CHILD({idx_child}) < AFTER({idx_after})"
     )
