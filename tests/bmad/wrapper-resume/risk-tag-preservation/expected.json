@@ -1,0 +1,12 @@
+{
+  "test_id": "T-L4-WR-006",
+  "description": "Wrapper records active risk tags BEFORE child invocation and re-reads them AFTER. Tag list must be byte-identical across the child boundary. SKILL.md must instruct the LLM to persist tags in a context-stable location (story file or persistent_facts), not in volatile chat memory.",
+  "expected_status": "PASS",
+  "expected_exit_code": 0,
+  "skill_must_declare": [
+    "risk-tag capture before child",
+    "stable storage location for tags",
+    "risk-tag re-read after child",
+    "tag-equality assertion"
+  ]
+}

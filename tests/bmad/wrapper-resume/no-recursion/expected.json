@@ -1,0 +1,11 @@
+{
+  "test_id": "T-L4-WR-004",
+  "description": "Wrapper must not invoke itself recursively. SKILL.md must explicitly forbid self-invocation and name only the child skill (bmad-dev-story) as a valid Skill target.",
+  "expected_status": "FAIL",
+  "expected_exit_code": 1,
+  "skill_must_declare": [
+    "no self-invocation rule",
+    "single child skill named (bmad-dev-story)",
+    "recursion guard sentinel"
+  ]
+}

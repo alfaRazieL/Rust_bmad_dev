@@ -1,0 +1,30 @@
+# Synthetic base bmad-agent-dev agent definition for menu-override tests.
+# Mirrors the shape of the real BMad agent file: each menu entry is a
+# [[agent.menu]] table with a `code` and a `skill` (or `task`) field.
+
+[agent]
+description = "Amelia — implementation developer (synthetic test base)"
+persistent_facts = []
+principles = [
+  "Standard BMad dev principles.",
+]
+
+[[agent.menu]]
+code = "DS"
+skill = "bmad-dev-story"
+title = "Dev Story"
+
+[[agent.menu]]
+code = "QD"
+skill = "bmad-quick-dev"
+title = "Quick Dev"
+
+[[agent.menu]]
+code = "CR"
+skill = "bmad-code-review"
+title = "Code Review"
+
+[[agent.menu]]
+code = "RF"
+skill = "bmad-refactor"
+title = "Refactor"

@@ -1,0 +1,11 @@
+{
+  "test_id": "T-L4-WR-005",
+  "description": "Wrapper must check for required post-child artifact (diff / evidence input) and HALT with a missing-artifact diagnostic if absent. Closes the Phase 0.1 pending item for child-incomplete result detection.",
+  "expected_status": "FAIL",
+  "expected_exit_code": 1,
+  "skill_must_declare": [
+    "post-child artifact existence check",
+    "missing-artifact diagnostic sentinel",
+    "halt on missing artifact"
+  ]
+}
