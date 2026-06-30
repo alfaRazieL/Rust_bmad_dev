@@ -129,14 +129,18 @@ def test_t_v6_acc_03_r2_wrapper_structurally_complete():
     # Frontmatter + body checks.
     assert CR_WRAPPER_SKILL.exists()
     text = CR_WRAPPER_SKILL.read_text(encoding="utf-8")
-    # Forbidden phrases — same set as Phase 3 wrapper.
-    lower = text.lower()
-    for phrase in ("hard enforcement", "guarantees compliance"):
-        assert phrase not in lower, (
-            f"R2 wrapper carries forbidden phrase {phrase!r}"
-        )
+    # Forbidden phrases — same negation-aware check as test_doc_honesty
+    # (T-V5-ACC-06). Negated forms ("NOT hard enforcement", "does not
+    # guarantee compliance") are the correct framing and are permitted.
+    from tests.acceptance.test_doc_honesty import _violations_in
+
+    violations = _violations_in(text)
+    assert not violations, (
+        f"R2 wrapper carries un-negated forbidden phrases: {violations}"
+    )
     # Soft-gate disclaimer.
-    assert "soft gate" in lower
+    lower = text.lower()
+    assert "soft gate" in lower or "soft-gate" in lower
     # Child → judgment ordering.
     idx_child = text.find("bmad-code-review")
     idx_judgment = text.find("rdx-judgment")

@@ -97,13 +97,14 @@ def test_t_l4_cr_001_wrapper_orders_child_then_judgment():
         "wrapper must invoke rdx-judgment after the child"
     )
 
-    # Ordering: anchor on the section headings, not first-mention prose.
-    # Phase 3 wrapper uses "Invoke child skill" / "AFTER marker" headings;
-    # mirror that pattern.
-    idx_before = body.find("BEFORE")
-    idx_child = body.find(expected["expected_child_skill"])
-    idx_judgment = body.find(expected["expected_post_child_skill"])
-    assert -1 < idx_before < idx_child < idx_judgment, (
+    # Ordering: anchor on the step-section headings, not first-mention
+    # prose. The Phase 3 wrapper uses the same pattern — `body.index(
+    # "BEFORE marker")` etc — so a substring in the introductory section
+    # does not flip the ordering.
+    idx_before = body.index("BEFORE marker")
+    idx_child = body.index("Invoke child skill (bmad-code-review)")
+    idx_judgment = body.index("Invoke rdx-judgment")
+    assert idx_before < idx_child < idx_judgment, (
         f"ordering violated: BEFORE({idx_before}) < CHILD({idx_child}) < JUDGMENT({idx_judgment})"
     )
 
