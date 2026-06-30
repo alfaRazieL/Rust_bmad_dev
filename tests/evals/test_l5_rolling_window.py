@@ -152,7 +152,9 @@ def test_aggregator_load_runs_from_artifacts_dir(tmp_path: Path) -> None:
 
     runs = load_runs(runs_dir)
     assert len(runs) == 3
-    assert [r.run_id for r in runs] == ["r1", "r2", "r0"]  # sorted by timestamp ascending
+    # Records authored: r0=3 days ago, r1=1 day ago, r2=2 days ago.
+    # Ascending by timestamp ⇒ oldest first: r0 (-3d), r2 (-2d), r1 (-1d).
+    assert [r.run_id for r in runs] == ["r0", "r2", "r1"]
 
 
 def test_threshold_checker_status_uses_canonical_taxonomy(evals_dir: Path) -> None:

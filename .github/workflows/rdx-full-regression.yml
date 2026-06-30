@@ -1,0 +1,107 @@
+name: RDX Full Regression (L0-L7)
+
+# Phase 6 §6.4 — Release gate for RDX itself.
+#
+# RDX_IMPLEMENTATION_PLAN_TESTED.md §6.4:
+#   "CI runs all L0-L7 on any change to KB / mapping / schema /
+#    validator / agent override"
+#
+# Trigger surface is intentionally broad: anything that can shift the
+# validator's verdict (KB sections, router mapping, evidence schema,
+# the validator package itself, BMAD overrides shipped by rdx-setup,
+# the eval-runner harness) recomputes the full L0-L7 superset before
+# merge. Layer-specific workflows still exist for tight feedback on
+# narrow changes; this one is the safety net.
+
+on:
+  pull_request:
+    paths:
+      # KB and Router mapping
+      - '.claude/skills/rdx-setup/assets/kb-sections/**'
+      - '.claude/skills/rdx-setup/assets/router-rules.json'
+      - '.claude/skills/rdx-setup/assets/modes.md'
+      - '.claude/skills/rdx-setup/assets/module.yaml'
+      # Validator package + schemas + status taxonomy
+      - 'rdx-validator/**'
+      - 'tests/contracts/schemas/**'
+      # BMAD agent overrides (rdx-dev-story wrapper, menu replacements)
+      - '.claude/skills/rdx-dev-story/**'
+      - '.claude/skills/rdx-setup/assets/agent-overrides/**'
+      # CI infrastructure that decides what runs
+      - '.github/scripts/rdx-ci-runner.py'
+      - '.github/workflows/rdx-full-regression.yml'
+      # The catalog itself: a new test ID demands a re-run
+      - 'RDX_TEST_CASES.yaml'
+      # Eval harness contracts
+      - 'tests/evals/**'
+  push:
+    branches:
+      - main
+      - rdx-improvements
+    paths:
+      - '.claude/skills/rdx-setup/**'
+      - '.claude/skills/rdx-dev-story/**'
+      - 'rdx-validator/**'
+      - 'tests/contracts/schemas/**'
+      - 'RDX_TEST_CASES.yaml'
+      - '.github/workflows/rdx-full-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    name: full L0-L7 regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema pytest pyyaml
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name "RDX CI"
+          git config --global user.email "rdx-ci@example.com"
+          git config --global init.defaultBranch main
+
+      - name: L0 contracts
+        run: python -m pytest tests/contracts -v --tb=short
+
+      - name: L1 + L2 validator units
+        run: python -m pytest tests/unit -v --tb=short
+
+      - name: L3 integration
+        run: python -m pytest tests/integration -v --tb=short
+
+      - name: L4 BMAD wrapper + menu override + setup
+        run: python -m pytest tests/bmad -v --tb=short
+
+      - name: L5 harness contracts
+        # L5 statistical runs are scheduled (bmad-eval-runner), NOT
+        # per-PR per RDX_TEST_STRATEGY.md §4. This step asserts the
+        # harness + case files only.
+        run: python -m pytest tests/evals -v --tb=short
+
+      - name: L6 hook + CI runner
+        run: python -m pytest tests/ci -v --tb=short
+
+      - name: L7 mutation suite (full V5)
+        run: python -m pytest tests/mutation -v --tb=short
+
+      - name: Acceptance (doc-honesty + regression timing)
+        run: python -m pytest tests/acceptance -v --tb=short
+
+      - name: Compatibility matrix shape
+        run: python -m pytest tests/compatibility -v --tb=short
