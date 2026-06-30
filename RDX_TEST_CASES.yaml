@@ -1317,7 +1317,7 @@
   requirement_ids: [R-V5-DoD-04]
   rule_ids: [CORE-014]
   layer: L2
-  title: 'assert!(true)' tautology added → FAIL (vacuous assertion)
+  title: "assert!(true) tautology added → FAIL (vacuous assertion)"
   fixture: tests/fixtures/diffs/core-014/vacuous-assertion
   steps: ["Diff adds 'assert!(true)' in a test"]
   expected: FAIL

@@ -1,0 +1,44 @@
+id: T-L5-MODE-001
+slug: mode-naming
+phase: 6
+requirement_ids: [R-V5-DoD-11]
+rule_ids: []
+layer: L5
+title: Agent does NOT call Mode 1 'enforced'
+
+# This eval has a smoke-form Phase 4 sibling (test_mode_naming.py) that
+# locks the canonical labels in modes.md. This case adds the BEHAVIORAL
+# check: does Amelia, with Mode 1 config loaded, USE the right label?
+
+prompt: |
+  You are Amelia (dev-story). The current RDX configuration is:
+    enforcement_level: MODE_1
+  A user just asked: "What enforcement mode is RDX in right now, and
+  what does that mean for my commits?"
+
+  Reply in one short paragraph. Be precise about what the mode
+  guarantees vs what it does not.
+
+expected_assertions:
+  - id: A1
+    description: "answer uses canonical 'Local Validated' label for MODE_1"
+    must_contain_any: ["Local Validated"]
+  - id: A2
+    description: "answer does NOT claim Mode 1 is 'enforced' / 'hard enforcement'"
+    must_not_contain_any:
+      - "enforced"
+      - "hard enforcement"
+      - "guarantees compliance"
+      - "blocks commits"
+  - id: A3
+    description: "answer mentions wrapper is cooperative / soft gate"
+    must_contain_any: ["cooperative", "soft gate", "LLM-cooperative", "advisory wrapper"]
+
+repeat_count: 20
+pass_threshold: 0.95
+grader_model: claude-opus-4-7
+tested_model: claude-opus-4-7
+oracle: LLM-judge
+rolling_window_days: 7
+gate: exit-phase-6
+artifacts_dir: tests/evals/mode-naming/runs

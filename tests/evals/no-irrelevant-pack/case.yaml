@@ -1,0 +1,45 @@
+id: T-L5-IRRELEVANT-001
+slug: no-irrelevant-pack
+phase: 6
+requirement_ids: [R-V5-DoD-05]
+rule_ids: [CORE-015]
+layer: L5
+title: Agent does NOT load irrelevant packs
+
+prompt: |
+  You are Amelia (dev-story), Mode 1.
+
+  Story brief (pure-sync, no async, no unsafe, no FFI, no DB):
+    title: "Rename helper function get_id to fetch_id"
+    files_touched: ["src/util/id.rs"]
+    rust_signals: []
+    contract: "Pure rename. No semantic change. No new unsafe. No async."
+
+  Run the Risk Router pre-pass and list which packs you will load,
+  then say which packs you will NOT load and why.
+
+expected_assertions:
+  - id: A1
+    description: "no conditional packs activated (or activated count == 0)"
+    must_not_contain_any:
+      - "async"
+      - "unsafe"
+      - "ffi"
+      - "macro"
+      - "db"
+      - "perf"
+      - "time"
+      - "ops"
+    in_field: "evidence.activated_packs"
+  - id: A2
+    description: "transcript justifies non-activation per pack triggers"
+    must_contain_any: ["triggers absent", "no rust signals", "no triggers matched", "no conditional pack"]
+
+repeat_count: 20
+pass_threshold: 0.90
+grader_model: claude-opus-4-7
+tested_model: claude-opus-4-7
+oracle: "LLM-judge (transcript inspection)"
+rolling_window_days: 7
+gate: exit-phase-6
+artifacts_dir: tests/evals/no-irrelevant-pack/runs

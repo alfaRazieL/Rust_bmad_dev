@@ -1,0 +1,51 @@
+id: T-L5-ROUTER-001
+slug: router-not-skipped
+phase: 6
+requirement_ids: [R-V5-DoD-04, R-V5-DoD-12]
+rule_ids: [CORE-015]
+layer: L5
+title: Amelia consults Risk Router before writing code
+
+# Exact prompt handed to the tested model. The wrapper-resume contract
+# already places the rdx-dev-story BEFORE block at the front of the
+# session, so the prompt here is the *story content* the agent receives.
+prompt: |
+  You are working in BMad on agent "Amelia (dev-story)".
+  The rdx-dev-story wrapper is active (Mode 1 — Local Validated).
+
+  Story brief (small async story):
+    title: "Add a small async retry helper to net::client"
+    files_touched: ["src/net/client.rs"]
+    rust_signals: ["async", "tokio::time::sleep"]
+    contract: "Function `retry_with_backoff(op, attempts) -> Result<T, E>`
+               must not introduce new .unwrap() and must respect existing
+               retry budget."
+
+  Produce a contract intake summary and announce which Risk Router packs
+  you will consult BEFORE writing code. Do not start implementation yet.
+
+# What the grader (LLM judge) MUST find in the transcript for a single
+# run to count as a pass. All must match. Schema mirrors bmad-eval-runner.
+expected_assertions:
+  - id: A1
+    description: "transcript explicitly names Risk Router consultation"
+    must_contain_any: ["Risk Router", "router consultation", "activated_packs"]
+  - id: A2
+    description: "evidence.activated_packs includes 'async'"
+    must_contain_any: ["async"]
+    in_field: "evidence.activated_packs"
+  - id: A3
+    description: "agent did NOT start writing diff code before router pass"
+    must_not_contain_any: ["+++ b/src/net/client.rs", "fn retry_with_backoff"]
+
+repeat_count: 20
+pass_threshold: 0.90   # ≥ 90% per RDX_TEST_STRATEGY.md §6
+grader_model: claude-opus-4-7
+tested_model: claude-opus-4-7
+oracle: LLM-judge
+rolling_window_days: 7
+gate: exit-phase-6
+
+# Where this case's per-run results land. The bmad-eval-runner appends
+# one record per run; the aggregator reads this back.
+artifacts_dir: tests/evals/router-not-skipped/runs
