@@ -2362,18 +2362,20 @@
   requirement_ids: [R-V6-DoD-07, R-V6-DoD-08]
   rule_ids: []
   layer: L7
-  title: Cat-4 approval cannot be reused after diff change
+  title: Cat-4 approval cannot be reused after diff change (B1 — in-repo JSON storage)
   fixture: tests/mutation/approval-reuse
   steps:
-    - "Specialist approves PR at diff_digest=D1"
+    - "Specialist creates _bmad/rdx/approvals/<D1>.json for diff_digest=D1, commits"
     - "Author pushes new commit; diff_digest=D2"
-    - "CI checks: approval.diff_digest != current diff_digest → APPROVAL_REQUIRED"
-  expected: rejected
+    - "Validator computes current diff_digest=D2; looks for _bmad/rdx/approvals/D2.json"
+    - "Approval file for D2 does not exist (only D1 exists)"
+    - "Assert: APPROVAL_REQUIRED status; exit 3; CI blocks"
+  expected: stale approval has no effect on new diff; approval pinned to diff_digest by file naming
   expected_status: APPROVAL_REQUIRED
   expected_exit_code: 3
   blocking: true
   oracle: deterministic
-  artifacts: []
+  artifacts: [diff_digest computation log]
   automation: full
   gate: exit-phase-8
 
@@ -2485,18 +2487,23 @@
   requirement_ids: [R-V6-DoD-06, R-V6-DoD-07]
   rule_ids: []
   layer: L8
-  title: Cat-4 — unsafe change with no approval is blocked
+  title: Cat-4 — unsafe change with no approval is blocked (A3 approvers.yaml + B1 JSON)
   fixture: tests/fixtures/approvals/unsafe-no-approval
+  preconditions:
+    - "_bmad/rdx/approvers.yaml is present and lists 'unsafe-reviewers' role for src/unsafe/** pattern"
+    - "No _bmad/rdx/approvals/<diff_digest>.json file exists for current diff"
   steps:
-    - "PR has unsafe block (new); no approval recorded"
-    - "Run validator with Mode 4"
-    - "Assert: APPROVAL_REQUIRED; CI blocks"
-  expected: blocked until approved
+    - "PR adds unsafe block in src/unsafe/foo.rs (new); no approval JSON committed"
+    - "Validator computes diff_digest=D from actual diff"
+    - "Validator loads approvers.yaml; matches path pattern → requires 'unsafe-reviewers' role"
+    - "Validator looks for _bmad/rdx/approvals/D.json; not found"
+    - "Assert: rule verdict APPROVAL_REQUIRED; final_verdict BLOCKED; exit 3"
+  expected: blocked until approval JSON for this exact diff is committed
   expected_status: APPROVAL_REQUIRED
   expected_exit_code: 3
   blocking: true
   oracle: deterministic
-  artifacts: []
+  artifacts: [validator JSON output, diff_digest log]
   automation: full
   gate: exit-phase-8
 
@@ -2506,18 +2513,24 @@
   requirement_ids: [R-V6-DoD-06, R-V6-DoD-07]
   rule_ids: []
   layer: L8
-  title: Cat-4 — approval present, diff_digest matches → PASS
+  title: Cat-4 — approval present with matching diff_digest and authorized identity → PASS
   fixture: tests/fixtures/approvals/unsafe-approved
+  preconditions:
+    - "_bmad/rdx/approvers.yaml lists alice@example.com under 'unsafe-reviewers'"
+    - "_bmad/rdx/approvals/<diff_digest>.json exists, validates against approval.v1.schema.json"
+    - "Approval file fields: approver_identity=alice@example.com, role=unsafe-reviewers, diff_digest=<current>, decision=approved"
   steps:
-    - "Approval signed for current diff_digest by CODEOWNERS member"
-    - "Run validator"
-    - "Assert: APPROVAL_REQUIRED resolves to PASS"
-  expected: unblocked
+    - "Run validator on the diff"
+    - "Validator computes current diff_digest=D"
+    - "Validator finds _bmad/rdx/approvals/D.json; validates schema"
+    - "Validator confirms approver_identity is in approvers.yaml under matching role"
+    - "Assert: rule verdict PASS; final_verdict PASS; exit 0"
+  expected: unblocked — approval honored
   expected_status: PASS
   expected_exit_code: 0
   blocking: true
   oracle: deterministic
-  artifacts: []
+  artifacts: [validator JSON output]
   automation: full
   gate: exit-phase-8
 
@@ -2527,15 +2540,69 @@
   requirement_ids: [R-V6-DoD-07, R-V6-DoD-08]
   rule_ids: []
   layer: L8
-  title: Cat-4 — unauthorized approver rejected
+  title: Cat-4 — approver identity not listed in approvers.yaml → rejected
   fixture: tests/fixtures/approvals/unsafe-unauthorized-approver
+  preconditions:
+    - "_bmad/rdx/approvers.yaml lists alice@example.com under 'unsafe-reviewers'"
+    - "_bmad/rdx/approvals/<diff_digest>.json exists with approver_identity=mallory@example.com (NOT in approvers.yaml)"
   steps:
-    - "Approval present but signer is not in CODEOWNERS for the affected area"
-    - "Run validator"
-    - "Assert: APPROVAL_REQUIRED remains"
-  expected: rejection by ownership policy
+    - "Run validator on the diff"
+    - "Validator finds approval JSON; validates schema (schema passes — file is well-formed)"
+    - "Validator checks approver_identity against approvers.yaml role membership"
+    - "mallory@example.com is NOT a member of 'unsafe-reviewers' for the affected path"
+    - "Assert: rule verdict APPROVAL_REQUIRED (NOT PASS); exit 3"
+  expected: identity-based rejection; well-formed but unauthorized approval ignored
   expected_status: APPROVAL_REQUIRED
   expected_exit_code: 3
+  blocking: true
+  oracle: deterministic
+  artifacts: [validator JSON output noting identity mismatch]
+  automation: full
+  gate: exit-phase-8
+
+- id: T-L8-CAT4-004
+  version: V6
+  phase: 8
+  requirement_ids: [R-V6-DoD-06, R-V6-DoD-07]
+  rule_ids: []
+  layer: L8
+  title: sync-codeowners generates correct .github/CODEOWNERS from approvers.yaml (A3 hybrid)
+  fixture: tests/fixtures/approvers/sample-approvers
+  preconditions:
+    - "_bmad/rdx/approvers.yaml exists with 3 patterns (src/unsafe/**, src/crypto/**, _bmad/rust-kb/**) and corresponding identities"
+  steps:
+    - "Run: rdx-setup sync-codeowners"
+    - "Read generated .github/CODEOWNERS"
+    - "Assert: file contains the 3 patterns with @-prefixed identities/teams"
+    - "Assert: existing manual entries in CODEOWNERS (outside RDX-managed section) preserved"
+  expected: idempotent generation; preserves foreign entries via marker block
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: golden
+  artifacts: [generated CODEOWNERS file, golden expected file]
+  automation: full
+  gate: exit-phase-8
+
+- id: T-L8-CAT4-005
+  version: V6
+  phase: 8
+  requirement_ids: [R-V6-DoD-06, R-V6-DoD-07]
+  rule_ids: []
+  layer: L8
+  title: Approval schema validates required fields (B1 schema lock)
+  fixture: tests/fixtures/approvals/schema-cases
+  preconditions:
+    - "_bmad/rdx/approval.v1.schema.json present"
+  steps:
+    - "Validate sample valid approval JSON → passes"
+    - "Validate sample missing rule_id → fails"
+    - "Validate sample missing diff_digest → fails"
+    - "Validate sample missing approver_identity → fails"
+    - "Validate sample with decision=denied → passes (denials are recorded too)"
+  expected: schema correctly enforces required-fields contract
+  expected_status: PASS
+  expected_exit_code: 0
   blocking: true
   oracle: deterministic
   artifacts: []
@@ -2548,13 +2615,17 @@
   requirement_ids: [R-V6-DoD-08]
   rule_ids: []
   layer: L8
-  title: Modifying RDX KB or validator policy requires governance approval
+  title: Modifying RDX KB / validator / schema / workflow requires governance role approval
   fixture: tests/fixtures/approvals/kb-change-no-approval
+  preconditions:
+    - "_bmad/rdx/approvers.yaml lists 'governance' role with at least one identity"
+    - "approvers.yaml maps protected paths: _bmad/rust-kb/**, tests/contracts/router-rules.json, tests/contracts/schemas/**, rdx-validator/**, .github/workflows/rdx-gate.yml → 'governance' role"
   steps:
     - "PR modifies _bmad/rust-kb/section-4-core.md"
-    - "No governance approval"
-    - "Assert: blocked"
-  expected: governance gate
+    - "No _bmad/rdx/approvals/<diff_digest>.json for this diff"
+    - "Validator activates governance approval requirement for the protected path"
+    - "Assert: APPROVAL_REQUIRED with role=governance; exit 3"
+  expected: governance gate triggers for any of the 5 protected path categories
   expected_status: APPROVAL_REQUIRED
   expected_exit_code: 3
   blocking: true

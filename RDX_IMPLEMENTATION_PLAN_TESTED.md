@@ -396,28 +396,69 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 
 ## Phase 8 — Cat-4 specialist approval
 
+### Architectural decisions (locked 2026-06-30, after Phase 7 review)
+
+**Approvers schema — A3 (hybrid):**
+- Canonical source: `_bmad/rdx/approvers.yaml` in the user's project repo.
+  Format: rule-pattern → role → list of allowed identities (git author emails OR GitHub usernames).
+- For GitHub-flow projects: `rdx-setup sync-codeowners` utility GENERATES `.github/CODEOWNERS` from the YAML so GitHub's native auto-request-and-block works.
+- For non-GitHub (GitLab self-hosted, Forgejo, plain git+CI): validator reads `approvers.yaml` directly + verifies git author email of the approval JSON file matches an allowed identity.
+- Reason: portable across CI providers; one source of truth; GitHub UX preserved; works without GitHub identities at all when needed.
+
+**Approval storage — B1 (in-repo JSON, canonical):**
+- Per-PR/diff approval is committed to `_bmad/rdx/approvals/<diff_digest>.json` in the repo.
+- Schema: `{rule_id, approver_identity, approver_role, head_sha, diff_digest, timestamp, scope, decision, conditions, signature?}`.
+- `diff_digest` binding (per T-L7-APPROVAL-REUSE-001) makes the approval invalid as soon as the diff changes — the JSON is *for that diff only*.
+- Reason: portable; audit trail via git log; works offline; CI any provider can read the file; no GitHub API dependency.
+- Optional GitHub-only convenience: in a follow-up enhancement, CI may auto-generate the JSON from a native PR review by an authorized reviewer; not required for V6 release.
+
+These decisions are reflected in the test cases below and in `RDX_TEST_CASES.yaml` Phase 8 entries.
+
 ### Entry gate
 
-- [ ] T-L8-CAT4-001/002/003 specs written
+- [ ] `_bmad/rdx/approvers.schema.json` — JSON Schema for `approvers.yaml`; specs written
+- [ ] `_bmad/rdx/approval.v1.schema.json` — JSON Schema for individual approval files; specs written
+- [ ] T-L8-CAT4-001/002/003 specs written (referencing the two schemas above)
 - [ ] T-L7-APPROVAL-REUSE-001 spec written
 - [ ] T-L8-GOV-001 spec written
 - [ ] T-V6-ACC-04 spec written
+- [ ] Fixtures under `tests/fixtures/approvers/` + `tests/fixtures/approvals/` with: valid YAML, valid JSON for a diff, invalid (unauthorized identity), invalid (mismatched diff_digest)
 
 ### Implementation tasks
 
-- [ ] Approval contract schema (rule_id, reviewer, role, head_sha, diff_digest, timestamp, scope, decision, conditions)
-- [ ] CODEOWNERS template for unsafe / FFI / security / public API / RDX-protected
-- [ ] CI rejects approval-with-mismatched-diff_digest
-- [ ] CI rejects approval-from-non-CODEOWNERS-member
+#### 8.1 Approvers schema (A3)
+
+- [ ] `_bmad/rdx/approvers.schema.json` JSON Schema defining canonical YAML structure
+- [ ] `rdx-setup` sub-command `sync-codeowners` that reads `approvers.yaml` and writes/updates `.github/CODEOWNERS`
+- [ ] Template `approvers.yaml.example` shipped with RDX (placeholder identities for unsafe/FFI/security/public-API/RDX-protected categories)
+- [ ] Validator loads `approvers.yaml` if present; tolerates absence (treats as "no Cat-4 rules active")
+
+#### 8.2 Approval contract schema (B1)
+
+- [ ] `_bmad/rdx/approval.v1.schema.json` with required fields: rule_id, approver_identity, approver_role, head_sha, diff_digest, timestamp, scope, decision, conditions
+- [ ] Optional: signature/HMAC field reserved but NOT required for V6 (deferred to Phase 9 HA)
+- [ ] Validator reads `_bmad/rdx/approvals/<diff_digest>.json` files; matches against approvers.yaml + current diff_digest
+
+#### 8.3 Validator-side approval verification
+
+- [ ] CI rejects approval-with-mismatched-diff_digest (T-L7-APPROVAL-REUSE-001)
+- [ ] CI rejects approval-from-non-listed-identity (T-L8-CAT4-003)
+- [ ] APPROVAL_REQUIRED rule with no approval file → blocked (T-L8-CAT4-001)
+- [ ] APPROVAL_REQUIRED rule with valid approval → unblocked (T-L8-CAT4-002)
+
+#### 8.4 Governance-sensitive artifact protection
+
+- [ ] Changes to `_bmad/rust-kb/`, `tests/contracts/router-rules.json`, `tests/contracts/schemas/*`, `rdx-validator/`, `.github/workflows/rdx-gate.yml` require governance role approval per approvers.yaml (T-L8-GOV-001)
 
 ### Exit gate
 
 - [ ] T-L8-CAT4-001 (no approval → blocked)
 - [ ] T-L8-CAT4-002 (valid approval → unblocked)
-- [ ] T-L8-CAT4-003 (unauthorized approver → blocked)
+- [ ] T-L8-CAT4-003 (unauthorized identity → blocked)
 - [ ] T-L7-APPROVAL-REUSE-001 (diff change invalidates)
-- [ ] T-L8-GOV-001 (KB/validator changes require governance approval)
-- [ ] T-V6-ACC-04 (end-to-end cycle)
+- [ ] T-L8-GOV-001 (KB/validator/schema/workflow changes require governance approval)
+- [ ] T-V6-ACC-04 (end-to-end cycle: unsafe diff → blocked → JSON approval committed → unblocked → diff changed → re-blocked)
+- [ ] `sync-codeowners` generates correct CODEOWNERS from sample approvers.yaml
 
 ---
 
@@ -461,10 +502,26 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 - [ ] hook behavior + `--no-verify` documented
 - [ ] CI setup
 - [ ] review integration
-- [ ] specialist approvals
+- [ ] specialist approvals (A3 hybrid CODEOWNERS + B1 in-repo JSON storage)
 - [ ] troubleshooting
 - [ ] compatibility matrix
 - [ ] limitations
+
+### README sections (locked 2026-06-30, post-Phase-7 user request)
+
+The repository `README.md` must include — beyond the basic install/use sections — a dedicated section on **CI cost and GitHub Actions usage** for BMAD/RDX users:
+
+- [ ] **"Using RDX with GitHub Actions Free plan"** subsection:
+  - Explain that GH Actions on Free plan gives **2,000 CI minutes/month for private repos** (and unlimited for public).
+  - Note: the 2,000 min budget is per **account/organization owner**, summed across all private repos.
+  - Typical Rust+RDX project consumes ~5–15 CI-min per PR; ≥130 PRs/month before exhausting the free tier.
+  - Document Mode 2 (Local Gated, pre-push hook) as the **fully free, no-CI alternative** for solo developers.
+  - Step-by-step instructions for setting up a BMAD/RDX project on GitHub Free with `rdx-gate.yml` as a required check.
+- [ ] **"When you need more than 2,000 minutes — switching to paid"** subsection:
+  - Step-by-step: move the repo into a GitHub **organization** (Free organization works for collaborators; paid plans unlock larger budgets).
+  - Compare: Pro ($4/user/month, +1,000 min) vs Team ($4/user/month, +1,000 min) vs Enterprise (50,000 min).
+  - Note self-hosted runners as a zero-additional-cost option (you provide infra; GH Actions itself stays free).
+  - Suggested cost calculator: typical PR minutes × expected monthly PRs.
 
 ### Public positioning (Phase 10 deliverable, but enforced by T-V5-ACC-06)
 
@@ -480,6 +537,8 @@ Clearly state:
 ### Exit gate
 
 - [ ] Grep over all docs: no forbidden phrases ("hard enforcement" applied to Modes 0/1, "guarantees compliance", etc.) — covered by T-V5-ACC-06
+- [ ] README contains both GH-Actions-Free and GH-Actions-Paid subsections with concrete steps
+- [ ] Mode 2 (Local Gated, no-CI) is explicitly positioned as a valid release-quality option, not a "stepping stone"
 
 ---
 

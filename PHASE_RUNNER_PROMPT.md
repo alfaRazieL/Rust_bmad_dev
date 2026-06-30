@@ -188,9 +188,14 @@ C. **Exit gate** (тесты которые должны пройти зелён
 - Если R2 не работает в реальной сессии — fallback на R1, документируй
 
 **Если PHASE = 8 (Cat-4 approvals):**
-- CODEOWNERS template
-- Approval schema с diff_digest binding
-- T-L7-APPROVAL-REUSE-001 — критический тест
+- ⚠ АРХИТЕКТУРА ЗАФИКСИРОВАНА (см. RDX_IMPLEMENTATION_PLAN_TESTED.md Phase 8 § "Architectural decisions (locked)"):
+  - **A3 (hybrid approvers schema)**: canonical YAML — `_bmad/rdx/approvers.yaml` (rule-pattern → role → identities). Утилита `rdx-setup sync-codeowners` генерирует `.github/CODEOWNERS` из YAML для GitHub UX. НЕ делай только CODEOWNERS template — это сломает портативность на не-GitHub провайдерах.
+  - **B1 (in-repo JSON approval storage)**: `_bmad/rdx/approvals/<diff_digest>.json` коммитится в репо. НЕ использовать GitHub PR review state как канонический источник. Файлы привязаны к `diff_digest` через имя файла + поле внутри.
+- Два новых обязательных schema файла: `_bmad/rdx/approvers.schema.json` и `_bmad/rdx/approval.v1.schema.json`
+- Test cases T-L8-CAT4-001..005 + T-L8-GOV-001 + T-L7-APPROVAL-REUSE-001 в YAML содержат точные preconditions с упоминанием обоих schema файлов и сценариев identities
+- T-L8-CAT4-004 (sync-codeowners idempotent generation) — golden test, ключевой для GitHub UX
+- HMAC/signature поле в approval.v1.schema.json — зарезервировано (optional), НЕ required в V6 (отложено на Phase 9 HA)
+- Governance-sensitive пути (для T-L8-GOV-001): `_bmad/rust-kb/**`, `tests/contracts/router-rules.json`, `tests/contracts/schemas/**`, `rdx-validator/**`, `.github/workflows/rdx-gate.yml`
 
 **Если PHASE = 9 (HA hardening):**
 - Только если есть реальный demand
@@ -199,6 +204,11 @@ C. **Exit gate** (тесты которые должны пройти зелён
 **Если PHASE = 10 (Docs):**
 - T-V5-ACC-06 — финальная проверка на forbidden phrases
 - compatibility matrix актуализирована
+- ⚠ ОБЯЗАТЕЛЬНЫЕ README секции (см. RDX_IMPLEMENTATION_PLAN_TESTED.md Phase 10 § "README sections"):
+  - **"Using RDX with GitHub Actions Free plan"** — объясни 2000 CI-минут/мес бюджет, что считается per account/organization owner, типичный расход Rust+RDX проекта (5–15 мин/PR), и Mode 2 как fully-free no-CI альтернативу для solo разработчиков. Step-by-step установка `rdx-gate.yml` как required check на GitHub Free.
+  - **"When you need more than 2,000 minutes — switching to paid"** — step-by-step: перенос репо в GitHub organization, сравнение Pro/Team/Enterprise тарифов с конкретными цифрами включённых минут, упоминание self-hosted runners как zero-cost варианта (вы платите только за инфру), suggested калькулятор cost.
+- Mode 2 (Local Gated, no-CI) должен быть позиционирован как полноценный release-quality вариант, НЕ как "stepping stone" к Mode 3
+- НЕ выдумывай тарифные цифры если они изменились с момента написания плана — используй те что в плане или дай задачу пользователю проверить актуальные
 
 ═══════════════════════════════════════════════════════════
 6. COMMIT И PUSH
