@@ -1,0 +1,12 @@
+diff --git a/_bmad/rdx/approvers.yaml b/_bmad/rdx/approvers.yaml
+index aaaaaaa..bbbbbbb 100644
+--- a/_bmad/rdx/approvers.yaml
++++ b/_bmad/rdx/approvers.yaml
+@@ -5,6 +5,7 @@ roles:
+     description: Specialists authorised to approve `unsafe` Rust surface changes.
+     identities:
+       - alice@example.com
++      - mallory@attacker.example
+       - "@core-unsafe-team"
+   governance:
+     description: Owners of RDX rules / validator / CI workflow / config files.

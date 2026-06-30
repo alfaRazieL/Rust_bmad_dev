@@ -2861,12 +2861,66 @@
   layer: L7
   title: Acceptance — High Assurance mode survives adversarial tests
   fixture: tests/acceptance/ha-adversarial-suite
-  steps: ["Run full L7 mutation suite in HA mode; assert all bypasses caught"]
-  expected: 100% adversarial detection
+  steps: ["Run full L7 mutation suite (V5 + V6 HA-specific) in HA mode; assert all bypasses caught"]
+  expected: 100% adversarial detection across the V5 + HA-specific bypass classes
   expected_status: PASS
   expected_exit_code: 0
   blocking: true
   oracle: deterministic
   artifacts: []
+  automation: full
+  gate: v6-release
+
+# --- Phase 9 HA-specific L7 bypass paths ---------------------------------------
+# These tests close gaps identified in docs/threat-model.md §6 that are not
+# exercised by the V5 L7 suite. They are catalogued as version: V6 so the
+# Phase 6 V5 full-suite gate (test_l7_full_suite.py) is not retro-broken; the
+# Phase 9 HA suite (T-V6-ACC-05) gates both V5 and V6 L7 modules.
+
+- id: T-L7-HA-MODE-DOWNGRADE-001
+  version: V6
+  phase: 9
+  requirement_ids: [R-V6-DoD-10, R-V6-DoD-08]
+  rule_ids: []
+  layer: L7
+  title: HA bypass — PR lowers enforcement mode in _bmad/rdx/config.toml
+  preconditions:
+    - "Project ships _bmad/rdx/config.toml declaring mode: MODE_4"
+    - "approvers.yaml.example places `_bmad/rdx/**` under the governance role"
+  fixture: tests/mutation/ha-mode-downgrade
+  steps:
+    - "PR rewrites _bmad/rdx/config.toml to mode: MODE_3"
+    - "Validator + governance pattern detect that the file is under _bmad/rdx/** and require GOV-RDX-001 approval"
+    - "Without approval the validator emits APPROVAL_REQUIRED and exits 3"
+  expected: HA mode cannot be silently downgraded; governance approval required
+  expected_status: APPROVAL_REQUIRED
+  expected_exit_code: 3
+  blocking: true
+  oracle: deterministic
+  artifacts: ["evidence.json"]
+  automation: full
+  gate: v6-release
+
+- id: T-L7-HA-APPROVERS-FORGERY-001
+  version: V6
+  phase: 9
+  requirement_ids: [R-V6-DoD-10, R-V6-DoD-08]
+  rule_ids: []
+  layer: L7
+  title: HA bypass — PR forges an entry in _bmad/rdx/approvers.yaml
+  preconditions:
+    - "approvers.yaml.example places `_bmad/rdx/**` under the governance role (recommended HA baseline)"
+    - "Project enables that governance pattern in their own approvers.yaml"
+  fixture: tests/mutation/ha-approvers-forgery
+  steps:
+    - "PR appends an attacker identity to roles.unsafe-reviewers.identities"
+    - "approvers.yaml lives under _bmad/rdx/**; governance pattern matches"
+    - "Validator emits APPROVAL_REQUIRED for GOV-RDX-001 unless a governance-role approver signs off"
+  expected: An attacker cannot add themselves as a Cat-4 approver without governance approval
+  expected_status: APPROVAL_REQUIRED
+  expected_exit_code: 3
+  blocking: true
+  oracle: deterministic
+  artifacts: ["evidence.json"]
   automation: full
   gate: v6-release

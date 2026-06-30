@@ -1,0 +1,47 @@
+---
+# HA-baseline approvers.yaml — Phase 9 fixture.
+#
+# Same shape as tests/fixtures/approvers/sample-approvers/approvers.yaml,
+# extended with the `_bmad/rdx/**` governance pattern that the HA mode
+# threat model (docs/threat-model.md §6) requires.
+#
+# Used by:
+#   tests/mutation/test_l7_ha_mode_downgrade.py      (T-L7-HA-MODE-DOWNGRADE-001)
+#   tests/mutation/test_l7_ha_approvers_forgery.py   (T-L7-HA-APPROVERS-FORGERY-001)
+#   tests/acceptance/ha-adversarial-suite/test_v6_acc_05.py (T-V6-ACC-05)
+
+schema_version: v1
+roles:
+  unsafe-reviewers:
+    description: Specialists authorised to approve `unsafe` Rust surface changes.
+    identities:
+      - alice@example.com
+      - "@core-unsafe-team"
+  governance:
+    description: Owners of RDX rules / validator / CI workflow / config files.
+    identities:
+      - alice@example.com
+      - "@rdx-governance"
+patterns:
+  - path: "src/unsafe/**"
+    rule_id: RP-UNSAFE-001
+    role: unsafe-reviewers
+  # HA governance baseline — see docs/threat-model.md §6 (V6 HA-specific bypass paths)
+  - path: "_bmad/rust-kb/**"
+    rule_id: GOV-KB-001
+    role: governance
+  - path: "_bmad/rdx/**"
+    rule_id: GOV-RDX-001
+    role: governance
+  - path: "tests/contracts/router-rules.json"
+    rule_id: GOV-ROUTER-001
+    role: governance
+  - path: "tests/contracts/schemas/**"
+    rule_id: GOV-SCHEMA-001
+    role: governance
+  - path: "rdx-validator/**"
+    rule_id: GOV-VALIDATOR-001
+    role: governance
+  - path: ".github/workflows/rdx-gate.yml"
+    rule_id: GOV-WORKFLOW-001
+    role: governance
