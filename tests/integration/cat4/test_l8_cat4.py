@@ -45,7 +45,8 @@ def _sha(diff_text: str) -> str:
 
 
 def _run_validator(project_root: Path, diff_file: Path, story_file: Path | None = None,
-                   evidence_out: Path | None = None) -> subprocess.CompletedProcess:
+                   evidence_out: Path | None = None,
+                   evidence_in: Path | None = None) -> subprocess.CompletedProcess:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_ROOT / "rdx-validator")
     cmd = [
@@ -58,24 +59,71 @@ def _run_validator(project_root: Path, diff_file: Path, story_file: Path | None 
     ]
     if story_file is not None:
         cmd += ["--story", str(story_file)]
+    if evidence_in is not None:
+        cmd += ["--evidence-in", str(evidence_in)]
     if evidence_out is not None:
         cmd += ["--evidence-out", str(evidence_out)]
     return subprocess.run(cmd, capture_output=True, text=True, env=env, check=False)
 
 
-def _scaffold_project(tmp_path: Path, diff_fixture: Path) -> tuple[Path, Path, str]:
+def _scaffold_project(
+    tmp_path: Path,
+    diff_fixture: Path,
+    *,
+    activated_packs: list[str] | None = None,
+    cargo_evidence: bool = True,
+) -> tuple[Path, Path, str]:
     """Create the in-repo layout the validator expects and return key paths.
 
     Returns (project_root, diff_file_in_project, diff_digest).
+
+    The scaffold also writes a CORE-011 PASS evidence stub (so Cat-4 is the
+    only blocking concern) and a story that correctly claims the packs the
+    router will activate (so CORE-015 stays NA).
     """
     (tmp_path / "_bmad" / "rdx" / "approvals").mkdir(parents=True, exist_ok=True)
     shutil.copy(SAMPLE_APPROVERS, tmp_path / "_bmad" / "rdx" / "approvers.yaml")
     diff_dst = tmp_path / "diff.patch"
     shutil.copy(diff_fixture, diff_dst)
-    diff_digest = _sha(diff_dst.read_text(encoding="utf-8"))
-    story = {"story_id": "STORY-PHASE8-CAT4", "protected_files": [], "risk_tags": [],
-             "agent_activated_packs": [], "router_suppressions": []}
+    diff_text = diff_dst.read_text(encoding="utf-8")
+    diff_digest = _sha(diff_text)
+    story = {
+        "story_id": "STORY-PHASE8-CAT4",
+        "protected_files": [],
+        "risk_tags": [],
+        "router_suppressions": [],
+    }
+    if activated_packs is not None:
+        story["agent_activated_packs"] = activated_packs
     (tmp_path / "story.json").write_text(json.dumps(story), encoding="utf-8")
+    if cargo_evidence:
+        evidence = {
+            "rdx_schema_version": "v1",
+            "story_id": "STORY-PHASE8-CAT4",
+            "head_sha": "0123456789abcdef0123456789abcdef01234567",
+            "base_sha": "fedcba9876543210fedcba9876543210fedcba98",
+            "diff_digest": diff_digest,
+            "mode": "MODE_4",
+            "rules": {
+                "CORE-011": {
+                    "category": 1,
+                    "verdict": "PASS",
+                    "severity": "INFO",
+                    "author": "VALIDATOR",
+                    "evidence": [
+                        {
+                            "command": "cargo check --workspace --all-targets",
+                            "exit_code": 0,
+                            "output_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        }
+                    ],
+                }
+            },
+            "exceptions": [],
+            "approvals": [],
+            "aggregate": {"verdict": "PASS", "exit_code": 0},
+        }
+        (tmp_path / "evidence-in.json").write_text(json.dumps(evidence), encoding="utf-8")
     return tmp_path, diff_dst, diff_digest
 
 
@@ -107,7 +155,9 @@ def test_t_l8_cat4_001_unsafe_no_approval_blocks(tmp_path: Path):
     )
     out = tmp_path / "evidence.json"
     res = _run_validator(project_root, diff_file,
-                         story_file=project_root / "story.json", evidence_out=out)
+                         story_file=project_root / "story.json",
+                         evidence_in=project_root / "evidence-in.json",
+                         evidence_out=out)
     assert res.returncode == 3, f"expected exit 3, got {res.returncode}\nstderr: {res.stderr}"
     envelope = json.loads(out.read_text(encoding="utf-8"))
     assert envelope["aggregate"]["verdict"] == "BLOCKED"
@@ -131,7 +181,9 @@ def test_t_l8_cat4_002_valid_approval_passes(tmp_path: Path):
     )
     out = tmp_path / "evidence.json"
     res = _run_validator(project_root, diff_file,
-                         story_file=project_root / "story.json", evidence_out=out)
+                         story_file=project_root / "story.json",
+                         evidence_in=project_root / "evidence-in.json",
+                         evidence_out=out)
     assert res.returncode == 0, f"expected exit 0, got {res.returncode}\nstderr: {res.stderr}"
     envelope = json.loads(out.read_text(encoding="utf-8"))
     rule = envelope["rules"]["RP-UNSAFE-001"]
@@ -155,7 +207,9 @@ def test_t_l8_cat4_003_unauthorized_approver_blocks(tmp_path: Path):
     )
     out = tmp_path / "evidence.json"
     res = _run_validator(project_root, diff_file,
-                         story_file=project_root / "story.json", evidence_out=out)
+                         story_file=project_root / "story.json",
+                         evidence_in=project_root / "evidence-in.json",
+                         evidence_out=out)
     assert res.returncode == 3, f"expected exit 3, got {res.returncode}\nstderr: {res.stderr}"
     envelope = json.loads(out.read_text(encoding="utf-8"))
     rule = envelope["rules"]["RP-UNSAFE-001"]
@@ -192,7 +246,9 @@ def test_t_l8_cat4_005_malformed_approval_blocks(tmp_path: Path):
     )
     out = tmp_path / "evidence.json"
     res = _run_validator(project_root, diff_file,
-                         story_file=project_root / "story.json", evidence_out=out)
+                         story_file=project_root / "story.json",
+                         evidence_in=project_root / "evidence-in.json",
+                         evidence_out=out)
     assert res.returncode == 3
     envelope = json.loads(out.read_text(encoding="utf-8"))
     rule = envelope["rules"]["RP-UNSAFE-001"]
@@ -220,8 +276,10 @@ def test_t_l7_approval_reuse_001_diff_change_invalidates(tmp_path: Path):
     # Sanity: with D1 approval, the original diff PASSes.
     out1 = tmp_path / "evidence-1.json"
     res1 = _run_validator(project_root, original_diff,
-                          story_file=project_root / "story.json", evidence_out=out1)
-    assert res1.returncode == 0, f"baseline PASS expected, got {res1.returncode}"
+                          story_file=project_root / "story.json",
+                          evidence_in=project_root / "evidence-in.json",
+                          evidence_out=out1)
+    assert res1.returncode == 0, f"baseline PASS expected, got {res1.returncode}\nstderr={res1.stderr}"
 
     # Now author replaces the diff with a revised one (D2 ≠ D1).
     revised = project_root / "diff.patch"
@@ -229,10 +287,19 @@ def test_t_l7_approval_reuse_001_diff_change_invalidates(tmp_path: Path):
     d2 = _sha(revised.read_text(encoding="utf-8"))
     assert d1 != d2, "revised fixture must differ"
 
+    # Regenerate the CORE-011 evidence stub against the new diff_digest so the
+    # only blocking issue is the missing D2 approval (rebase invalidates evidence
+    # binding by design — see preflight stale-evidence check).
+    ev_in = json.loads((project_root / "evidence-in.json").read_text(encoding="utf-8"))
+    ev_in["diff_digest"] = d2
+    (project_root / "evidence-in.json").write_text(json.dumps(ev_in), encoding="utf-8")
+
     # The D1 approval file still exists but no D2 approval file → re-blocked.
     out2 = tmp_path / "evidence-2.json"
     res2 = _run_validator(project_root, revised,
-                          story_file=project_root / "story.json", evidence_out=out2)
+                          story_file=project_root / "story.json",
+                          evidence_in=project_root / "evidence-in.json",
+                          evidence_out=out2)
     assert res2.returncode == 3, f"diff change must re-block, got {res2.returncode}"
     env2 = json.loads(out2.read_text(encoding="utf-8"))
     assert env2["rules"]["RP-UNSAFE-001"]["verdict"] == "APPROVAL_REQUIRED"
@@ -247,7 +314,9 @@ def test_t_l8_gov_001_kb_change_requires_governance(tmp_path: Path):
     )
     out = tmp_path / "evidence.json"
     res = _run_validator(project_root, diff_file,
-                         story_file=project_root / "story.json", evidence_out=out)
+                         story_file=project_root / "story.json",
+                         evidence_in=project_root / "evidence-in.json",
+                         evidence_out=out)
     assert res.returncode == 3, f"governance path must block, got {res.returncode}\nstderr: {res.stderr}"
     envelope = json.loads(out.read_text(encoding="utf-8"))
     # The synthesised governance rule id is GOV-KB-001 (per sample approvers.yaml).

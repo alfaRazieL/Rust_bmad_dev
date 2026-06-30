@@ -168,3 +168,29 @@ def test_t_l4_setup_003_uninstall_round_trip(project_with_foreign: Path):
     # [modules.rdx] removed from config.yaml.
     config = (project_with_foreign / "_bmad" / "config.yaml").read_text()
     assert "rdx:" not in config, "[modules.rdx] must be removed after uninstall"
+
+
+def test_t_l8_cat4_install_seeds_artifacts(clean_project: Path):
+    """Phase 8 — fresh install also seeds Cat-4 schemas + approvers.yaml.example.
+
+    Without these the validator can't gate on specialist approval in the user's
+    project (it reads `_bmad/rdx/approvers.yaml` + `approval.v1.schema.json`
+    directly from project_root). The schemas are always overwritten; the
+    example template is created only when no user file exists.
+    """
+    result = _run(INSTALL_SCRIPT, clean_project)
+    assert result.returncode == 0, f"install failed: {result.stderr}\n{result.stdout}"
+
+    rdx_dir = clean_project / "_bmad" / "rdx"
+    assert (rdx_dir / "approvers.schema.json").exists(), (
+        "install must seed _bmad/rdx/approvers.schema.json"
+    )
+    assert (rdx_dir / "approval.v1.schema.json").exists(), (
+        "install must seed _bmad/rdx/approval.v1.schema.json"
+    )
+    assert (rdx_dir / "approvers.yaml.example").exists(), (
+        "install must seed _bmad/rdx/approvers.yaml.example template"
+    )
+    assert (rdx_dir / "approvals").is_dir(), (
+        "install must create the _bmad/rdx/approvals/ directory"
+    )

@@ -38,11 +38,44 @@ def _run_validator(project_root: Path, diff_file: Path, evidence_out: Path) -> s
             "--contracts-dir", str(REPO_ROOT / "tests" / "contracts"),
             "--story", str(project_root / "story.json"),
             "--mode", "MODE_4",
+            "--evidence-in", str(project_root / "evidence-in.json"),
             "--evidence-out", str(evidence_out),
             "--quiet",
         ],
         capture_output=True, text=True, env=env, check=False,
     )
+
+
+def _write_cargo_evidence(project_root: Path, diff_digest: str) -> None:
+    """Write a CORE-011 PASS stub pinned to the given digest so the Cat-4 path
+    is the only blocking concern."""
+    evidence = {
+        "rdx_schema_version": "v1",
+        "story_id": "STORY-V6-ACC-04",
+        "head_sha": "0123456789abcdef0123456789abcdef01234567",
+        "base_sha": "fedcba9876543210fedcba9876543210fedcba98",
+        "diff_digest": diff_digest,
+        "mode": "MODE_4",
+        "rules": {
+            "CORE-011": {
+                "category": 1,
+                "verdict": "PASS",
+                "severity": "INFO",
+                "author": "VALIDATOR",
+                "evidence": [
+                    {
+                        "command": "cargo check --workspace --all-targets",
+                        "exit_code": 0,
+                        "output_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                    }
+                ],
+            }
+        },
+        "exceptions": [],
+        "approvals": [],
+        "aggregate": {"verdict": "PASS", "exit_code": 0},
+    }
+    (project_root / "evidence-in.json").write_text(json.dumps(evidence), encoding="utf-8")
 
 
 def test_t_v6_acc_04_cat4_full_cycle(tmp_path: Path):
@@ -57,9 +90,10 @@ def test_t_v6_acc_04_cat4_full_cycle(tmp_path: Path):
     diff_v1 = project_root / "diff.patch"
     shutil.copy(FIXTURES / "diffs" / "cat4-unsafe" / "positive.diff", diff_v1)
     digest_v1 = _sha(diff_v1.read_text(encoding="utf-8"))
+    _write_cargo_evidence(project_root, digest_v1)
     ev1 = project_root / "ev1.json"
     r1 = _run_validator(project_root, diff_v1, ev1)
-    assert r1.returncode == 3, f"step 1: expected exit 3, got {r1.returncode}"
+    assert r1.returncode == 3, f"step 1: expected exit 3, got {r1.returncode}\nstderr={r1.stderr}"
     env1 = json.loads(ev1.read_text(encoding="utf-8"))
     assert env1["rules"]["RP-UNSAFE-001"]["verdict"] == "APPROVAL_REQUIRED"
 
@@ -89,6 +123,7 @@ def test_t_v6_acc_04_cat4_full_cycle(tmp_path: Path):
     shutil.copy(FIXTURES / "diffs" / "cat4-unsafe" / "positive-revised.diff", diff_v2)
     digest_v2 = _sha(diff_v2.read_text(encoding="utf-8"))
     assert digest_v1 != digest_v2
+    _write_cargo_evidence(project_root, digest_v2)
     ev3 = project_root / "ev3.json"
     r3 = _run_validator(project_root, diff_v2, ev3)
     assert r3.returncode == 3, f"step 3: expected exit 3, got {r3.returncode}\nstderr={r3.stderr}"

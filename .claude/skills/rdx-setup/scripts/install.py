@@ -75,6 +75,32 @@ def _install_kb(project_root: Path) -> None:
             shutil.copy(s, dst / fname)
 
 
+def _install_cat4_artifacts(project_root: Path) -> None:
+    """Seed Phase 8 Cat-4 schemas + approvers.yaml.example template.
+
+    Schemas are always overwritten (canonical, must stay in sync with the RDX
+    release). The example template is only written when no approvers.yaml AND
+    no approvers.yaml.example already exists — never overwrites user content.
+    """
+    # Find the canonical schemas: they live in the RDX repo's _bmad/rdx/.
+    repo_root = _skill_root().parent.parent.parent  # .../<repo>/.claude/skills/rdx-setup → repo
+    src_dir = repo_root / "_bmad" / "rdx"
+    dst_dir = project_root / "_bmad" / "rdx"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    (dst_dir / "approvals").mkdir(parents=True, exist_ok=True)
+
+    for schema_name in ("approvers.schema.json", "approval.v1.schema.json"):
+        src = src_dir / schema_name
+        if src.exists():
+            shutil.copy(src, dst_dir / schema_name)
+
+    example_src = src_dir / "approvers.yaml.example"
+    example_dst = dst_dir / "approvers.yaml.example"
+    user_yaml = dst_dir / "approvers.yaml"
+    if example_src.exists() and not example_dst.exists() and not user_yaml.exists():
+        shutil.copy(example_src, example_dst)
+
+
 def _read_toml(path: Path) -> dict:
     if not path.exists():
         return {}
@@ -282,6 +308,7 @@ def main() -> int:
         return 1
 
     _install_kb(project_root)
+    _install_cat4_artifacts(project_root)
     _merge_dev_override(project_root)
     _copy_simple_override(project_root, "bmad-agent-architect.toml")
     _copy_simple_override(project_root, "bmad-agent-pm.toml")

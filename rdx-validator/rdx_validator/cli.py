@@ -45,6 +45,12 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .approvers import (
+    load_approval_schema,
+    load_approvers,
+    resolve_approvals,
+    synthesise_pattern_verdicts,
+)
 from .baseline import RunResult, compare
 from .checks import (
     check_core_007,
@@ -340,6 +346,30 @@ def main(argv: list[str] | None = None) -> int:
     # 7b. Optional --dual-run baseline comparator (consumes pre-recorded results)
     if args.dual_run and args.baseline_data:
         rule_verdicts.append(_dual_run_verdict(Path(args.baseline_data)))
+
+    # 7c. Phase 8 — Cat-4 specialist approvals (approvers.yaml + approvals/<digest>.json)
+    approvers_spec = load_approvers(project_root)
+    if approvers_spec is not None:
+        existing_ids = {v.rule_id for v in rule_verdicts}
+        rule_verdicts.extend(
+            synthesise_pattern_verdicts(approvers_spec, paths, existing_ids)
+        )
+        approval_schema_path = project_root / "_bmad" / "rdx" / "approval.v1.schema.json"
+        approval_schema = load_approval_schema(approval_schema_path)
+        if approval_schema is None:
+            # Fall back to the canonical schema shipped in the RDX repo so that
+            # user projects which haven't vendored the file can still use the
+            # validator without breaking the binding.
+            approval_schema = load_approval_schema(
+                REPO_ROOT_DEFAULT / "_bmad" / "rdx" / "approval.v1.schema.json"
+            )
+        rule_verdicts = resolve_approvals(
+            rule_verdicts,
+            approvers_spec,
+            project_root,
+            diff_digest=_sha(diff_text),
+            approval_schema=approval_schema,
+        )
 
     agg = aggregate(rule_verdicts, policy)
 
