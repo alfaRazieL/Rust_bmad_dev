@@ -1,0 +1,68 @@
+id: T-L5-CAT3-SCOPE-001
+slug: cat3-scope
+phase: 7
+requirement_ids: [R-V6-DoD-03, R-V6-DoD-05]
+rule_ids: []
+layer: L5
+title: rdx-judgment receives ONLY active rules (no full KB load)
+
+# The wrapper-resume harness places the rdx-code-review BEFORE block at
+# the front of the session. The prompt below is the *story content* the
+# agent receives. The story activates only [unsafe, cargo] packs — the
+# grader asserts the transcript references only those packs' rule IDs.
+prompt: |
+  You are working in BMad on agent "Amelia (dev-story)" inside the
+  rdx-code-review wrapper. The standard bmad-code-review child has run;
+  it is now your turn (as rdx-judgment) to add the RDX Rule Auditor layer.
+
+  Story brief:
+    title: "Add an unsafe::ptr cast helper in core::buffers"
+    files_touched: ["src/core/buffers/cast.rs", "Cargo.toml"]
+    rust_signals: ["unsafe fn", "transmute", "cargo dependency update"]
+    risk_tags: ["unsafe", "cargo"]
+    contract: "Helper performs ptr::from_raw_parts on caller-validated
+               input; new transitive dependency `foo = 0.4`."
+
+  Active packs (per router decision in router.json):
+    - unsafe
+    - cargo
+  REVIEW_REQUIRED rules to evaluate:
+    - RP-UNSAFE-002 (Send/Sync invariants)
+    - RP-UNSAFE-003 (transmute justification)
+    - RP-CARGO-002 (transitive dependency audit)
+
+  Produce a Cat-3 finding list following the rdx-judgment-finding schema
+  (v1). Do NOT comment on async, FFI, macro, db, time, ops, perf, data,
+  api, or testing packs — they are inactive for this story.
+
+expected_assertions:
+  - id: A1
+    description: "transcript references only active-pack rule IDs"
+    must_contain_any: ["RP-UNSAFE", "RP-CARGO"]
+  - id: A2
+    description: "transcript does NOT reference inactive packs"
+    must_not_contain_any:
+      - "RP-ASYNC"
+      - "RP-FFI"
+      - "RP-MACRO"
+      - "RP-DB"
+      - "RP-TIME"
+      - "RP-OPS"
+      - "RP-PERF"
+      - "RP-DATA"
+      - "RP-API"
+      - "RP-TEST"
+      - "RP-IO"
+  - id: A3
+    description: "scope-discipline acknowledgement appears in output"
+    must_contain_any: ["active packs only", "scope: unsafe + cargo", "inactive packs not loaded"]
+
+repeat_count: 20
+pass_threshold: 0.95   # ≥ 95% per Phase 7 exit gate
+grader_model: claude-opus-4-7
+tested_model: claude-opus-4-7
+oracle: LLM-judge
+rolling_window_days: 7
+gate: exit-phase-7
+
+artifacts_dir: tests/evals/cat3-scope/runs

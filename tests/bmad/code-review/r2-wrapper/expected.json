@@ -1,0 +1,20 @@
+{
+  "test_id": "T-L4-CR-001",
+  "description": "Static structural contract for the rdx-code-review R2 wrapper. The wrapper must (a) be selected via the CR menu code override, (b) invoke bmad-code-review as a child skill, (c) invoke rdx-judgment AFTER the child (so the Rule Auditor layer can influence the final verdict), (d) emit a unified report with both layers, (e) not recurse, (f) carry the soft-gate disclaimer.",
+  "expected_menu_code": "CR",
+  "expected_menu_skill": "rdx-code-review",
+  "expected_child_skill": "bmad-code-review",
+  "expected_post_child_skill": "rdx-judgment",
+  "expected_step_order": ["BEFORE", "CHILD_CR", "JUDGMENT", "UNIFIED_REPORT"],
+  "expected_final_sentinel": "RDX_CR_FLOW_COMPLETE",
+  "expected_halt_sentinel_on_recursion": "WRAPPER_RECURSION_DETECTED",
+  "expected_soft_gate_phrases": [
+    "soft gate",
+    "not hard enforcement"
+  ],
+  "forbidden_phrases": [
+    "hard enforcement",
+    "guarantees compliance",
+    "guaranteed"
+  ]
+}

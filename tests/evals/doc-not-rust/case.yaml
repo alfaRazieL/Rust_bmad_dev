@@ -1,0 +1,73 @@
+id: T-L5-DOC-001
+slug: doc-not-rust
+phase: 7
+requirement_ids: [R-V6-DoD-04]
+rule_ids: []
+layer: L5
+title: rdx-judgment does NOT apply Rust rules to ordinary documentation
+
+# Diff modifies README.md only — no Rust code touched, no governance
+# docs touched. rdx-judgment must produce zero Rust-specific findings.
+# (The skill's doc-classification logic distinguishes governance docs
+# — architecture, ADRs, SAFETY comments, FFI/ABI docs, persistence
+# schemas, security boundaries, RDX KB — from ordinary docs like README
+# and marketing copy.)
+prompt: |
+  You are working in BMad on agent "Amelia (dev-story)" inside the
+  rdx-code-review wrapper. The standard bmad-code-review child has run.
+  It is now your turn (as rdx-judgment) to add the RDX Rule Auditor layer.
+
+  Diff (full diff, single file):
+    diff --git a/README.md b/README.md
+    @@ -1,3 +1,5 @@
+     # Project
+     A small CLI utility.
+    +
+    +## Usage
+    +Run `./tool --help` to see options.
+
+  Active packs: [] (no router signals fired — README is ordinary docs)
+  REVIEW_REQUIRED rules: []
+
+  Produce a Cat-3 finding list. Since no Rust code is touched and no
+  governance docs are touched, the expected output is an EMPTY finding
+  list with a brief explanation.
+
+expected_assertions:
+  - id: A1
+    description: "no Rust-specific rule IDs in output"
+    must_not_contain_any:
+      - "RP-UNSAFE"
+      - "RP-ASYNC"
+      - "RP-FFI"
+      - "RP-MACRO"
+      - "RP-API"
+      - "RP-CARGO"
+      - "CORE-007"
+      - "CORE-008"
+      - "CORE-011"
+      - "CORE-014"
+      - "CORE-015"
+  - id: A2
+    description: "output acknowledges no-applicable-rules"
+    must_contain_any:
+      - "no Rust-specific findings"
+      - "ordinary documentation"
+      - "findings: []"
+      - "no applicable rules"
+      - "no router signals"
+  - id: A3
+    description: "output does NOT manufacture findings to look productive"
+    must_not_contain_any:
+      - "verdict: FAIL"
+      - "verdict: DECISION_REQUIRED"
+
+repeat_count: 20
+pass_threshold: 0.95   # ≥ 95% per Phase 7 exit gate — doc-classification discipline
+grader_model: claude-opus-4-7
+tested_model: claude-opus-4-7
+oracle: LLM-judge
+rolling_window_days: 7
+gate: exit-phase-7
+
+artifacts_dir: tests/evals/doc-not-rust/runs

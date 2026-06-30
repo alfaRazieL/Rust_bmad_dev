@@ -1,0 +1,14 @@
+{
+  "test_id": "T-L4-CR-002",
+  "description": "Static structural contract for the R1 fallback control. R1 is documented as a fallback only — the primary integration is R2 (T-L4-CR-001). R1 ships as a workflow-override TOML (bmad-code-review.toml) with on_complete = 'rdx-judgment'. Per RDX_TEST_STRATEGY.md §8, R1 has a timing limitation: rdx-judgment runs AFTER triage and story status update, so its findings cannot influence the standard review's verdict. The structural contract here proves the fallback artefact exists, declares the on_complete hook, and carries the timing-limitation disclaimer so future maintainers don't promote R1 to primary by accident.",
+  "expected_override_path": ".claude/skills/rdx-setup/assets/workflow-overrides/bmad-code-review.toml",
+  "expected_on_complete_value": "rdx-judgment",
+  "expected_documentation_phrases": [
+    "fallback",
+    "control test",
+    "AFTER",
+    "triage"
+  ],
+  "expected_timing_limitation_phrase": "cannot influence",
+  "primary_integration_pointer": "rdx-code-review (R2 wrapper)"
+}
