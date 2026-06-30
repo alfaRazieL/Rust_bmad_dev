@@ -1,0 +1,10 @@
+{
+  "approval_schema_version": "v1",
+  "rule_id": "RP-UNSAFE-001",
+  "approver_identity": "alice@example.com",
+  "approver_role": "unsafe-reviewers",
+  "head_sha": "0123456789abcdef0123456789abcdef01234567",
+  "timestamp": "2026-06-30T12:00:00Z",
+  "scope": {"paths": ["src/unsafe/foo.rs"]},
+  "decision": "approved"
+}

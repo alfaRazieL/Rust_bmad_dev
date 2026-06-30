@@ -1,0 +1,42 @@
+---
+# Sample approvers.yaml for T-L0-PHASE8-SCHEMA-002 + T-L8-CAT4-004 fixtures.
+# Phase 8 canonical schema: _bmad/rdx/approvers.schema.json
+schema_version: v1
+roles:
+  unsafe-reviewers:
+    description: Specialists authorised to approve `unsafe` Rust surface changes.
+    identities:
+      - alice@example.com
+      - "@core-unsafe-team"
+  crypto-reviewers:
+    description: Specialists authorised to approve cryptographic primitives.
+    identities:
+      - bob@example.com
+      - "@crypto-team"
+  governance:
+    description: Owners of RDX rules / validator / CI workflow files.
+    identities:
+      - alice@example.com
+      - "@rdx-governance"
+patterns:
+  - path: "src/unsafe/**"
+    rule_id: RP-UNSAFE-001
+    role: unsafe-reviewers
+  - path: "src/crypto/**"
+    rule_id: RP-CRYPTO-001
+    role: crypto-reviewers
+  - path: "_bmad/rust-kb/**"
+    rule_id: GOV-KB-001
+    role: governance
+  - path: "tests/contracts/router-rules.json"
+    rule_id: GOV-ROUTER-001
+    role: governance
+  - path: "tests/contracts/schemas/**"
+    rule_id: GOV-SCHEMA-001
+    role: governance
+  - path: "rdx-validator/**"
+    rule_id: GOV-VALIDATOR-001
+    role: governance
+  - path: ".github/workflows/rdx-gate.yml"
+    rule_id: GOV-WORKFLOW-001
+    role: governance

@@ -1,0 +1,7 @@
+---
+# Missing top-level `roles` block — schema must reject.
+schema_version: v1
+patterns:
+  - path: "src/unsafe/**"
+    rule_id: RP-UNSAFE-001
+    role: unsafe-reviewers
