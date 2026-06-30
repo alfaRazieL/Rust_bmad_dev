@@ -55,6 +55,11 @@ from .checks import (
 )
 from .diff import compute_diff_digest, parse_diff_paths, parse_file_changes
 from .policy import load as load_policy
+from .preflight import (
+    DEFAULT_MAX_DIFF_BYTES,
+    PreflightResult,
+    check_evidence_freshness,
+)
 from .router import RouterRules, replay
 from .status import Aggregate, Mode, Policy, RuleVerdict, Severity, Verdict, aggregate
 
@@ -192,6 +197,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--validator-source", default="TARGET_BRANCH")
     p.add_argument("--contracts-dir", default=str(CONTRACTS_DIR_DEFAULT))
+    p.add_argument(
+        "--max-diff-bytes",
+        type=int,
+        default=DEFAULT_MAX_DIFF_BYTES,
+        help="Refuse diffs larger than this (DoS guard). Default 10 MiB.",
+    )
     p.add_argument("--quiet", action="store_true")
     return p
 
@@ -229,9 +240,28 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"error": f"story not loadable: {e}"}), file=sys.stderr)
             return 2
 
-    # 4. Read diff
+    # 4. Read diff (with DoS-class size guard)
+    diff_path: Path | None = None
     if args.diff_file:
-        diff_text = Path(args.diff_file).read_text(encoding="utf-8")
+        diff_path = Path(args.diff_file)
+        size_bytes = diff_path.stat().st_size
+        if size_bytes > args.max_diff_bytes:
+            envelope = _env_unavailable_envelope(
+                reason=(
+                    f"diff size {size_bytes} bytes exceeds max_diff_bytes "
+                    f"{args.max_diff_bytes} — refusing to load (DoS guard)"
+                ),
+                mode=Mode(args.mode) if args.mode in [m.value for m in Mode] else Mode.MODE_2,
+                validator_source=args.validator_source,
+            )
+            if not args.quiet:
+                sys.stdout.write(json.dumps(envelope, indent=2) + "\n")
+            if args.evidence_out:
+                Path(args.evidence_out).write_text(
+                    json.dumps(envelope, indent=2) + "\n", encoding="utf-8"
+                )
+            return 2
+        diff_text = diff_path.read_text(encoding="utf-8")
     elif args.base:
         diff_text, err = _read_git_diff(args.base, args.head, project_root)
         if diff_text is None:
@@ -241,10 +271,22 @@ def main(argv: list[str] | None = None) -> int:
         print("error: --base or --diff-file required", file=sys.stderr)
         return 2
 
-    # 5. Pre-recorded evidence (optional)
+    # 5. Pre-recorded evidence (optional) + preflight freshness check
     evidence_in: dict = {}
+    preflight_result: PreflightResult | None = None
     if args.evidence_in:
         evidence_in = json.loads(Path(args.evidence_in).read_text(encoding="utf-8"))
+        preflight_result = check_evidence_freshness(
+            evidence=evidence_in,
+            current_diff=diff_text,
+            current_base_sha=_resolve_sha(args.base, project_root) if args.base else None,
+            current_head_sha=_resolve_sha(args.head, project_root) if args.head else None,
+        )
+        if preflight_result.stale_evidence or preflight_result.wrong_base:
+            # Stale or wrong-base evidence is treated as untrusted: we
+            # ignore the LLM/author-supplied verdicts and recompute from
+            # the diff. Recording is done in the envelope below.
+            evidence_in = {}
 
     paths = parse_diff_paths(diff_text)
     changes = parse_file_changes(diff_text)
@@ -312,6 +354,12 @@ def main(argv: list[str] | None = None) -> int:
         mode=policy.mode,
         validator_source=args.validator_source,
     )
+    if preflight_result is not None:
+        envelope["preflight"] = {
+            "stale_evidence": preflight_result.stale_evidence,
+            "wrong_base": preflight_result.wrong_base,
+            "reason": preflight_result.reason,
+        }
 
     if not args.quiet:
         sys.stdout.write(json.dumps(envelope, indent=2) + "\n")
@@ -323,6 +371,50 @@ def main(argv: list[str] | None = None) -> int:
 
 def _placeholder_sha() -> str:
     return "0" * 40
+
+
+def _env_unavailable_envelope(
+    *,
+    reason: str,
+    mode: Mode,
+    validator_source: str,
+) -> dict:
+    """Bounded-handling envelope for oversized diffs and other env failures.
+
+    Emits a minimal but schema-friendly envelope so downstream consumers
+    (CI summary, wrapper report) can read a deterministic verdict.
+    """
+    return {
+        "rdx_schema_version": "v1",
+        "story_id": "STORY-UNKNOWN",
+        "head_sha": _placeholder_sha(),
+        "base_sha": _placeholder_sha(),
+        "diff_digest": "0" * 64,
+        "mode": mode.value,
+        "mode_label": MODE_LABELS.get(mode.value, mode.value),
+        "router_activations": [],
+        "rules": {},
+        "exceptions": [],
+        "approvals": [],
+        "aggregate": {
+            "verdict": Verdict.ENVIRONMENT_UNAVAILABLE.value,
+            "exit_code": 2,
+            "blocking_count": 0,
+            "warning_count": 0,
+            "info_count": 0,
+        },
+        "validator": {
+            "name": "rdx-validator",
+            "version": __version__,
+            "source": validator_source,
+        },
+        "preflight": {
+            "stale_evidence": False,
+            "wrong_base": False,
+            "reason": reason,
+        },
+        "generated_at": _dt.datetime.now(tz=_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
 
 
 def _exception_for(evidence_in: dict, rule_id: str) -> bool:

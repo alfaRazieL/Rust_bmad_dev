@@ -1,0 +1,95 @@
+name: RDX Gate (Mode 3 — CI Enforced)
+
+# Phase 5 — required-check workflow.
+#
+# Trust model: this workflow implements Option B from
+# RDX_TEST_STRATEGY.md §7 — the validator code, schemas, and contracts
+# are loaded from the PR's BASE branch (`github.event.pull_request.base.sha`)
+# via .github/scripts/rdx-ci-runner.py, not from the PR head. A PR that
+# rewrites rdx-validator/ or weakens the schema has no effect on the
+# verdict computed here.
+#
+# Required-check name: `rdx-gate / validate`
+# Branch protection: see docs/branch-protection.md for the required
+# CODEOWNERS rule on `.github/workflows/**` (T-L7-WORKFLOW-MOD-001).
+#
+# Fork PR safety (T-L6-CI-003):
+# - `permissions: contents: read` only; no `id-token`, no `packages`,
+#   no secrets are required for Cat-1/2 verification.
+# - Cat-3 LLM review is NOT in this blocking workflow; it runs in a
+#   separate, non-blocking workflow with the appropriate scoping.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - rdx-improvements
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout PR head (read-only)
+        uses: actions/checkout@v4
+        with:
+          # Fetch enough history to resolve base..head diff.
+          fetch-depth: 0
+          # On pull_request, GITHUB_REF points at the merge ref. We
+          # explicitly checkout the PR head so that diffing against the
+          # base sha is meaningful.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install runner deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema pyyaml pytest
+
+      - name: Run rdx-ci-runner against PR head, validator from base
+        id: ci_runner
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python .github/scripts/rdx-ci-runner.py \
+            --project-root "$GITHUB_WORKSPACE" \
+            --base-ref "$BASE_REF" \
+            --head-ref "$HEAD_REF" \
+            --validator-repo "$GITHUB_WORKSPACE" \
+            --validator-ref "$BASE_REF" \
+            --mode MODE_3 \
+            --dual-run \
+            | tee "$GITHUB_WORKSPACE/rdx-evidence.json"
+          rc=${PIPESTATUS[0]}
+          echo "rdx_exit=$rc" >> "$GITHUB_OUTPUT"
+          exit $rc
+
+      - name: Upload evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdx-evidence
+          path: rdx-evidence.json
+          retention-days: 30
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## RDX Gate"
+            echo "Exit code: ${{ steps.ci_runner.outputs.rdx_exit }}"
+            echo ""
+            echo "Validator source: TARGET_BRANCH (Option B trust model)."
+            echo "See docs/branch-protection.md for the required CODEOWNERS rule."
+          } >> "$GITHUB_STEP_SUMMARY"

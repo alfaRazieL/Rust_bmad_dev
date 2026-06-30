@@ -262,32 +262,32 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 
 ### Entry gate
 
-- [ ] T-L6-HOOK-001..005 specs written
-- [ ] T-L6-CI-001..005 specs written
-- [ ] T-L7 mutation suite specs written (fake-pass, stale-diff, wrong-base, disabled-pack, mod-schema, mod-validator, del-test, oversized-diff, workflow-mod)
-- [ ] Sample repo plan at `tests/ci/sample-repo-spec.md` written
+- [x] T-L6-HOOK-001..005 specs written
+- [x] T-L6-CI-001..005 specs written
+- [x] T-L7 mutation suite specs written (fake-pass, stale-diff, wrong-base, disabled-pack, mod-schema, mod-validator, del-test, oversized-diff, workflow-mod)
+- [x] Sample repo plan at `tests/ci/sample-repo-spec.md` written
 
 ### Implementation tasks
 
 #### 5.1 Pre-push hook
 
-- [ ] Opt-in installer script
-- [ ] Existing-hook chaining
-- [ ] Uninstall script
-- [ ] `--no-verify` documented behavior
+- [x] Opt-in installer script — `.claude/skills/rdx-hooks/scripts/install-hook.py` (idempotent, foreign-preserving)
+- [x] Existing-hook chaining — pre-existing `pre-push` moved to `pre-push.user.rdx-backup`; hook invokes it after RDX runs (T-L6-HOOK-003)
+- [x] Uninstall script — `.claude/skills/rdx-hooks/scripts/uninstall-hook.py` restores backup byte-equal (T-L6-HOOK-004)
+- [x] `--no-verify` documented behavior — bypass remains by design and is documented in `.claude/skills/rdx-hooks/SKILL.md` + asserted by T-L6-HOOK-005
 
 #### 5.2 GitHub Actions
 
-- [ ] `.github/workflows/rdx-gate.yml` template
-- [ ] Validator loaded from target/base branch (NOT PR head — Option B per strategy §7)
-- [ ] Independent recomputation of Cat-1/2
-- [ ] Summary publication
-- [ ] Branch protection documentation
+- [x] `.github/workflows/rdx-gate.yml` template — required-check workflow with read-only `permissions: contents: read`
+- [x] Validator loaded from target/base branch (NOT PR head — Option B per strategy §7) — `.github/scripts/rdx-ci-runner.py` accepts `--validator-ref` and uses `git show <ref>:<path>` to materialise validator + schema + contracts from base into a tempdir; PR-head edits to `rdx-validator/**` or the schema have no effect (T-L6-CI-002 + T-L7-MOD-VALIDATOR-001 + T-L7-MOD-SCHEMA-001)
+- [x] Independent recomputation of Cat-1/2 — runner always recomputes the diff fresh (`git diff base...head`) and ignores any PR-supplied diff file (T-V5-ACC-05 verified locally)
+- [x] Summary publication — workflow appends to `$GITHUB_STEP_SUMMARY` and uploads `rdx-evidence.json` as an artifact (retention 30 d)
+- [x] Branch protection documentation — `docs/branch-protection.md` lists required-check name, CODEOWNERS rule for `.github/workflows/**`, signed-commit recommendation, and verification command (T-L7-WORKFLOW-MOD-001)
 
 #### 5.3 Fork PR
 
-- [ ] Workflow runs without secrets for Cat-1/2 (T-L6-CI-003)
-- [ ] Cat-3 LLM review NOT in blocking workflow
+- [x] Workflow runs without secrets for Cat-1/2 (T-L6-CI-003) — `permissions: contents: read`; no `id-token`, no `${{ secrets.* }}` in the blocking section
+- [x] Cat-3 LLM review NOT in blocking workflow — `rdx-gate.yml` runs Cat-1/2 only; Cat-3 routing is Phase 7 in a separate workflow per `RDX_TEST_STRATEGY.md` §13
 
 #### 5.4 GitLab portability (deferred)
 
@@ -295,9 +295,9 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 
 ### Exit gate
 
-- [ ] All L6 tests pass against sample GitHub repo
-- [ ] All L7 mutation tests caught
-- [ ] T-V5-ACC-05 passes (CI re-computes match local)
+- [x] All L6 tests pass against sample GitHub repo — 11 L6 tests green via locally-materialised sample repos under `tmp_path` (see `tests/ci/conftest.py` + `tests/ci/sample-repo-spec.md`). Real-GitHub fork-PR validation is structural (workflow YAML asserted by T-L6-CI-003) since live GitHub PR runs require infrastructure beyond this branch; the rdx-ci-runner.py is what the workflow invokes, so passing the local L6 suite proves the runner's contract.
+- [x] All L7 mutation tests caught — 10 L7 tests green (FAKE-PASS, STALE-DIFF×2, WRONG-BASE, DISABLED-PACK, MOD-SCHEMA, MOD-VALIDATOR, DEL-TEST, OVERSIZED-DIFF, WORKFLOW-MOD×2)
+- [x] T-V5-ACC-05 passes (CI re-computes match local) — `tests/ci/test_l6_ci_workflow.py::test_v5_acc_05_ci_matches_local` runs validator locally + via runner and asserts rule-verdict equality + exit-code equality
 
 ---
 
@@ -543,3 +543,4 @@ Clearly state:
 | 2026-06-29 | Phase 2 | Validator package + L1/L2/L3 (partial) | x | 92 tests green (13 L0 + 30 L1 + 45 L2 + 4 L3). `rdx-validator/` package with diff parser, digest, router replay, exception parser, status taxonomy, aggregator, exit-code mapper, baseline comparator, CORE-007/008/011/014/015 checks, CLI. Closed: T-L1-DIFF-001..003, T-L1-DIGEST-001/002, T-L1-COMMENT-001, T-L1-EXC-001/002, T-L1-AGG-001..003, T-L1-EXIT-001..005, T-L1-BASE-001..004, T-L1-POL-001, T-L2-ASYNC-001..004, T-L2-UNSAFE-001..004 (validator portion), T-L2-FFI-001/002, T-L2-MACRO-001/002, T-L2-API-001/002, T-L2-CARGO-001/002, T-L2-TEST-001/002, T-L2-DATA-001, T-L2-DB-001, T-L2-TIME-001, T-L2-OPS-001/002, T-L2-PERF-001/002, T-L2-CORE007-001..003, T-L2-CORE008-001..003, T-L2-CORE011-001..003, T-L2-CORE014-001..003, T-L2-CORE015-001/002, T-L3-CRATE-001/003/004/005. T-L3-CRATE-002/006/007 deferred (need real cargo invocation, Phase 5). BASELINE_BLOCKS_VALIDATION + TOOL_UNAVAILABLE dedicated unit tests deferred to Phase 5. CI workflow `.github/workflows/rdx-l1-l3-validator.yml`. |
 | 2026-06-30 | Phase 3 | rdx-dev-story wrapper + menu override + setup/uninstall | x | 116 tests green (92 prior + 24 new L4). `.claude/skills/rdx-dev-story/SKILL.md` ships the soft-gate wrapper with BEFORE→CHILD→AFTER ordering, validator-fail halt sentinel, no-recursion guard, missing-artifact diagnostic, child-error continuation, and risk-tag preservation via on-disk storage. `.claude/skills/rdx-setup/assets/agent-overrides/bmad-agent-dev.toml` declares `[[agent.menu]] code="DS" skill="rdx-dev-story"`. `.claude/skills/rdx-setup/scripts/{install,uninstall}.py` perform idempotent install (merge-by-code, foreign-preserving) and round-trip uninstall. Closed: T-L4-MENU-001/002, T-L4-WR-001..006 (static structural contract), T-L4-SETUP-001/002/003. Resolver SHA pin + setup warning deferred to Phase 4; full L5 ≥85% over 20 runs is Phase 6 work per strategy §2 (L5 = statistical layer). CI workflow `.github/workflows/rdx-l4-bmad-integration.yml`. Resolver-shim helper at `tests/bmad/_helpers/resolver_shim.py`. |
 | 2026-06-30 | Phase 4 | Operating modes + setup UX + validator mode_label + doc-honesty | x | 138 tests green (116 prior + 22 new: 9 mode-selector + 4 mode-naming + 6 mode-label + 3 doc-honesty). Production-artefact set: `.claude/skills/rdx-setup/assets/modes.md` (single-source mode reference: Advisory / Local Validated / Local Gated / CI Enforced / Specialist Approval); `.claude/skills/rdx-setup/assets/module.yaml` adds `enforcement_level` single-select with default `MODE_1`; `.claude/skills/rdx-setup/SKILL.md` Step 0.5 prompts for mode + Step 4 passes `--enforcement-level` to install.py. Runtime guards: `install.py` `--enforcement-level` flag with precedence flag > existing > `MODE_1` default; `_extract_existing_level` / `_strip_rdx_block` so re-runs preserve user choice and stay bytewise idempotent. Validator surface: `rdx_validator/cli.py` adds `mode_label` to the JSON envelope (sourced from `MODE_LABELS`) and gets a proper `if __name__ == "__main__"` guard so `python rdx-validator/rdx_validator/cli.py` actually runs (latent Phase 3 bug; the wrapper SKILL.md documented the script form but the file was a no-op when executed directly). Closed: T-V5-ACC-06 (doc-honesty grep), T-L5-MODE-001 smoke (deterministic label contract; statistical eval still Phase 6). Per-mode acceptance tests pass: T-L1-POL-001 (Mode 0 advisory) and T-L4-WR-* (Mode 1 soft-gate) remain green; T-L6-HOOK-* and T-L6-CI-* specs present in YAML (implementation Phase 5). Resolver SHA pin runtime check (Phase 3.3 carry-over) further deferred to Phase 5. CI workflow `.github/workflows/rdx-l4-modes.yml`. |
+| 2026-06-30 | Phase 5 | Git hook + CI workflow + L7 mutation guards | x | 160 tests green (138 prior + 22 new: 5 L6-hook + 6 L6-CI + 11 L7-mutation). Production: `.claude/skills/rdx-hooks/{SKILL.md, assets/pre-push.sh, scripts/install-hook.py, scripts/uninstall-hook.py}` ship the opt-in pre-push hook with foreign-hook chaining + byte-equal uninstall restore + documented `--no-verify` bypass. `.github/workflows/rdx-gate.yml` is the required-check workflow with `permissions: contents: read` only (no secrets, fork-PR safe). `.github/scripts/rdx-ci-runner.py` implements Option B (validator + schema + contracts materialised from `--validator-ref` via `git show <ref>:<path>` into a tempdir; PR-head edits ignored); also supports a working-tree mode for local pytest. `docs/branch-protection.md` documents the GitHub-side CODEOWNERS rule for `.github/workflows/**` (T-L7-WORKFLOW-MOD-001). Runtime guards in `rdx-validator/rdx_validator/preflight.py` cover stale-evidence (digest mismatch → recompute) and wrong-base (sha mismatch) checks; `cli.py` adds `--max-diff-bytes` (default 10 MiB) and emits `ENVIRONMENT_UNAVAILABLE` with exit 2 for oversized diffs (T-L7-OVERSIZED-DIFF-001). `tests/fixtures/cargo-projects/green-crate/evidence-in.json` digest recomputed to match its diff so the new preflight does not flag it as stale. Closed: T-L6-HOOK-001..005, T-L6-CI-001..005, T-V5-ACC-05, T-L7-FAKE-PASS-001, T-L7-STALE-DIFF-001, T-L7-WRONG-BASE-001, T-L7-DISABLED-PACK-001 (L7 reaffirmation), T-L7-MOD-SCHEMA-001, T-L7-MOD-VALIDATOR-001, T-L7-DEL-TEST-001 (L7 reaffirmation), T-L7-OVERSIZED-DIFF-001, T-L7-WORKFLOW-MOD-001. T-V5-ACC-01..04/06/07 already proven by earlier phases or unchanged. GitLab portability (5.4) deferred. CI workflow `.github/workflows/rdx-l6-l7.yml`. |

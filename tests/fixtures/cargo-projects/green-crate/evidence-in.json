@@ -3,7 +3,7 @@
   "story_id": "STORY-L3-GREEN-001",
   "head_sha": "fedcba9876543210fedcba9876543210fedcba98",
   "base_sha": "0123456789abcdef0123456789abcdef01234567",
-  "diff_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diff_digest": "8243ff758c7c0d4a619a91e7a68b9ee3ae388e70f077c4b694bdb4db6865a48f",
   "mode": "MODE_2",
   "rules": {
     "CORE-011": {

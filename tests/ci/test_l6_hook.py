@@ -16,11 +16,16 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
-from .conftest import git, run_script
+from .conftest import REPO_ROOT, git, run_script
+
+# The sample repo does not ship its own validator. Point the hook at
+# this repository's validator via the documented env-var hook.
+RDX_VALIDATOR_CMD = f"{sys.executable} {REPO_ROOT / 'rdx-validator' / 'rdx_validator' / 'cli.py'}"
 
 
 def _install_hook(repo_work: Path, install_script: Path, extra: list[str] | None = None) -> None:
@@ -44,6 +49,7 @@ def _push(repo_work: Path, branch: str = "main", *, extra: list[str] | None = No
             "GIT_COMMITTER_EMAIL": "rdx-test@example.com",
             "GIT_CONFIG_GLOBAL": "/dev/null",
             "GIT_CONFIG_SYSTEM": "/dev/null",
+            "RDX_VALIDATOR": RDX_VALIDATOR_CMD,
         }
     )
     return subprocess.run(
@@ -97,14 +103,12 @@ def test_l6_hook_001_blocks_push_on_validator_fail(sample_hook_repo, hook_instal
 def test_l6_hook_002_permits_clean_push(sample_hook_repo, hook_install_script):
     _install_hook(sample_hook_repo.work, hook_install_script)
 
-    # Author a clean diff (non-protected file, no router triggers).
-    lib_rs = sample_hook_repo.work / "src" / "lib.rs"
-    lib_rs.write_text(
-        lib_rs.read_text(encoding="utf-8") + "\npub fn added_noop() {}\n",
-        encoding="utf-8",
-    )
-    git("add", "src/lib.rs", cwd=sample_hook_repo.work)
-    git("commit", "-m", "harmless addition", cwd=sample_hook_repo.work)
+    # Author a clean diff (non-Rust file, no router triggers, no
+    # compile-evidence requirement).
+    readme = sample_hook_repo.work / "README.md"
+    readme.write_text("# Demo\n\nharmless docs.\n", encoding="utf-8")
+    git("add", "README.md", cwd=sample_hook_repo.work)
+    git("commit", "-m", "docs only", cwd=sample_hook_repo.work)
 
     r = _push(sample_hook_repo.work)
     assert r.returncode == 0, f"clean push should succeed; stderr=\n{r.stderr}"
@@ -131,13 +135,10 @@ def test_l6_hook_003_chains_existing_hook(sample_hook_repo, hook_install_script)
     _install_hook(sample_hook_repo.work, hook_install_script)
 
     # Clean diff so both hooks return 0 and push succeeds.
-    lib_rs = sample_hook_repo.work / "src" / "lib.rs"
-    lib_rs.write_text(
-        lib_rs.read_text(encoding="utf-8") + "\npub fn another_noop() {}\n",
-        encoding="utf-8",
-    )
-    git("add", "src/lib.rs", cwd=sample_hook_repo.work)
-    git("commit", "-m", "noop", cwd=sample_hook_repo.work)
+    readme = sample_hook_repo.work / "README.md"
+    readme.write_text("# Demo\n", encoding="utf-8")
+    git("add", "README.md", cwd=sample_hook_repo.work)
+    git("commit", "-m", "docs", cwd=sample_hook_repo.work)
 
     r = _push(sample_hook_repo.work)
     assert r.returncode == 0, f"push should succeed; stderr=\n{r.stderr}"

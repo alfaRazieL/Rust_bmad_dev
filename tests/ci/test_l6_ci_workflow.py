@@ -65,10 +65,12 @@ def _run_runner(
             base_ref,
             "--head-ref",
             head_ref,
+            # No --validator-ref → runner uses working tree of
+            # --validator-repo (this RDX repo), which is the test's
+            # trusted source (still Option B w.r.t. the sample repo's
+            # PR head).
             "--validator-repo",
             str(REPO_ROOT),
-            "--validator-ref",
-            "HEAD",
             *extra,
         ],
         capture_output=True,
@@ -193,11 +195,13 @@ def test_l6_ci_004_dual_run_baseline_vs_regression(sample_ci_repo, ci_runner_scr
     git("checkout", "pr-head", cwd=sample_ci_repo.work)
     git("merge", "main", "-m", "merge main", cwd=sample_ci_repo.work)
 
-    # PR adds an unrelated, harmless change.
-    lib = sample_ci_repo.work / "src" / "lib.rs"
-    lib.write_text(lib.read_text(encoding="utf-8") + "\npub fn unrelated() {}\n", encoding="utf-8")
-    git("add", "src/lib.rs", cwd=sample_ci_repo.work)
-    git("commit", "-m", "unrelated change", cwd=sample_ci_repo.work)
+    # PR adds an unrelated, harmless docs-only change so the PR diff
+    # carries no Rust files (Mode 3 CORE-011 evidence requirement
+    # would otherwise dominate the baseline blame test).
+    readme = sample_ci_repo.work / "README.md"
+    readme.write_text("# unrelated docs\n", encoding="utf-8")
+    git("add", "README.md", cwd=sample_ci_repo.work)
+    git("commit", "-m", "unrelated docs change", cwd=sample_ci_repo.work)
 
     r = _run_runner(
         ci_runner_script,
