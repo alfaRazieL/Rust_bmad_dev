@@ -2924,3 +2924,116 @@
   artifacts: ["evidence.json"]
   automation: full
   gate: v6-release
+
+# ============================================================================
+# PHASE 10 — DOCUMENTATION GATES (deterministic structural tests over README +
+# docs/*.md). T-V5-ACC-06 close-out remains at tests/acceptance/test_doc_honesty.py
+# (scope = .claude/skills/rdx-*); these tests extend the same rules to the
+# user-facing README and docs/ tree.
+# ============================================================================
+
+- id: T-DOC-CHECKLIST-001
+  version: V5
+  phase: 10
+  requirement_ids: [R-V5-DoD-11]
+  rule_ids: []
+  layer: L4
+  title: Phase 10 entry-gate — Doc-review checklist enumerates the 14 implementation topics
+  fixture: tests/docs
+  steps:
+    - "Author docs/doc-review-checklist.md as a markdown task list"
+    - "Each of the 14 Phase-10 implementation topics appears next to a `- [ ]` checkbox"
+  expected: checklist exists, mentions every required topic, ≥14 checkbox items
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: deterministic
+  artifacts: ["docs/doc-review-checklist.md"]
+  automation: full
+  gate: v5-release
+
+- id: T-DOC-README-CI-COST-001
+  version: V5
+  phase: 10
+  requirement_ids: [R-V5-DoD-11]
+  rule_ids: []
+  layer: L4
+  title: Phase 10 exit-gate — README has GH-Actions-Free and switching-to-paid subsections with concrete steps
+  fixture: tests/docs
+  steps:
+    - "README contains a 'Using RDX with GitHub Actions Free plan' subsection"
+    - "Subsection mentions 2,000 CI minutes/month, per-account/org aggregation, typical 5–15 min/PR, Mode 2 as no-CI alternative, numbered rdx-gate.yml setup"
+    - "README contains a 'When you need more than 2,000 minutes — switching to paid' subsection"
+    - "Subsection compares Pro/Team/Enterprise, mentions self-hosted runners, includes cost-calculator hint, explains organization move"
+  expected: both subsections present with required content
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: deterministic
+  artifacts: ["README.md"]
+  automation: full
+  gate: v5-release
+
+- id: T-DOC-README-MODE2-001
+  version: V5
+  phase: 10
+  requirement_ids: [R-V5-DoD-11]
+  rule_ids: []
+  layer: L4
+  title: Phase 10 exit-gate — Mode 2 positioned as release-quality, never as 'stepping stone' to Mode 3
+  fixture: tests/docs
+  steps:
+    - "Grep README for 'stepping stone' within ±200 chars of a Mode-2 mention"
+    - "Allow negated form ('not a stepping stone'); reject naked use"
+    - "Assert 'release-quality' (or 'release quality') framing appears in Mode-2 context"
+  expected: Mode 2 framed as release-quality; no naked 'stepping stone' claim
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: deterministic
+  artifacts: ["README.md"]
+  automation: full
+  gate: v5-release
+
+- id: T-DOC-README-ARCHITECTURE-001
+  version: V5
+  phase: 10
+  requirement_ids: [R-V5-DoD-11]
+  rule_ids: []
+  layer: L4
+  title: Phase 10 implementation tasks — README covers all 14 doc topics + 7 public-positioning statements
+  fixture: tests/docs
+  steps:
+    - "Scan README for all 5 mode names + canonical labels (Advisory / Local Validated / Local Gated / CI Enforced / Specialist Approval)"
+    - "Scan for validator, wrapper, pre-push hook + --no-verify, CI required check + rdx-gate.yml"
+    - "Scan for Cat-1..Cat-4, CODEOWNERS / approvers.yaml, evidence schema, status verdicts (PASS/FAIL/REVIEW_REQUIRED/APPROVAL_REQUIRED), exception model, update + uninstall, review integration (rdx-code-review + rdx-judgment), troubleshooting, limitations, compatibility matrix"
+    - "Assert public-positioning statements: 'does not prove/guarantee', 'CI is source of enforcement', wrapper is UX/soft"
+  expected: all topics + positioning statements present
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: deterministic
+  artifacts: ["README.md"]
+  automation: full
+  gate: v5-release
+
+- id: T-DOC-HONESTY-EXTENDED-001
+  version: V5
+  phase: 10
+  requirement_ids: [R-V5-DoD-11]
+  rule_ids: []
+  layer: L4
+  title: Phase 10 reaffirmation — T-V5-ACC-06 forbidden-phrase scan extended to README + docs/*.md
+  fixture: tests/docs
+  steps:
+    - "Reuse T-V5-ACC-06 phrase list + negation allow-list"
+    - "Scan README.md and every docs/**.md file"
+    - "Assert no naked occurrences"
+  expected: zero forbidden naked phrases in user-facing docs
+  expected_status: PASS
+  expected_exit_code: 0
+  blocking: true
+  oracle: deterministic
+  artifacts: ["README.md", "docs/*.md"]
+  automation: full
+  gate: v5-release
