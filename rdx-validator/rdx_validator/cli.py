@@ -24,6 +24,18 @@ Outputs:
 
 from __future__ import annotations
 
+# Allow being executed as a plain script: `python rdx-validator/rdx_validator/cli.py`.
+# The rdx-dev-story wrapper SKILL.md documents the script-form invocation, so
+# the package must support both `python -m rdx_validator` and direct execution.
+if __name__ == "__main__" and (__package__ in (None, "")):
+    import pathlib as _pathlib
+    import sys as _sys
+
+    _pkg_root = _pathlib.Path(__file__).resolve().parent.parent
+    if str(_pkg_root) not in _sys.path:
+        _sys.path.insert(0, str(_pkg_root))
+    __package__ = "rdx_validator"
+
 import argparse
 import datetime as _dt
 import hashlib
@@ -45,6 +57,18 @@ from .diff import compute_diff_digest, parse_diff_paths, parse_file_changes
 from .policy import load as load_policy
 from .router import RouterRules, replay
 from .status import Aggregate, Mode, Policy, RuleVerdict, Severity, Verdict, aggregate
+
+
+# Phase 4 — canonical human labels per mode, kept here so downstream consumers
+# (wrapper report, CI summary, pre-push hook) read one source of truth instead
+# of inventing labels that drift into calling Mode 1 "Enforced".
+MODE_LABELS: dict[str, str] = {
+    Mode.MODE_0.value: "Advisory",
+    Mode.MODE_1.value: "Local Validated",
+    Mode.MODE_2.value: "Local Gated",
+    Mode.MODE_3.value: "CI Enforced",
+    Mode.MODE_4.value: "Specialist Approval",
+}
 
 
 REPO_ROOT_DEFAULT = Path(__file__).resolve().parents[2]
@@ -105,6 +129,7 @@ def _envelope(
         "base_sha": base_sha,
         "diff_digest": _sha(diff_text),
         "mode": mode.value,
+        "mode_label": MODE_LABELS.get(mode.value, mode.value),
         "router_activations": [
             {
                 "pack": a.pack,
@@ -389,3 +414,7 @@ def _pack_verdicts(activations) -> list[RuleVerdict]:
             )
             continue
     return out
+
+
+if __name__ == "__main__":
+    sys.exit(main())

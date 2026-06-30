@@ -6,6 +6,7 @@ behavior without a live LLM. Designed to be safe to re-run.
 
 Usage:
     python install.py --project-root /path/to/project
+    python install.py --project-root /path/to/project --enforcement-level MODE_2
 
 Effects:
 - Copies KB sections to {project-root}/_bmad/rust-kb/
@@ -14,6 +15,9 @@ Effects:
     additions in (keeps existing principles + agent.menu entries, adds RDX
     ones, dedupes).
 - Ensures {project-root}/_bmad/config.yaml has a [modules.rdx] section.
+- Writes `enforcement_level` (MODE_0..MODE_4) under [modules.rdx]; the
+  selected level is the canonical record consulted by the wrapper, the
+  pre-push hook, and CI. Phase 4 mode selector.
 
 Exit codes: 0 = success, 1 = unrecoverable error.
 """
@@ -21,6 +25,7 @@ Exit codes: 0 = success, 1 = unrecoverable error.
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -33,6 +38,11 @@ except ModuleNotFoundError:  # pragma: no cover
 RDX_TAG_BANNER = (
     "# RDX — Rust Dev eXpert overrides"  # marker that lets uninstall identify RDX content
 )
+
+# Modes supported by Phase 4. MODE_4 is accepted for forward-compat but its
+# end-to-end wiring is Phase 8 (Cat-4 specialist approvals).
+VALID_MODES = ("MODE_0", "MODE_1", "MODE_2", "MODE_3", "MODE_4")
+DEFAULT_MODE = "MODE_1"  # Local Validated — see assets/modes.md
 
 
 def _skill_root() -> Path:
@@ -166,15 +176,66 @@ def _copy_simple_override(project_root: Path, fname: str) -> None:
     shutil.copy(src, dst)
 
 
-def _ensure_config_block(project_root: Path) -> None:
+_RDX_LEVEL_RE = re.compile(r"^    enforcement_level:\s*(\S+)\s*$", re.MULTILINE)
+
+
+def _extract_existing_level(text: str) -> str | None:
+    m = _RDX_LEVEL_RE.search(text)
+    return m.group(1) if m else None
+
+
+def _strip_rdx_block(text: str) -> str:
+    """Remove the entire 2-space-indented `rdx:` block under `modules:`.
+
+    Reuses the strip semantics from uninstall.py so re-running install with a
+    different --enforcement-level overwrites cleanly instead of duplicating.
+    """
+    lines = text.splitlines()
+    out: list[str] = []
+    skipping = False
+    for line in lines:
+        if not skipping and line.rstrip() == "  rdx:":
+            skipping = True
+            continue
+        if skipping:
+            if line.startswith("    ") or line.strip() == "":
+                if line.startswith("    "):
+                    continue
+                out.append(line)
+                skipping = False
+                continue
+            skipping = False
+            out.append(line)
+            continue
+        out.append(line)
+    return "\n".join(out)
+
+
+def _ensure_config_block(project_root: Path, enforcement_level: str | None) -> None:
+    """Write the [modules.rdx] block, carrying enforcement_level.
+
+    Precedence:
+      1. --enforcement-level flag (if supplied)
+      2. existing enforcement_level in the file (if any) — preserves prior choice
+      3. DEFAULT_MODE (MODE_1, Local Validated)
+    """
     config = project_root / "_bmad" / "config.yaml"
     config.parent.mkdir(parents=True, exist_ok=True)
     text = config.read_text(encoding="utf-8") if config.exists() else "modules:\n"
-    if "rdx:" in text:
-        return
+
+    existing_level = _extract_existing_level(text)
+    if enforcement_level is not None:
+        chosen = enforcement_level
+    elif existing_level is not None:
+        chosen = existing_level
+    else:
+        chosen = DEFAULT_MODE
+
+    # Always re-write the rdx block so a level change is applied cleanly.
+    text = _strip_rdx_block(text)
     if "modules:" not in text:
         text = "modules:\n" + text
-    # Append rdx under modules.
+
     lines = text.splitlines()
     out: list[str] = []
     inserted = False
@@ -184,17 +245,35 @@ def _ensure_config_block(project_root: Path) -> None:
             out.append("  rdx:")
             out.append('    version: "1.0.0"')
             out.append("    managed_by: rdx-setup")
+            out.append(f"    enforcement_level: {chosen}")
             inserted = True
     if not inserted:
+        out.append("modules:")
         out.append("  rdx:")
         out.append('    version: "1.0.0"')
         out.append("    managed_by: rdx-setup")
-    config.write_text("\n".join(out) + "\n", encoding="utf-8")
+        out.append(f"    enforcement_level: {chosen}")
+    # Normalise: collapse any run of blank lines so repeat installs are
+    # bytewise identical (T-L4-SETUP-002 idempotency).
+    rendered = "\n".join(out) + "\n"
+    rendered = re.sub(r"\n{3,}", "\n\n", rendered)
+    config.write_text(rendered, encoding="utf-8")
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description="RDX install")
     p.add_argument("--project-root", required=True, type=Path)
+    p.add_argument(
+        "--enforcement-level",
+        default=None,
+        choices=list(VALID_MODES),
+        help=(
+            "RDX enforcement level. MODE_0=Advisory, MODE_1=Local Validated "
+            "(default), MODE_2=Local Gated (pre-push hook), MODE_3=CI Enforced "
+            "(CI required check), MODE_4=Specialist Approval. If omitted, "
+            "preserves the existing value in config.yaml or defaults to MODE_1."
+        ),
+    )
     args = p.parse_args()
 
     project_root: Path = args.project_root.resolve()
@@ -206,9 +285,12 @@ def main() -> int:
     _merge_dev_override(project_root)
     _copy_simple_override(project_root, "bmad-agent-architect.toml")
     _copy_simple_override(project_root, "bmad-agent-pm.toml")
-    _ensure_config_block(project_root)
+    _ensure_config_block(project_root, args.enforcement_level)
 
-    print(f"[install] RDX installed into {project_root}")
+    final_level = _extract_existing_level(
+        (project_root / "_bmad" / "config.yaml").read_text(encoding="utf-8")
+    ) or DEFAULT_MODE
+    print(f"[install] RDX installed into {project_root}; enforcement_level={final_level}")
     return 0
 
 

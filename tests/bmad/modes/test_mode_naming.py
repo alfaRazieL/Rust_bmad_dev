@@ -53,18 +53,34 @@ def test_modes_doc_names_every_mode():
 
 def test_mode_1_never_called_enforced():
     """The single most important T-L5-MODE-001 invariant: the Mode 1 section
-    must NOT call itself 'Enforced'.
+    must NOT label itself 'Enforced'.
 
-    We grep the line that introduces MODE_1 (or 'Mode 1') and assert the
-    label on that line is 'Local Validated' (the canonical), or some clearly
-    cooperative/soft-gate descriptor — never 'Enforced'."""
-    text = _read_modes_doc().lower()
-    # Walk every line that mentions mode 1 / MODE_1 and assert no "enforced".
-    for line in text.splitlines():
-        if "mode 1" in line or "mode_1" in line:
-            assert "enforced" not in line, (
-                f"Mode 1 line uses forbidden 'enforced' label: {line.strip()!r}"
-            )
+    We look for explicit labeling: 'Mode 1 — Enforced', 'Mode 1: Enforced',
+    'MODE_1 Enforced', etc. — i.e. the word 'enforced' positioned as the
+    *label* immediately after Mode 1. Sentences like 'Mode 1 is validated,
+    not enforced' are the correct framing and are permitted.
+    """
+    import re
+
+    text = _read_modes_doc()
+    pattern = re.compile(
+        r"\bmode[ _]1\b\s*[—:\-=]?\s*['\"`]?\s*enforced\b",
+        re.IGNORECASE,
+    )
+    matches = pattern.findall(text)
+    assert not matches, (
+        f"Mode 1 must never be labeled 'Enforced'; found: {matches!r}"
+    )
+
+    # Also: the table row that defines MODE_1's label must be exactly
+    # 'Local Validated'. This makes the label contract auditable in one place.
+    row_pattern = re.compile(r"\|\s*MODE_1\s*\|\s*([^|]+?)\s*\|")
+    row = row_pattern.search(text)
+    assert row, "modes.md must contain a table row defining MODE_1"
+    label = row.group(1).strip()
+    assert label == "Local Validated", (
+        f"MODE_1 row label must be 'Local Validated'; got {label!r}"
+    )
 
 
 def test_module_yaml_offers_mode_choice():

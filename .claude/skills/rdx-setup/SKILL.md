@@ -39,6 +39,30 @@ Check if `{project-root}/_bmad/config.yaml` contains a `[modules.rdx]` section.
 - **Args include `setup`, `configure`, or `install`** → always reload registration (reconfiguration). Load `./assets/module-setup.md` regardless of current state.
 - **Section present and no reconfigure arg** → skip registration and proceed directly to Step 1.
 
+### Step 0.5: Pick an enforcement level (Phase 4 mode selector)
+
+During first-time registration (or any reconfigure), present the user with the
+five RDX modes and ask which one this project should run at. The full mode
+reference is at `./assets/modes.md` — load it to answer follow-up questions,
+but the short summary the user picks from is:
+
+| Mode | Label | One-liner |
+|------|-------|-----------|
+| MODE_0 | Advisory | Record verdicts, never block |
+| MODE_1 | Local Validated | **Default.** Wrapper soft-gate inside the agent |
+| MODE_2 | Local Gated | Pre-push hook (bypassable with `--no-verify`) |
+| MODE_3 | CI Enforced | CI required check (the actual enforcement point) |
+| MODE_4 | Specialist Approval | Cat-4 sign-off (Phase 8 — accepted but not yet wired end-to-end) |
+
+Default: `MODE_1` (Local Validated). The user's choice is passed to
+`install.py` via `--enforcement-level MODE_X` and is recorded in
+`{project-root}/_bmad/config.yaml` under `[modules.rdx].enforcement_level`.
+
+Modes 0 and 1 are NOT hard enforcement — they depend on the LLM honoring
+the SKILL.md prose. Real enforcement starts at Mode 2 (pre-push hook) and
+becomes tamper-resistant at Mode 3 (CI required check). Mention this when
+the user asks "which one should I pick?"; do NOT call Mode 1 "Enforced".
+
 ### Step 1: Resolve project root
 
 Determine the actual filesystem path of `{project-root}`. This is the project working directory where `_bmad/` lives (or will live). All subsequent paths are relative to this resolved root.
@@ -74,6 +98,20 @@ bmad-agent-dev.toml
 bmad-agent-architect.toml
 bmad-agent-pm.toml
 ```
+
+When running the deterministic install script directly, pass the user's
+selected mode through so the `enforcement_level` is recorded in the same
+pass:
+
+```bash
+python3 {skill-root}/scripts/install.py \
+  --project-root {project-root} \
+  --enforcement-level MODE_1
+```
+
+Omitting `--enforcement-level` preserves any previously selected level (or
+defaults to `MODE_1` for fresh installs). See `./assets/modes.md` for the
+full label table and migration guidance.
 
 **For each file, check if the target already exists at `{project-root}/_bmad/custom/{filename}`:**
 

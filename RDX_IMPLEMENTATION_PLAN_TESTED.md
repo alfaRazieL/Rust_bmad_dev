@@ -235,25 +235,26 @@ But the pending items (0.1 error cases, 0.2 empirical close) **must remain on th
 
 ### Entry gate
 
-- [ ] Per-mode acceptance test specs written:
-  - [ ] Mode 0: T-L1-POL-001 covers advisory pass-through
-  - [ ] Mode 1: T-L4-WR-* tests cover soft-gate behavior
-  - [ ] Mode 2: T-L6-HOOK-001..005 specs written
-  - [ ] Mode 3: T-L6-CI-001..005 specs written
-  - [ ] Mode 4: deferred to Phase 8 entry gate
+- [x] Per-mode acceptance test specs written:
+  - [x] Mode 0: T-L1-POL-001 covers advisory pass-through (already green from Phase 2)
+  - [x] Mode 1: T-L4-WR-* tests cover soft-gate behavior (already green from Phase 3)
+  - [x] Mode 2: T-L6-HOOK-001..005 specs written (in `RDX_TEST_CASES.yaml`; implementation lands in Phase 5)
+  - [x] Mode 3: T-L6-CI-001..005 specs written (in `RDX_TEST_CASES.yaml`; implementation lands in Phase 5)
+  - [x] Mode 4: deferred to Phase 8 entry gate (module.yaml accepts the value for forward-compat)
 
 ### Implementation tasks
 
-- [ ] `rdx-setup` interactive mode selector with mode-strength explanation
-- [ ] Config records `enforcement_level` matching selected mode
-- [ ] Validator output explicitly labels current mode
-- [ ] Documentation explicitly distinguishes "Validated" from "Gated" from "Enforced"
+- [x] `rdx-setup` interactive mode selector with mode-strength explanation — `assets/module.yaml` single-select `enforcement_level` variable; `SKILL.md` Step 0.5 walks the user through the five modes referencing `assets/modes.md`
+- [x] Config records `enforcement_level` matching selected mode — `install.py` `--enforcement-level MODE_X` flag writes `[modules.rdx].enforcement_level` into `config.yaml`; precedence is flag > existing-value > MODE_1 default
+- [x] Validator output explicitly labels current mode — `rdx_validator/cli.py` adds `mode_label` field to the JSON envelope alongside the raw `mode` code; canonical labels (Advisory / Local Validated / Local Gated / CI Enforced / Specialist Approval) live in `MODE_LABELS` so downstream consumers do not invent their own
+- [x] Documentation explicitly distinguishes "Validated" from "Gated" from "Enforced" — `.claude/skills/rdx-setup/assets/modes.md` is the single-source mode reference; uses the verbs verbatim and explicitly states Mode 1 is "validated, not enforced"
+- [~] Phase 3.3 resolver SHA pin (deferred carry-over) — `modes.md` documents the merge contract the install relies on; runtime SHA check deferred to Phase 5 where CI infrastructure exists to verify against a known BMAD release
 
 ### Exit gate
 
-- [ ] T-V5-ACC-06 (no false enforcement claim) passes
-- [ ] T-L5-MODE-001 (agent names mode correctly) passes (smoke; full in Phase 6)
-- [ ] All per-mode acceptance tests pass
+- [x] T-V5-ACC-06 (no false enforcement claim) passes — `tests/acceptance/test_doc_honesty.py` greps `.claude/skills/rdx-*` for forbidden phrases (`hard enforcement`, `enforced (Mode 1)`, `guarantees compliance`); negated forms allowed
+- [x] T-L5-MODE-001 (agent names mode correctly) passes (smoke; full in Phase 6) — `tests/bmad/modes/test_mode_naming.py` locks the canonical labels in `modes.md` table cells; statistical L5 eval is Phase 6 work per `RDX_TEST_STRATEGY.md` §2
+- [x] All per-mode acceptance tests pass — 138/138 tests green (116 prior + 22 new Phase 4)
 
 ---
 
@@ -541,3 +542,4 @@ Clearly state:
 | 2026-06-29 | Phase 1 | Contracts & SSoT complete | x | Commit `c34631c` (red tests) + impl commit; 13 L0 tests green; closed T-L0-SCHEMA-001..004, T-L0-ROUTER-001, T-L0-DRIFT-001/002, T-L0-STATUS-001/002, T-L0-RULE-IDS-001; CI workflow `.github/workflows/rdx-l0-contracts.yml` |
 | 2026-06-29 | Phase 2 | Validator package + L1/L2/L3 (partial) | x | 92 tests green (13 L0 + 30 L1 + 45 L2 + 4 L3). `rdx-validator/` package with diff parser, digest, router replay, exception parser, status taxonomy, aggregator, exit-code mapper, baseline comparator, CORE-007/008/011/014/015 checks, CLI. Closed: T-L1-DIFF-001..003, T-L1-DIGEST-001/002, T-L1-COMMENT-001, T-L1-EXC-001/002, T-L1-AGG-001..003, T-L1-EXIT-001..005, T-L1-BASE-001..004, T-L1-POL-001, T-L2-ASYNC-001..004, T-L2-UNSAFE-001..004 (validator portion), T-L2-FFI-001/002, T-L2-MACRO-001/002, T-L2-API-001/002, T-L2-CARGO-001/002, T-L2-TEST-001/002, T-L2-DATA-001, T-L2-DB-001, T-L2-TIME-001, T-L2-OPS-001/002, T-L2-PERF-001/002, T-L2-CORE007-001..003, T-L2-CORE008-001..003, T-L2-CORE011-001..003, T-L2-CORE014-001..003, T-L2-CORE015-001/002, T-L3-CRATE-001/003/004/005. T-L3-CRATE-002/006/007 deferred (need real cargo invocation, Phase 5). BASELINE_BLOCKS_VALIDATION + TOOL_UNAVAILABLE dedicated unit tests deferred to Phase 5. CI workflow `.github/workflows/rdx-l1-l3-validator.yml`. |
 | 2026-06-30 | Phase 3 | rdx-dev-story wrapper + menu override + setup/uninstall | x | 116 tests green (92 prior + 24 new L4). `.claude/skills/rdx-dev-story/SKILL.md` ships the soft-gate wrapper with BEFORE→CHILD→AFTER ordering, validator-fail halt sentinel, no-recursion guard, missing-artifact diagnostic, child-error continuation, and risk-tag preservation via on-disk storage. `.claude/skills/rdx-setup/assets/agent-overrides/bmad-agent-dev.toml` declares `[[agent.menu]] code="DS" skill="rdx-dev-story"`. `.claude/skills/rdx-setup/scripts/{install,uninstall}.py` perform idempotent install (merge-by-code, foreign-preserving) and round-trip uninstall. Closed: T-L4-MENU-001/002, T-L4-WR-001..006 (static structural contract), T-L4-SETUP-001/002/003. Resolver SHA pin + setup warning deferred to Phase 4; full L5 ≥85% over 20 runs is Phase 6 work per strategy §2 (L5 = statistical layer). CI workflow `.github/workflows/rdx-l4-bmad-integration.yml`. Resolver-shim helper at `tests/bmad/_helpers/resolver_shim.py`. |
+| 2026-06-30 | Phase 4 | Operating modes + setup UX + validator mode_label + doc-honesty | x | 138 tests green (116 prior + 22 new: 9 mode-selector + 4 mode-naming + 6 mode-label + 3 doc-honesty). Production-artefact set: `.claude/skills/rdx-setup/assets/modes.md` (single-source mode reference: Advisory / Local Validated / Local Gated / CI Enforced / Specialist Approval); `.claude/skills/rdx-setup/assets/module.yaml` adds `enforcement_level` single-select with default `MODE_1`; `.claude/skills/rdx-setup/SKILL.md` Step 0.5 prompts for mode + Step 4 passes `--enforcement-level` to install.py. Runtime guards: `install.py` `--enforcement-level` flag with precedence flag > existing > `MODE_1` default; `_extract_existing_level` / `_strip_rdx_block` so re-runs preserve user choice and stay bytewise idempotent. Validator surface: `rdx_validator/cli.py` adds `mode_label` to the JSON envelope (sourced from `MODE_LABELS`) and gets a proper `if __name__ == "__main__"` guard so `python rdx-validator/rdx_validator/cli.py` actually runs (latent Phase 3 bug; the wrapper SKILL.md documented the script form but the file was a no-op when executed directly). Closed: T-V5-ACC-06 (doc-honesty grep), T-L5-MODE-001 smoke (deterministic label contract; statistical eval still Phase 6). Per-mode acceptance tests pass: T-L1-POL-001 (Mode 0 advisory) and T-L4-WR-* (Mode 1 soft-gate) remain green; T-L6-HOOK-* and T-L6-CI-* specs present in YAML (implementation Phase 5). Resolver SHA pin runtime check (Phase 3.3 carry-over) further deferred to Phase 5. CI workflow `.github/workflows/rdx-l4-modes.yml`. |
