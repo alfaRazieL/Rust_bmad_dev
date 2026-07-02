@@ -422,9 +422,15 @@ For RDX-typical PRs (5–15 CI-min each) the calculator is dominated by `monthly
 
 ---
 
-## File structure
+## Repository structure
+
+For users, the map below is the whole thing. For maintainers or agents extending RDX, start at [`docs/AGENT_MAINTENANCE_GUIDE.md`](docs/AGENT_MAINTENANCE_GUIDE.md) — it explains where to add checks, how the test taxonomy works, and where every design decision was made.
 
 ```
+README.md                               ← this file
+CHANGELOG.md                            ← per-release notes
+LICENSE
+
 .claude/skills/
 ├── rdx-setup/                          ← installer, modes selector, Cat-4 seed
 ├── rdx-dev-story/                      ← soft-gate wrapper (Mode 1)
@@ -432,33 +438,27 @@ For RDX-typical PRs (5–15 CI-min each) the calculator is dominated by `monthly
 ├── rdx-code-review/                    ← R2 wrapper (Cat-3 review)
 └── rdx-judgment/                       ← Cat-3 evaluator (rule auditor)
 
-rdx-validator/
-├── rdx_validator/                      ← standalone Python package, BMAD-independent
-└── README.md
+rdx-validator/                          ← standalone Python package, BMAD-independent
 
-.github/workflows/
-├── rdx-gate.yml                        ← Mode 3 required-check (loads validator from target branch)
-├── rdx-l0-contracts.yml                ← L0 schema / drift / router-rules tests
-├── rdx-l1-l3-validator.yml             ← L1/L2/L3 validator unit tests
-├── rdx-l4-bmad-integration.yml         ← L4 wrapper + setup + uninstall
-├── rdx-l4-modes.yml                    ← L4 mode-selector + mode-label
-├── rdx-l4-l8-judgment.yml              ← L4 R2 + L5 Cat-3 + L8 judgment
-├── rdx-l6-l7.yml                       ← L6 hook + CI runner + L7 mutation guards
-├── rdx-l8-cat4.yml                     ← L8 Cat-4 driver + sync-codeowners + V6-ACC-04
-├── rdx-full-regression.yml             ← full L0–L7 + acceptance regression
-└── rdx-compat-matrix.yml               ← Python 3.11/3.12/3.13 × Ubuntu/macOS
-
-_bmad/rdx/
+_bmad/rdx/                              ← runtime config surface
 ├── approvers.schema.json
 ├── approval.v1.schema.json
 └── approvers.yaml.example
 
-docs/
+docs/                                   ← living documentation
+├── AGENT_MAINTENANCE_GUIDE.md          ← start here to extend RDX
 ├── branch-protection.md                ← GitHub-side CODEOWNERS / required-checks recipe
-├── threat-model.md                     ← Phase 9 threat model + HA mode operational checklist
-└── doc-review-checklist.md             ← Phase 10 entry-gate (this file is verified by tests/docs/)
+├── threat-model.md                     ← formal threat model (Mode 4 rationale + §8 triggers)
+└── doc-review-checklist.md             ← run before each release
 
-tests/                                  ← 277+ deterministic tests across L0–L8 + acceptance
+.github/workflows/
+├── rdx-gate.yml                        ← the ONE workflow users copy into their own project
+└── (10 internal workflows)             ← this repo's own CI — see AGENT_MAINTENANCE_GUIDE §5.4
+
+tests/                                  ← 307-test regression suite (L0–L8 + acceptance)
+
+archive-docs-dev/                       ← historical planning artefacts, frozen at 1.1 release
+                                          (read-only; see archive-docs-dev/README.md for the index)
 ```
 
 ---
