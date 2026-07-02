@@ -12,6 +12,12 @@
     "artifact_path",
     "artifact_sha256",
     "prepare_manifest_sha256",
+    "projection_hash",
+    "base_sha",
+    "head_sha",
+    "diff_digest",
+    "rdx_source_sha",
+    "tea_source_sha",
     "completed"
   ],
   "properties": {
@@ -28,12 +34,16 @@
       "enum": ["sequential"],
       "description": "D3 v1 only supports sequential. Other modes are UNSUPPORTED_BY_DESIGN."
     },
-    "base_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
-    "head_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "base_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "diff_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "rdx_source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "tea_source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "projection_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "core_rules": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^CORE-\\d{3}$" }
+    },
     "active_packs": {
       "type": "array",
       "items": {

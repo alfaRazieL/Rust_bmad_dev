@@ -54,3 +54,11 @@ ci,RP-UNSAFE-*,,rule;validation,CI writes pipelines not source lints.,TEA §7,L7
 ci,RP-FFI-*,,rule;validation,Same.,TEA §7,L7-F04
 ci,RP-MACRO-*,,rule;validation,Same.,TEA §7,L7-F04
 ci,RP-DATA-*,,rule;validation,Same.,TEA §7,L7-F04
+test-design,CORE-*,ALL,,"Test-design carries every CORE-* rule (all 18) — always-on baseline.",D3.1 obligation_matrix.py,L4-D31-E01
+atdd,CORE-001;CORE-004;CORE-009,rule;required_reasoning;validation;exceptions,,"Contract-first, root-cause, panic-discipline are ATDD-relevant.",D3.1 obligation_matrix.py,L4-E01
+automate,CORE-001;CORE-004,rule;validation;exceptions,,"Contract-first + root-cause suffice for automation harness.",D3.1 obligation_matrix.py,L2-D01
+test-review,CORE-001;CORE-002;CORE-004,rule;required_reasoning;validation,,"Reviewer needs contract + reasoning + validation only.",D3.1 obligation_matrix.py,L2-D01
+nfr,CORE-004;CORE-014;CORE-015,rule;required_reasoning;validation;exceptions;trigger;risk,,"Root-cause + non-hostile-drop + no-invented-panic obligations for NFR.",D3.1 obligation_matrix.py,L2-D01
+trace,CORE-001,rule;validation,,"Trace maps AC → tests; only contract-first CORE required.",D3.1 obligation_matrix.py,L2-D09
+framework,CORE-004,rule;validation,,"Framework scaffolds; only root-cause CORE required.",D3.1 obligation_matrix.py,L2-D01
+ci,CORE-004,rule;validation,,"CI writes pipelines; only root-cause CORE required.",D3.1 obligation_matrix.py,L2-D01

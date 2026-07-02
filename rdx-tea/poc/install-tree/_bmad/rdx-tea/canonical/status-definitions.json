@@ -1,0 +1,116 @@
+{
+  "rdx_status_version": "v1",
+  "source_of_truth": "RDX_TEST_STRATEGY.md §5",
+  "verdicts": {
+    "PASS": {
+      "description": "Tool/check confirmed compliant.",
+      "set_by": ["VALIDATOR", "EVALUATOR", "SPECIALIST", "CI"],
+      "blocking_in_modes": [],
+      "exit_code_class": 0
+    },
+    "FAIL": {
+      "description": "Tool/check confirmed violation, no valid exception.",
+      "set_by": ["VALIDATOR", "EVALUATOR", "SPECIALIST", "CI"],
+      "blocking_in_modes": ["MODE_1", "MODE_2", "MODE_3", "MODE_4"],
+      "exit_code_class": 1
+    },
+    "NOT_APPLICABLE": {
+      "description": "Trigger absent (router didn't activate) — no check needed.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": [],
+      "exit_code_class": 0
+    },
+    "NOT_RUN": {
+      "description": "Tool unavailable; structured reason recorded.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_2", "MODE_3", "MODE_4"],
+      "blocking_conditional_on": "reason_not_on_approved_list",
+      "exit_code_class": 3
+    },
+    "EVIDENCE_REQUIRED": {
+      "description": "Signal detected; evidence absent or insufficient.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_2", "MODE_3", "MODE_4"],
+      "exit_code_class": 3
+    },
+    "REVIEW_REQUIRED": {
+      "description": "Cat-3 rule needs evaluator pass.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_4"],
+      "informational_in_modes": ["MODE_3"],
+      "exit_code_class": 4
+    },
+    "APPROVAL_REQUIRED": {
+      "description": "Cat-4 rule needs specialist sign-off; pinned to diff_digest.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_1", "MODE_2", "MODE_3", "MODE_4"],
+      "exit_code_class": 3
+    },
+    "BASELINE_FAILURE_OBSERVED": {
+      "description": "Same error signature on base and head; story not at fault.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": [],
+      "exit_code_class": 0
+    },
+    "BASELINE_BLOCKS_VALIDATION": {
+      "description": "Base failure prevents meaningful head check; override path: rebase or story-owner authorisation.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_2", "MODE_3", "MODE_4"],
+      "blocking_conditional_on": "no_override_recorded",
+      "exit_code_class": 3
+    },
+    "REGRESSION_FAILURE": {
+      "description": "Base passed; head fails OR head fails with new signature.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_1", "MODE_2", "MODE_3", "MODE_4"],
+      "exit_code_class": 1
+    },
+    "REGRESSION_FIXED": {
+      "description": "Base failed; head passes — bonus credit.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": [],
+      "exit_code_class": 0
+    },
+    "ENVIRONMENT_UNAVAILABLE": {
+      "description": "Cannot run validator at all (no Python, no git).",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_2", "MODE_3", "MODE_4"],
+      "downgrade_path": "MODE_0_report_only",
+      "exit_code_class": 2
+    },
+    "TOOL_UNAVAILABLE": {
+      "description": "Specific tool missing (Miri, cargo-audit) but core ran.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": [],
+      "blocking_conditional_on": "project_policy",
+      "exit_code_class": 3
+    },
+    "BLOCKED": {
+      "description": "Aggregate flag — at least one blocking finding present.",
+      "set_by": ["VALIDATOR"],
+      "blocking_in_modes": ["MODE_1", "MODE_2", "MODE_3", "MODE_4"],
+      "exit_code_class": 3
+    }
+  },
+  "severities": {
+    "INFO": {
+      "description": "Informational; never blocks.",
+      "blocks": false
+    },
+    "WARNING": {
+      "description": "Non-blocking advice (e.g., CORE-008 .unwrap() without panic-discipline story tag).",
+      "blocks": false
+    },
+    "BLOCKING": {
+      "description": "Drives FAIL verdict.",
+      "blocks": true
+    }
+  },
+  "exit_code_resolution_order": [
+    "ENVIRONMENT_UNAVAILABLE -> 2",
+    "FAIL or REGRESSION_FAILURE -> 1",
+    "BLOCKED or BASELINE_BLOCKS_VALIDATION or APPROVAL_REQUIRED or EVIDENCE_REQUIRED -> 3",
+    "REVIEW_REQUIRED -> 4",
+    "otherwise -> 0"
+  ]
+}

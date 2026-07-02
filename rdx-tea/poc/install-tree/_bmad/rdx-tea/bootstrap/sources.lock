@@ -1,0 +1,23 @@
+# Reproducible upstream source lock for the RDX-TEA adapter.
+# Consumed by bootstrap.py to clone the exact tags this adapter was
+# tested against. Consumed by rdx_tea_wrapper.py to stamp the
+# identity block in every prepare manifest.
+#
+# When bumping any SHA, update:
+#   - this file
+#   - rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md (§9 addendum)
+#   - rdx-tea/evidence/final/D3_FINAL_VERIFICATION.json
+
+rdx_source_sha: "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d"    # RDX (this repo main)
+rdx_source_tag: "v1.1.0"
+
+bmad_source_sha: "3bcd6c3cce6e381b759e23185b099081496567a5"    # BMAD-METHOD v6.8.0
+bmad_source_tag: "v6.8.0"
+bmad_source_repo: "https://github.com/bmad-code-org/BMAD-METHOD"
+
+tea_source_sha: "8734d51f24071ddbcb3617390b5fcddb4128ef77"     # TEA v1.19.0
+tea_source_tag: "v1.19.0"
+tea_source_repo: "https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise"
+
+# Adapter version this lock file belongs to.
+adapter_version: "0.3.1"
