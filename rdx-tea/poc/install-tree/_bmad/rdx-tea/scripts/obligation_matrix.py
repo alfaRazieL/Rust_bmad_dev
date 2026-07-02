@@ -81,6 +81,62 @@ WORKFLOW_OBLIGATION_MATRIX = {
 }
 
 
+def all_workflows() -> list[str]:
+    return sorted(WORKFLOW_OBLIGATION_MATRIX.keys())
+
+
+def coverage_for(workflow: str, rule_id: str, pack_id: str) -> dict:
+    """Return the machine decision for one workflow × rule."""
+    m = matrix_for(workflow)
+    if rule_id.startswith("CORE-"):
+        decision = "INCLUDE" if core_rules_allowed(workflow, rule_id) else "EXCLUDE"
+        reason = f"core_rules_policy={type(m['core_rules']).__name__}"
+    else:
+        decision = "INCLUDE" if pack_id in m["packs"] else "EXCLUDE"
+        reason = "pack in matrix" if pack_id in m["packs"] else "pack excluded by scope"
+    return {
+        "workflow": workflow,
+        "rule_id": rule_id,
+        "pack_id": pack_id,
+        "decision": decision,
+        "reason": reason,
+        "fields": sorted(m["fields"]) if decision == "INCLUDE" else [],
+    }
+
+
+def generate_csv() -> str:
+    """Return the WORKFLOW_OBLIGATION_MATRIX.csv content derived from
+    this single source of truth."""
+    import io
+    import csv
+    buf = io.StringIO(newline="")
+    writer = csv.writer(buf, quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(["workflow", "rule_id_or_pack", "included_fields",
+                     "excluded_fields", "reason", "source_anchor", "test_id"])
+    all_f = ";".join(sorted(ALL_FIELDS))
+    for workflow in all_workflows():
+        m = matrix_for(workflow)
+        for pack in sorted(m["packs"]):
+            fields = ";".join(sorted(m["fields"]))
+            excluded = ";".join(sorted(ALL_FIELDS - m["fields"]))
+            writer.writerow([workflow, f"pack:{pack}", fields, excluded,
+                             f"pack in matrix for {workflow}",
+                             "obligation_matrix.py", "L2/L4"])
+        # CORE row
+        cr = m["core_rules"]
+        if cr is True:
+            writer.writerow([workflow, "CORE-*", ";".join(sorted(m["fields"])),
+                             "",
+                             f"core_rules=True (all CORE-*)",
+                             "obligation_matrix.py", "L2/L4"])
+        elif isinstance(cr, (set, frozenset)):
+            writer.writerow([workflow, ";".join(sorted(cr)),
+                             ";".join(sorted(m["fields"])), "",
+                             "core_rules=explicit subset",
+                             "obligation_matrix.py", "L2/L4"])
+    return buf.getvalue()
+
+
 def matrix_for(workflow: str) -> dict:
     """Return the obligation-matrix entry for a workflow. Unknown workflow
     yields an empty entry (fail-safe — see test_l7_f08)."""

@@ -29,6 +29,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -85,13 +86,20 @@ def _select_active_rules(
     active_pack_ids: list[str],
     workflow: str,
     parsed_rules: list[dict],
+    rust_scope: bool = True,
 ) -> list[dict]:
     """Return rules that (a) match an activated pack for this workflow OR
-    (b) satisfy the workflow's CORE inclusion policy — but ONLY when at
-    least one pack is active. A non-Rust / non-activating diff yields
-    an empty bundle to avoid injecting Rust CORE rules into unrelated
-    stories."""
-    if not active_pack_ids:
+    (b) satisfy the workflow's CORE inclusion policy.
+
+    D3.2 §8 semantics:
+      * `rust_scope=False`  → empty bundle regardless of packs.
+      * `rust_scope=True` + `active_pack_ids=[]` → workflow-specific CORE
+        rules only (Rust story with no conditional pack still gets CORE
+        obligations).
+      * `rust_scope=True` + `active_pack_ids=[...]` → CORE per policy +
+        rules of every allowed active pack.
+    """
+    if not rust_scope:
         return []
     out: list[dict] = []
     for r in parsed_rules:
@@ -223,24 +231,63 @@ def _canonical_snapshot_hash() -> str:
     return _sha256_bytes("\n".join(sorted(lines)).encode("utf-8"))
 
 
+_HEX40 = re.compile(r"^[0-9a-f]{40}$")
+
+
+def _validate_sha(name: str, value: str) -> None:
+    if not _HEX40.match(value):
+        raise PrepareError(f"identity.{name} must be a 40-hex SHA; got {value!r}")
+    if value == "0" * 40:
+        raise PrepareError(f"identity.{name} may not be all-zero (no fallback)")
+
+
+def _detect_rust_scope(project_root: Path) -> bool:
+    """A project is `rust_scope=True` when Cargo.toml or rust-toolchain
+    exist at the root OR at least one `.rs` file lives under it."""
+    if (project_root / "Cargo.toml").exists():
+        return True
+    if (project_root / "rust-toolchain").exists() or (project_root / "rust-toolchain.toml").exists():
+        return True
+    for p in project_root.rglob("*.rs"):
+        if ".git" in p.parts:
+            continue
+        return True
+    return False
+
+
 def prepare(
     project_root: Path,
     workflow: str,
     identity: dict,
+    run_id: str,
     story_path: Path | None = None,
     diff_path: Path | None = None,
     tags_path: Path | None = None,
     output_root: Path | None = None,
+    rust_scope: bool | None = None,
 ) -> dict:
-    """Prepare and atomically write the active-context bundle.
+    """Prepare and atomically write the active-context bundle under the
+    run-scoped directory.
 
     `identity` MUST include mandatory keys — see `_MANDATORY_IDENTITY`.
-    Missing key → PrepareError. This is the D3.1 fix for the D3 gap
-    "identity fields optional / env-only".
+    Missing key → PrepareError. All SHAs are validated as 40-hex; the
+    all-zero fallback is rejected outright (D3.2 gap §4).
+
+    `rust_scope` — when `None`, autodetected from `Cargo.toml`,
+    `rust-toolchain[.toml]`, or presence of any `.rs` file under
+    `project_root`. When `False`, the bundle is empty even for workflows
+    with an "all" CORE policy (D3.2 gap §8).
     """
+    if not run_id or not re.match(r"^[A-Za-z0-9_.-]{4,64}$", run_id):
+        raise PrepareError(f"invalid run_id: {run_id!r}")
     missing = [k for k in _MANDATORY_IDENTITY if k not in identity or not identity[k]]
     if missing:
         raise PrepareError(f"identity missing mandatory fields: {missing}")
+    for k in _MANDATORY_IDENTITY:
+        _validate_sha(k, identity[k])
+
+    if rust_scope is None:
+        rust_scope = _detect_rust_scope(project_root)
 
     router = _load_router()
     diff = _read_optional(diff_path)
@@ -249,10 +296,13 @@ def prepare(
 
     activations = replay(diff, router, tags)
     router_active_pack_ids = activated_pack_names(activations)
-    active_pack_ids = sorted(set(router_active_pack_ids) & set(matrix_for(workflow)["packs"]))
+    if rust_scope:
+        active_pack_ids = sorted(set(router_active_pack_ids) & set(matrix_for(workflow)["packs"]))
+    else:
+        active_pack_ids = []
 
     parsed_rules = rdx_parser.parse_all()
-    active_rules = _select_active_rules(active_pack_ids, workflow, parsed_rules)
+    active_rules = _select_active_rules(active_pack_ids, workflow, parsed_rules, rust_scope=rust_scope)
 
     bundle = _render_bundle(workflow, active_rules, active_pack_ids)
     bundle_bytes = bundle.encode("utf-8")
@@ -265,13 +315,18 @@ def prepare(
             f"with computed {diff_digest[:12]} — refusing to write bundle"
         )
 
-    output_root = output_root or (project_root / "_bmad" / "rdx-tea" / "runtime" / workflow)
+    # D3.2 §6: run-scoped runtime layout.
+    output_root = output_root or (
+        project_root / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id
+    )
     bundle_path = output_root / "active-context.md"
     manifest_path = output_root / "run-manifest.json"
 
     manifest = {
         "schema_version": "rdx-tea-run.v1",
         "workflow": workflow,
+        "run_id": run_id,
+        "rust_scope": rust_scope,
         "execution_mode": "sequential",
         "requested_mode": "sequential",
         "story_present": bool(story.strip()),
@@ -334,6 +389,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workflow", required=True)
     ap.add_argument("--project-root", required=True, type=Path)
+    ap.add_argument("--run-id", required=True)
     ap.add_argument("--story", type=Path, default=None)
     ap.add_argument("--diff", type=Path, default=None)
     ap.add_argument("--tags", type=Path, default=None)
@@ -343,16 +399,20 @@ def main() -> int:
     ap.add_argument("--diff-digest", default="")
     ap.add_argument("--rdx-source-sha", required=True)
     ap.add_argument("--tea-source-sha", required=True)
+    ap.add_argument("--rust-scope", choices=("auto", "true", "false"), default="auto")
     args = ap.parse_args()
+    scope = None if args.rust_scope == "auto" else args.rust_scope == "true"
     try:
         m = prepare(
             project_root=args.project_root,
             workflow=args.workflow,
             identity=_identity_from_cli(args),
+            run_id=args.run_id,
             story_path=args.story,
             diff_path=args.diff,
             tags_path=args.tags,
             output_root=args.output_root,
+            rust_scope=scope,
         )
     except PrepareError as err:
         print(f"prepare failed: {err}", file=sys.stderr)

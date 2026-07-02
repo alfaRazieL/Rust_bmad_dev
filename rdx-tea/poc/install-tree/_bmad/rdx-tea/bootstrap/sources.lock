@@ -19,5 +19,13 @@ tea_source_sha: "8734d51f24071ddbcb3617390b5fcddb4128ef77"     # TEA v1.19.0
 tea_source_tag: "v1.19.0"
 tea_source_repo: "https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise"
 
+# Expected SHA-256 hashes of load-bearing upstream files. Bootstrap
+# refuses to proceed if any hash disagrees with disk.
+expected_file_hashes:
+  bmad_resolve_customization_py: "a56abc64ffc8924f8ded95562c7ef3f6d7f1b18f0724289fd3b95fda3567dab4"
+  tea_bmad_tea_customize_toml:    "2864b07f57c631473380fb4e7cac49282e7585d191e266088337314c8e2b7937"
+  tea_test_design_customize_toml: "c83a85c3de1ee5ff9acc94b9b8a96c563d9573520ea791c54d35f468568c6695"
+  tea_test_design_skill_md:       "78636f43137dd33260994df1b2f91a392fb9ccddbb448a5fbcbcfa8c4cc8745e"
+
 # Adapter version this lock file belongs to.
-adapter_version: "0.3.1"
+adapter_version: "0.3.2"

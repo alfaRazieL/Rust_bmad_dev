@@ -21,6 +21,8 @@ from pathlib import Path
 
 import yaml
 
+import os  # noqa: E401
+
 _HERE = Path(__file__).resolve().parent
 
 
@@ -51,6 +53,46 @@ def clone_or_update(repo_url: str, tag: str, dest: Path) -> str:
     return sha
 
 
+def _assert_clean_worktree(dest: Path) -> None:
+    """Fail closed if `dest` has uncommitted changes or an untracked file
+    other than a fresh clone marker. `RDX_TEA_BOOTSTRAP_SKIP_WORKTREE_CHECK=1`
+    bypasses the check for test rigs that reuse a local clone."""
+    if os.environ.get("RDX_TEA_BOOTSTRAP_SKIP_WORKTREE_CHECK") == "1":
+        return
+    r = subprocess.run(["git", "-C", str(dest), "status", "--porcelain"],
+                       capture_output=True, text=True, check=True)
+    if r.stdout.strip():
+        raise RuntimeError(
+            f"upstream clone at {dest} has dirty worktree — refuse to proceed:\n"
+            f"{r.stdout}"
+        )
+
+
+def _assert_expected_hashes(bmad_dst: Path, tea_dst: Path, expected: dict) -> None:
+    """Verify SHA-256 of load-bearing upstream files matches `sources.lock`."""
+    checks = {
+        "bmad_resolve_customization_py":
+            bmad_dst / "src" / "scripts" / "resolve_customization.py",
+        "tea_bmad_tea_customize_toml":
+            tea_dst / "src" / "agents" / "bmad-tea" / "customize.toml",
+        "tea_test_design_customize_toml":
+            tea_dst / "src" / "workflows" / "testarch" / "bmad-testarch-test-design" / "customize.toml",
+        "tea_test_design_skill_md":
+            tea_dst / "src" / "workflows" / "testarch" / "bmad-testarch-test-design" / "SKILL.md",
+    }
+    for key, path in checks.items():
+        if not path.exists():
+            raise RuntimeError(f"expected file missing: {path}")
+        exp = expected.get(key)
+        if not exp:
+            continue
+        got = _sha256(path)
+        if got != exp:
+            raise RuntimeError(
+                f"hash mismatch for {key}: expected {exp}, got {got}"
+            )
+
+
 def bootstrap(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
     lock_path = sources_lock_path or (_HERE / "sources.lock")
     lock = yaml.safe_load(lock_path.read_text(encoding="utf-8"))
@@ -63,6 +105,7 @@ def bootstrap(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
             f"BMAD-METHOD tag {lock['bmad_source_tag']} resolves to {bmad_sha} "
             f"but sources.lock expects {lock['bmad_source_sha']}"
         )
+    _assert_clean_worktree(bmad_dst)
 
     tea_sha = clone_or_update(lock["tea_source_repo"], lock["tea_source_tag"], tea_dst)
     if tea_sha != lock["tea_source_sha"]:
@@ -70,6 +113,9 @@ def bootstrap(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
             f"TEA tag {lock['tea_source_tag']} resolves to {tea_sha} "
             f"but sources.lock expects {lock['tea_source_sha']}"
         )
+    _assert_clean_worktree(tea_dst)
+
+    _assert_expected_hashes(bmad_dst, tea_dst, lock.get("expected_file_hashes") or {})
 
     resolver = bmad_dst / "src" / "scripts" / "resolve_customization.py"
     if not resolver.exists():
@@ -82,6 +128,7 @@ def bootstrap(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
         "tea_source_sha":  tea_sha,
         "resolver_path":   str(resolver),
         "resolver_sha256": _sha256(resolver),
+        "hashes_verified": True,
     }
 
 

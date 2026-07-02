@@ -49,8 +49,11 @@ def bind(
     project_root: Path,
     workflow: str,
     artifact: Path,
+    run_id: str,
 ) -> dict:
-    runtime_dir = project_root / "_bmad" / "rdx-tea" / "runtime" / workflow
+    """D3.2: binder now REQUIRES a run_id and resolves the run-scoped
+    runtime directory `<project-root>/_bmad/rdx-tea/runtime/<workflow>/<run_id>/`."""
+    runtime_dir = project_root / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id
     manifest_path = runtime_dir / "run-manifest.json"
     if not manifest_path.exists():
         raise BinderError(
@@ -83,6 +86,8 @@ def bind(
     sidecar = {
         "schema_version": "rdx-tea-run.v1",
         "workflow": workflow,
+        "run_id": run_id,
+        "rust_scope": manifest.get("rust_scope", True),
         "execution_mode": manifest.get("execution_mode", "sequential"),
         "active_packs": manifest.get("active_packs", []),
         "core_rules": manifest.get("core_rules", []),
@@ -111,9 +116,10 @@ def main() -> int:
     ap.add_argument("--workflow", required=True)
     ap.add_argument("--project-root", required=True, type=Path)
     ap.add_argument("--artifact", required=True, type=Path)
+    ap.add_argument("--run-id", required=True)
     args = ap.parse_args()
     try:
-        s = bind(args.project_root, args.workflow, args.artifact)
+        s = bind(args.project_root, args.workflow, args.artifact, args.run_id)
     except BinderError as err:
         print(f"bind failed: {err}", file=sys.stderr)
         return 1
