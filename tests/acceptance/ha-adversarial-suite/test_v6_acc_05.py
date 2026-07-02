@@ -39,7 +39,7 @@ import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-TEST_CASES_YAML = REPO_ROOT / "RDX_TEST_CASES.yaml"
+TEST_CASES_YAML = REPO_ROOT / "archive-docs-dev" / "test-design" / "RDX_TEST_CASES.yaml"
 MUTATION_DIR = REPO_ROOT / "tests" / "mutation"
 THREAT_MODEL = REPO_ROOT / "docs" / "threat-model.md"
 
