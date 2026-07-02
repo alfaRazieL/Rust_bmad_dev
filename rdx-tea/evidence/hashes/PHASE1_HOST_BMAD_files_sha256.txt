@@ -1,0 +1,112 @@
+# SHA-256 of installed BMAD 6.8.0 host TEA/Builder/core surface
+# Recorded: 2026-07-02T09:30:44Z
+# Host: /Users/m33tball/bmad_module_builder (not a git repo — versioned via config.yaml Version: 6.8.0)
+
+## _bmad/scripts/
+8e326149d9170477ecc21aa2aa2389d8fbaa5d1cd95db2de2ad33029ce8ae528  /Users/m33tball/bmad_module_builder/_bmad/scripts/resolve_config.py
+a56abc64ffc8924f8ded95562c7ef3f6d7f1b18f0724289fd3b95fda3567dab4  /Users/m33tball/bmad_module_builder/_bmad/scripts/resolve_customization.py
+3c93a68544b28e10c08fe4f8c24f296926e69bf142ace13d1c30867e3283c4cb  /Users/m33tball/bmad_module_builder/_bmad/scripts/tests/test_resolve_customization.py
+
+## _bmad/tea/ (installer manifest side)
+a3263a592264e7891df14afdd8b6f08a8273edfa599a861b06be21b8f7e9ebad  /Users/m33tball/bmad_module_builder/_bmad/tea/config.yaml
+0a718d289033627c467016f694801467c2a84347034e7ef27e4651d1715c17e4  /Users/m33tball/bmad_module_builder/_bmad/tea/module-help.csv
+4a16e960f9cdfcdfcdb175d04fc463fb9a7f422246e3d0eea02b8e9fbb6f8b23  /Users/m33tball/bmad_module_builder/_bmad/tea/workflows/testarch/README.md
+
+## _bmad/custom/
+973b03a33f142c22cf9b65be285bebadd85790b6b55be04637d2f8c716f58fab  /Users/m33tball/bmad_module_builder/_bmad/custom/.gitignore
+b1616a1539ddec1e7bd68edfe547861afadeeb31777c385568ccc8ada43ac385  /Users/m33tball/bmad_module_builder/_bmad/custom/bmad-agent-architect.toml
+5a2ce2b988fef8b5cf86b615a6ceacf0a2527bcc18493da1fb904ef4f7c6c078  /Users/m33tball/bmad_module_builder/_bmad/custom/bmad-agent-dev.toml
+9a88c65f515f221ef4be7cf70dd51abe548accfe24bd7f5594347103c87ae088  /Users/m33tball/bmad_module_builder/_bmad/custom/bmad-agent-pm.toml
+d00d0bb7e0e03a7e32a9c7c935f2509e17107bb9949162450e408adef01878df  /Users/m33tball/bmad_module_builder/_bmad/custom/config.toml
+92af88b1942ddfd6e9954f2591e160618bb3e74ca55c292b35ab4c411f79f0e0  /Users/m33tball/bmad_module_builder/_bmad/custom/config.user.toml
+
+## bmad-tea skill (agent)
+c60d4e56c16be369ae72717d7a825e8a5ec4509e817f7b6ec1e9fc16b12b9ba3  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/SKILL.md
+2864b07f57c631473380fb4e7cac49282e7585d191e266088337314c8e2b7937  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/customize.toml
+a8129b16c3b2afbc1f58fe5edc73dc8f1291c172c6ca009d92f1947bef1a237e  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/adr-quality-readiness-checklist.md
+d14f6e26151c48424d60cde5db81c0ffc8ec72eaf3357f27b4e137f222a4c4e3  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/api-request.md
+4b1b7069737d4916853f1393d1cd804ce7061454ad250fb919046a78b77c2648  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/api-testing-patterns.md
+2b3de2a9468caf85f0e47ba9d79b142f424b6c10e3a342c264f1cf73d2f70ddc  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/auth-session.md
+5ba3d2abe6b961e5bc3948ab165e801195bff3ee6e66569c00c219b484aa4b5d  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/burn-in.md
+cc9ca53c62b910872e399ec1d378542e211e70563ddbce9aba84af253e0c74ac  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/ci-burn-in.md
+88bd1f9ca1d5bcd1552828845fe80b86ff3acdf071bac574eda744caf7120ef8  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/component-tdd.md
+7f1efe0240565332e0c0cecf62e2ef1882ef8d800b9be64a6f622cee9a8fdfab  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/confidence-gate.md
+50eb0f0f742c0b0a28490695f7e92791180cf155fa6adee6230755e74eecc9db  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/contract-testing.md
+d7428fe7675da02b6f5c4c03213fc5e542063f61ab033efb47c1c5669b835d88  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/data-factories.md
+43f4cc3138a905a91f4a69f358be6664a790b192811b4dfc238188e826f6b41b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/email-auth.md
+38975ebe2655b4d85035d8e740aef63fdef63dc31f9acf530142788060f62153  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/error-handling.md
+5b3cf037169719e69d468ff2ecfc94711bc41fd3e330c6f81a404163bb09fdba  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/feature-flags.md
+7d1092930118fb160b9c0a4a48c398d9b08bb909d1e2432662d8e81e1e3b0087  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/file-utils.md
+c0c62381e7a0385fe0d8b59861a3756994d3bbc673e4605ded9607d5217c7e55  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/fixture-architecture.md
+8e57a897663a272fd603026aeec76941543c1e09d129e377846726fd405f3a5a  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/fixtures-composition.md
+ac8213cc28a9f9c452a6fb419356dd1d66ce495d7f29d188fcb1bb51456ba869  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/intercept-network-call.md
+54b09992275e1ab361bf109b342a7d487cbb5bafa4e9cc48b320a1a5eb11857f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/log.md
+c9041fd4af8162580a12c7adad79fdf7539fae7d6717fe7dace05e851c1b734c  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/network-error-monitor.md
+2920e58e145626f5505bcb75e263dbd0e6ac79a8c4c2ec138f5329e06a6ac014  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/network-first.md
+6ae5ee35a9f1816dc4bf7c4573f6be931a16567d697ff463867819cc39a3268d  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/network-recorder.md
+e63cee4a0193e4858c8f70ff33a497a1b97d13a69da66f60ed5c9a9853025aa1  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/nfr-criteria.md
+25ca75c93fbcef398c7ec7a201ece881f6f3a15f86cfc0a19a04b90a2c6dddbf  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/overview.md
+2301c1610aa8e3961c356c59ec54b87cde04510e462754b9f270b8f4ced4d0a0  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pact-broker-webhooks.md
+c3883f65512dcebb78e611d9091fb8091f211b098685adb81719faefa365d793  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pact-consumer-di.md
+5794bb5daa2e7e0d7123335bca66257bd6eb491f937a406fb47aa353796fe0fe  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pact-consumer-framework-setup.md
+32bb4ab96d2ff069e99790277184770b5ce3e0ae98a41e0e191c241a73cbb70a  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pact-mcp.md
+82c21a71ea7cfafb4bb4c4d74eb83cb4134b7ca93aeae626a9b79868b3d621c9  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pactjs-utils-consumer-helpers.md
+16eb089189d1544c821f582b8776716c1c3ecd3e6044ccbc9a4984d3515e1b52  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pactjs-utils-overview.md
+4f5e306ededf8c9d2de9023fb6db115298a4fe2d70f934054c2f717115235bbb  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pactjs-utils-provider-verifier.md
+6f900300880f2544511436fa68c24268b3b28e0498af6dc43c848047a3cbff18  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pactjs-utils-request-filter.md
+a02b0859122ef4f720818ea78a149799202d0baf7852936f05a2f5d0c49935a8  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/pactjs-utils-zod-to-pact.md
+f0aaff215a5da05d900c7f6d1eef70a3ea97637788ac37aadf5779ec24d91c09  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/playwright-cli.md
+6f7cbf42be005165f68d50090bf0e86227cd401b8e0119ad9e65e7cb2a05644e  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/playwright-config.md
+446dba0caa1eb162734514f35366f8c38ed3666528b0b5e16c7f03fd3c537d0f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/probability-impact.md
+7937897b8d8fd74ab647634fb549ba9344e86d39f9a705e8731a7531e51ad726  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/recurse.md
+500482561420c9f2caad2eb92e5c503208adaa5ab952a317359556b3f11376f1  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/risk-governance.md
+060651774648174fdbff0fe7b858bd81d7c3bce8ee5a53ed7c1ba56e4dd4bbe0  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/selective-testing.md
+a55c25a340f1cd10811802665754a3f4eab0c82868fea61fea9cc61aa47ac179  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/selector-resilience.md
+b44f7db1ebb1c20ca4ef02d12cae95f692876aee02689605d4b15fe728d28fdf  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/test-healing-patterns.md
+80bbac7959a47a2e7e7de82613296f906954d571d2d64ece13381c1a0b480237  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/test-levels-framework.md
+321c3b708cc19892884be0166afa2a7197028e5474acaf7bc65c17ac861964a5  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/test-priorities-matrix.md
+19a0623e623d9cb974d92908eb8e38dad849ab78004c30ee0593696c28a9d076  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/test-quality.md
+c4c87539bbd3fd961369bb1d7066135d18c6aad7ecd70256ab5ec3b26a8777d9  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/timing-debugging.md
+f1a7db59553aee691550e2c62ca15348a2703dea738b76cd38e22cfcfe2bf7c8  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/visual-debugging.md
+87dd6d7eb4dfd45691ccbb876a0bdf0b8a8b8622351be7539b8fb80504068048  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-module-setup.md
+a71ba2c09c45541d4d262c4db85fb9b2aeb021bb09779c65454a5ed3bd546c63  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-providers.md
+8bd40218b2427c18212afa3f5bbc8ce251f4385ca2ae2ac62e6a907fa342200e  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-risk-guidance.md
+abf92e617b194199439c60fafe68cb0481b48e9ef09f69c01c8a424429a6009f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-template-matchers.md
+cc1778b9aa95cb6fe00cfbb2115a2238636f71513cf159b7c02cbb3e091541c3  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-testing-fundamentals.md
+21500487fccc694ac1194dd144e13f6fd9f2585f65b32202f0b3d7b1cdc3b607  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-timeout-error.md
+d914f3cfa9b3cfbd94fd0d3d057a7b578764cf37cdfc1b29278e03c88c3b06c5  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/knowledge/webhook-waiting-querying.md
+30ffce906680d270f9861912bbfbd82b17929dda3994065cb53d0408cda06112  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-tea/resources/tea-index.csv
+
+## bmad-testarch-* skills (workflow-level customize.toml + workflow.yaml + tea-index.csv)
+c83a85c3de1ee5ff9acc94b9b8a96c563d9573520ea791c54d35f468568c6695  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-design/customize.toml
+8ad0fb89bbe1f00af80eeeb2ac1bc2e90c6854bc2516f23dcff8e29cb1f81579  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-design/workflow.yaml
+78636f43137dd33260994df1b2f91a392fb9ccddbb448a5fbcbcfa8c4cc8745e  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-design/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-design/resources/tea-index.csv
+4e24c2e529578e713c7f28908e3435633c2afab5b855e7cb5ac55ce0eb2547fa  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-framework/customize.toml
+13f99eb56accb5e8da5f28aabe4041b2a736472f92edd241f3f7ce3294b1f29f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-framework/workflow.yaml
+a880b7061e9e03549c0141ffcece5fb289bd4a0f98c94752f40b8d8027c2b158  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-framework/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-framework/resources/tea-index.csv
+bcb285f67759ac44419178681d2cf67bb91dff1d08d0f46d638c467e520d53f6  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-ci/customize.toml
+367f88a326f217428654a1a2b4a7e5c497c498e7031f9e2809ca2766a0a02843  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-ci/workflow.yaml
+67df0b4028f97ce74ba63e360b4b3dc3b486b54c827e28bebc2a9644df78aaea  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-ci/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-ci/resources/tea-index.csv
+288fc010f2d4720ecb80cd74a1835efb8deb6e02907b81f8e67040dedcdc9893  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-atdd/customize.toml
+7f0ed54ed25cc51e4ecf3dd0e9298613a679982865473d82b81c117342a51a71  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-atdd/workflow.yaml
+fc37ffeab69ca3faf1c978eac2d4d19239d4577dbf628a3f12d84e9d250283a2  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-atdd/SKILL.md
+f223be0094e5ec17f7041c139823f9749853be5bf6ab1d95bec8a15f8c4a1bc3  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-atdd/resources/tea-index.csv
+480aa14b35703f4ec55e6a6cba6e595abac1529fa299c14a811eb55f42f1520f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-automate/customize.toml
+812166a75f88418ecfba92f43e293ce33476275218a6b874f9d3ab3b3eb34a02  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-automate/workflow.yaml
+ecbeacea8778de7c40dbc81628de44bcfe8d10ce280339b60615d92ae3ab90e1  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-automate/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-automate/resources/tea-index.csv
+a8756d45f2fecc5de278be621d4217a4f06755751ceb73bcdc2f3b9bf376e40d  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-review/customize.toml
+ba98595534cdbd0a477f358de0f1dc413cbe381830e7dff4d67ace34265a3164  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-review/workflow.yaml
+b04e1b84c3fb1cdc2ed179c9ea5351d855e2c73eb1d0b5d4c660a7c144fc6c9a  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-review/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-test-review/resources/tea-index.csv
+41ff5a011d0a55d39b8beefe88d7bfe1a7223d87de70eb164071bb013f418955  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-nfr/customize.toml
+e7e2c75f2497f61be338b5d8720992d8676d2e156db4920313f52bf60aa7b803  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-nfr/workflow.yaml
+bf034d3e6bc5eb7977de293b48095042f2b9748a894bdb3714dbfec6031305d0  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-nfr/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-nfr/resources/tea-index.csv
+2a2b7a49e140ac8fdd80c22f877c0f4c35225243f6df6e288a9f566146b4ca74  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-trace/customize.toml
+981c7fc26f0e2a755438c40c1af0f4cce4517294fe3f8371e9b2bfe5ac60fa0f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-trace/workflow.yaml
+5f7c1df02f51787121c0a9834bb8613f646af3fb688af9e93d6de950dd03758f  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-trace/SKILL.md
+82482e5af4e832b89c47a7e81560c3ad149784b28d4c6209757f4df9b2aa9e4b  /Users/m33tball/bmad_module_builder/.claude/skills/bmad-testarch-trace/resources/tea-index.csv
