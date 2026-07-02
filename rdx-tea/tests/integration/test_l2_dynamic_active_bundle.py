@@ -113,7 +113,7 @@ def project(tmp_path: Path) -> Path:
 
 
 def _prepare_run(project: Path, workflow: str, diff: str, story: str = "",
-                 tags: list[str] | None = None):
+                 tags: list[str] | None = None, run_id: str = "test-run-01"):
     tags_path = None
     if tags:
         p = project / "_bmad-run" / "tags.txt"
@@ -123,16 +123,23 @@ def _prepare_run(project: Path, workflow: str, diff: str, story: str = "",
     _write(diff_path, diff)
     story_path = project / "_bmad-run" / "story.md"
     _write(story_path, story or "# Rust story")
+    # D3.2: emulate rust-scope by writing Cargo.toml unless the diff is
+    # a doc-only or non-Rust fixture.
+    if diff and "src/lib.rs" in diff:
+        (project / "Cargo.toml").write_text("[package]\nname='p'\nversion='0'\n",
+                                            encoding="utf-8")
     manifest = prepare_mod.prepare(
         project_root=project,
         workflow=workflow,
         identity=dict(DEFAULT_IDENTITY),
+        run_id=run_id,
         story_path=story_path,
         diff_path=diff_path,
         tags_path=tags_path,
+        rust_scope=True if "src/lib.rs" in diff or "async" in workflow else False,
     )
     return manifest, (
-        project / "_bmad" / "rdx-tea" / "runtime" / workflow / "active-context.md"
+        project / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id / "active-context.md"
     ).read_text(encoding="utf-8")
 
 
@@ -198,7 +205,8 @@ def test_l2_d06_stale_bundle_atomically_replaced(project: Path) -> None:
     assert body1 != body2
     assert m1["bundle_sha256"] != m2["bundle_sha256"]
     # After the second run, bundle path holds body2 only.
-    disk = (project / "_bmad" / "rdx-tea" / "runtime" / "test-design" / "active-context.md").read_text()
+    disk = (project / "_bmad" / "rdx-tea" / "runtime" / "test-design"
+            / "test-run-01" / "active-context.md").read_text()
     assert disk == body2
     # No leakage of previous packs.
     ids = {p["pack_id"] for p in m2["active_packs"]}

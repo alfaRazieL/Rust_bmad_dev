@@ -111,21 +111,29 @@ def _run_resolver(proj: Path, workflow_skill_slug: str) -> dict:
 
 
 DEFAULT_IDENTITY = {
-    "base_sha":  "1" * 40,
-    "head_sha":  "2" * 40,
+    # D3.2: SHAs must be real 40-hex, not zero. Use canonical RDX/TEA
+    # tag SHAs as filler for base/head since these tests are
+    # git-independent.
+    "base_sha":  "1111111111111111111111111111111111111111",
+    "head_sha":  "2222222222222222222222222222222222222222",
     "diff_digest": "",
     "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
     "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
 }
+DEFAULT_RUN_ID = "test-run-01"
 
 
 def _run_prepare(proj: Path, workflow_short: str, diff: str) -> dict:
     (proj / "_bmad-run" / "diff.patch").write_text(diff)
     (proj / "_bmad-run" / "story.md").write_text("# Rust async story\n")
+    # D3.2 §8: force rust_scope by writing a Cargo.toml.
+    (proj / "Cargo.toml").write_text("[package]\nname='p'\nversion='0'\n",
+                                     encoding="utf-8")
     return prepare_mod.prepare(
         project_root=proj,
         workflow=workflow_short,
         identity=dict(DEFAULT_IDENTITY),
+        run_id=DEFAULT_RUN_ID,
         story_path=proj / "_bmad-run" / "story.md",
         diff_path=proj / "_bmad-run" / "diff.patch",
     )
@@ -140,7 +148,7 @@ def _simulated_tea_artifact(proj: Path, workflow_short: str) -> Path:
     bundle IS what a downstream reader sees — not to substitute for a
     real LLM.
     """
-    bundle_path = proj / "_bmad" / "rdx-tea" / "runtime" / workflow_short / "active-context.md"
+    bundle_path = proj / "_bmad" / "rdx-tea" / "runtime" / workflow_short / DEFAULT_RUN_ID / "active-context.md"
     bundle = bundle_path.read_text(encoding="utf-8")
     out_dir = proj / "_bmad-output" / "test-artifacts"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -189,7 +197,7 @@ def test_l4_e01_vertical_slice_produces_valid_sidecar(
 
     # Step 3: persistent_facts is now available and points at a
     # non-empty file.
-    bundle = (proj / "_bmad" / "rdx-tea" / "runtime" / workflow_short / "active-context.md")
+    bundle = (proj / "_bmad" / "rdx-tea" / "runtime" / workflow_short / DEFAULT_RUN_ID / "active-context.md")
     assert bundle.exists() and bundle.read_bytes(), "bundle empty"
     assert "cancel-safe" in bundle.read_text(), "async obligation not loaded"
 
@@ -202,7 +210,7 @@ def test_l4_e01_vertical_slice_produces_valid_sidecar(
     )
 
     # Step 5: binder runs (workflow.on_complete).
-    sidecar = binder_mod.bind(project_root=proj, workflow=workflow_short, artifact=artefact)
+    sidecar = binder_mod.bind(project_root=proj, workflow=workflow_short, artifact=artefact, run_id=DEFAULT_RUN_ID)
     _validate_sidecar(sidecar)
     assert sidecar["schema_version"] == "rdx-tea-run.v1"
     assert sidecar["execution_mode"] == "sequential"
@@ -221,7 +229,7 @@ def test_l4_e02_sidecar_invalidated_on_artifact_mutation(tmp_path: Path) -> None
     _write_overlay(proj, "bmad-testarch-test-design", "test-design")
     _run_prepare(proj, "test-design", ASYNC_DIFF)
     artefact = _simulated_tea_artifact(proj, "test-design")
-    sidecar = binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact)
+    sidecar = binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact, run_id=DEFAULT_RUN_ID)
     old_hash = sidecar["artifact_sha256"]
     artefact.write_text(artefact.read_text() + "\n<tampered>\n")
     new_hash = hashlib.sha256(artefact.read_bytes()).hexdigest()
@@ -235,7 +243,7 @@ def test_l4_e03_sidecar_present_only_after_binder(tmp_path: Path) -> None:
     artefact = _simulated_tea_artifact(proj, "test-design")
     sidecar_path = artefact.with_suffix(artefact.suffix + ".rdx-tea.json")
     assert not sidecar_path.exists()
-    binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact)
+    binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact, run_id=DEFAULT_RUN_ID)
     assert sidecar_path.exists()
 
 
@@ -248,7 +256,7 @@ def test_l4_e04_binder_fails_closed_without_prepare_manifest(tmp_path: Path) -> 
     fake_artifact.write_text("no bundle loaded")
     # D3.1 binder raises the typed BinderError instead of SystemExit.
     with pytest.raises((SystemExit, binder_mod.BinderError)):
-        binder_mod.bind(project_root=proj, workflow="test-design", artifact=fake_artifact)
+        binder_mod.bind(project_root=proj, workflow="test-design", artifact=fake_artifact, run_id=DEFAULT_RUN_ID)
 
 
 def test_l4_e05_execution_mode_recorded_as_sequential(tmp_path: Path) -> None:
@@ -258,5 +266,5 @@ def test_l4_e05_execution_mode_recorded_as_sequential(tmp_path: Path) -> None:
     manifest = _run_prepare(proj, "test-design", ASYNC_DIFF)
     assert manifest["execution_mode"] == "sequential"
     artefact = _simulated_tea_artifact(proj, "test-design")
-    sidecar = binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact)
+    sidecar = binder_mod.bind(project_root=proj, workflow="test-design", artifact=artefact, run_id=DEFAULT_RUN_ID)
     assert sidecar["execution_mode"] == "sequential"

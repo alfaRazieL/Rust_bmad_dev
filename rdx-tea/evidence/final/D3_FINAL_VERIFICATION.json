@@ -4,9 +4,12 @@
   "generated": "2026-07-03T00:00:00Z",
   "branch": "rdx-tea-integration",
   "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
-  "current_head_sha": "4f7e498314bb90f1b6291303593a8646da525d66",
+  "current_head_sha": "0e3a3ab4553c6cff9c5b093723764d414e9388d1",
+  "tested_subject_sha": "0e3a3ab4553c6cff9c5b093723764d414e9388d1",
+  "evidence_commit_sha": "PENDING (recorded in the final response of this run)",
+  "github_actions_run_id": "PENDING (populated by CI on next push)",
   "source_lock": "rdx-tea/research/SOURCE_LOCK.md + rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md + rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock",
-  "notes": "D3.1 supersedes D3 in one dimension: production-layout portability. Gate G12 added. current_head_sha above is the LAST HEAD prior to the D3.1 commits; verify_final_head() picks the current HEAD after the D3.1 addendum commit lands (recorded in the final response).",
+  "notes": "D3.2 closes 13 D3.1→prod gaps deterministically. Live 3-smoke (test-design async, atdd, non-Rust) remain NOT_RUN — see D3_2_NOT_RUN.md for the exact BMAD-runtime blocker.",
   "gates": {
     "G0_rdx_baseline": {
       "status": "PASS",
@@ -15,24 +18,27 @@
         "rdx-tea/evidence/logs/phase_d3_all_tests_GREEN.log",
         "rdx-tea/evidence/logs/phase_d3_1_full_suite_GREEN.log"
       ],
-      "notes": "307 baseline preserved verbatim across D3 and D3.1. Full suite after D3.1 additions: 404/0/0 in ~18s."
+      "notes": "307 baseline preserved verbatim through D3, D3.1, D3.2. Full suite at D3.2 checkpoint: 409/0/0 in ~21s."
     },
     "G1_official_extension_surface": {
       "status": "PASS",
       "evidence": [
         "rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md",
         "rdx-tea/evidence/hashes/D3_UPSTREAM_LOCK.txt",
-        "rdx-tea/tests/lifecycle/test_l4_upstream_customization.py"
+        "rdx-tea/tests/lifecycle/test_l4_upstream_customization.py",
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-test-design/SKILL.md",
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-atdd/SKILL.md"
       ],
-      "notes": "Upstream BMAD v6.8.0 and TEA v1.19.0 tag-locked. Host installation byte-identical. Real resolver run 9/9. D3.1 replaces the placeholder `on_complete` value with a real wrapper post-step invocation."
+      "notes": "D3.2 adds real BMAD Skill wrappers mirroring rdx-dev-story pattern. Overlay TOML no longer contains an on_complete placeholder — wrapper's finalize-run owns the post-child work."
     },
     "G2_semantic_canonical_projection": {
       "status": "PASS",
       "evidence": [
         "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_parser.py",
-        "rdx-tea/tests/unit/test_l1_rdx_parser_v2.py"
+        "rdx-tea/tests/unit/test_l1_rdx_parser_v2.py",
+        "rdx-tea/tests/unit/test_l1_d32_matrix_coverage.py"
       ],
-      "notes": "138 rules parsed. D3.1 moves the parser into the portable install-tree with `_locate_canonical_root` resolution. RP-ASYNC-005 body preserved verbatim (test still green)."
+      "notes": "Matrix coverage on all 138 parsed rules × 8 workflows = 1104 cells asserted in test_l1_matrix_coverage_of_all_parsed_rules."
     },
     "G3_router_parity_and_dynamic_active_bundle": {
       "status": "PASS",
@@ -40,7 +46,7 @@
         "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/prepare.py",
         "rdx-tea/tests/integration/test_l2_dynamic_active_bundle.py"
       ],
-      "notes": "13/13 dynamic-bundle tests. D3.1: `test_l2_d07` requires EXACT set equality between (Router ∩ obligation-matrix) and prepared packs. `test_l2_d10` asserts BOTH story-tag arms (no `or True` escape). Router replay uses vendored `router.py` byte-copied from RDX v1.1 `rdx_validator/router.py`."
+      "notes": "D3.2: rust_scope detection gates CORE-* inclusion; identity 40-hex only; run_id parameter required; exact set equality vs Router still enforced."
     },
     "G4_lifecycle": {
       "status": "PARTIAL_PASS",
@@ -48,7 +54,7 @@
         "rdx-tea/tests/lifecycle/test_l4_d3_lifecycle.py",
         "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py"
       ],
-      "notes": "Idempotent prepare, atomic replace, .user.toml survival, stale bundle replacement. D3.1 adds: fresh external project install (E01), portability audit (E05), bootstrap tag verification (E07). Fresh install/uninstall/rollback still deferred to production installer stage."
+      "notes": "D3.2 §11 bootstrap adds clean-worktree + expected-hash checks. Run-scoped layout proven to isolate concurrent runs (test_l4_d31_e08_run_scoped_layout_isolates_runs). Fresh install/uninstall/rollback still deferred."
     },
     "G5_real_sequential_tea_workflow_integration": {
       "status": "PARTIAL_PASS",
@@ -56,46 +62,43 @@
         "rdx-tea/tests/bmad-tea/test_l4_sequential_vertical_slice.py",
         "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py"
       ],
-      "notes": "D3.1 external-project vertical slice (7 tests) exercises the wrapper end-to-end in a fresh /tmp project with no access to the RDX dev tree. Live LLM-driven run still NOT_RUN."
+      "notes": "Two-phase wrapper end-to-end in tmp with --test-write-fake-artefact. Live LLM-driven runs remain NOT_RUN per D3_2_NOT_RUN.md."
     },
     "G6_v1_context_continuity_sequential": {
       "status": "PASS",
       "evidence": [
-        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py::test_l4_d31_e06_wrapper_verifies_sequential_mode"
+        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py::test_l4_d31_e06_wrapper_rejects_non_sequential"
       ],
-      "notes": "Wrapper `_verify_resolved_mode()` fails closed on non-sequential TEA config. Manifest AND sidecar record execution_mode=sequential AND requested_mode=sequential."
+      "notes": "Wrapper's `_assert_sequential_mode` accepts ONLY the literal `sequential` — `auto`, `subagent`, `agent-team` all rejected."
     },
     "G6F_future_subagent_extension": {
-      "status": "UNSUPPORTED_BY_DESIGN",
-      "notes": "Unchanged from D3. Explicit non-goal."
+      "status": "UNSUPPORTED_BY_DESIGN"
     },
     "G7_measured_benefit": {
       "status": "NOT_RUN",
-      "evidence": [],
-      "notes": "No baseline-vs-D3.1 behavioural eval yet. Requires live LLM."
+      "evidence": ["rdx-tea/research/D3_2_NOT_RUN.md"],
+      "notes": "Live baseline-vs-D3.2 evals blocked by the same runtime blocker as the 3-smoke."
     },
     "G8_deterministic_sidecar_and_rdx_validator": {
       "status": "PARTIAL_PASS",
       "evidence": [
         "rdx-tea/architecture/rdx-tea-run.v1.schema.json",
         "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/binder.py",
-        "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_validator.py",
-        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py"
+        "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_validator.py"
       ],
-      "notes": "Sidecar identity fields (base_sha, head_sha, diff_digest, rdx_source_sha, tea_source_sha, projection_hash) now MANDATORY in schema. Binder recomputes bundle_sha256 vs manifest and fails closed on mismatch. Validator stub verifies sidecar↔artifact. RDX-side rdx-tea-validate subcommand still deferred."
+      "notes": "D3.2 verifier reports pass/fail per 9 integrity checks: schema, manifest_hash, bundle_hash, artifact_hash, base_head_exist, diff_digest_recomputed, canonical_snapshot, source_lock, artifact_boundary. RDX-side rdx-tea-validate subcommand still deferred."
     },
     "G9_modes_and_enforcement": {
       "status": "BLOCKED",
-      "blocked_on": ["G7", "G8"],
-      "evidence": []
+      "blocked_on": ["G7", "G8"]
     },
     "G10_tamper_resistance": {
       "status": "PARTIAL_PASS",
       "evidence": [
         "rdx-tea/tests/mutation/test_l7_d3_falsification.py",
-        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py::test_l4_d31_e03_binder_fails_closed_when_bundle_tampered"
+        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py::test_l4_d31_e03_verifier_fails_on_bundle_tamper"
       ],
-      "notes": "D3.1 adds subprocess-level bundle-tamper detection test invoking the actual binder CLI. Plus 8 D3 falsification tests unchanged."
+      "notes": "Bundle tamper detection now integrated with verifier's pass/fail report. PR-head/CI-trust-boundary still BLOCKED behind G9."
     },
     "G11_upgrade_compatibility": {
       "status": "PARTIAL_PASS",
@@ -103,26 +106,42 @@
         "rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock",
         "rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py"
       ],
-      "notes": "Bootstrap script tag-verifies BMAD-METHOD and TEA against sources.lock; refuses to proceed on mismatch. Automated hash-mismatch gate on the runtime side still deferred."
+      "notes": "Bootstrap expected_file_hashes list documented and checked; clean-worktree guard fail-closed."
     },
     "G12_production_layout_closure": {
       "status": "PASS",
       "evidence": [
         "rdx-tea/research/D3_1_PRODUCTION_LAYOUT_AUDIT.md",
-        "rdx-tea/poc/install-tree/_bmad/rdx-tea/",
-        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py",
-        ".github/workflows/rdx-tea-integration-check.yml"
+        "rdx-tea/poc/install-tree/_bmad/rdx-tea/"
       ],
-      "notes": "New gate for D3.1. Adapter runs end-to-end in a fresh external project with no RDX dev tree. Wrapper resolves story/tags/base/head/diff; prepare fails closed without mandatory identity; binder fails closed on bundle tamper; validator verifies sidecar↔artifact; obligation matrix enforced at pack, rule, and field levels; CORE-* rules included per workflow; bootstrap tag-verifies upstream; branch-only CI workflow declines to run on main."
+      "notes": "Unchanged from D3.1."
+    },
+    "G13_live_invocation_closure_deterministic_side": {
+      "status": "PASS",
+      "evidence": [
+        "rdx-tea/research/D3_2_AUDIT.md",
+        "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_wrapper.py",
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-test-design/SKILL.md",
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-atdd/SKILL.md",
+        "rdx-tea/tests/bmad-tea/test_l4_d31_external_project_slice.py",
+        "rdx-tea/tests/unit/test_l1_d32_matrix_coverage.py"
+      ],
+      "notes": "All 13 D3.2 deterministic gaps closed by two-phase wrapper (prepare-run/finalize-run), run-scoped layout, strict git identity, rust_scope detection, output snapshot/delta, single-source obligation matrix with coverage on 1104 cells, hardened bootstrap, sys.executable CI."
+    },
+    "G14_live_invocation_closure_llm_side": {
+      "status": "NOT_RUN",
+      "evidence": ["rdx-tea/research/D3_2_NOT_RUN.md"],
+      "notes": "Live 3-smoke (test-design async, atdd, non-Rust) blocked by BMAD Skill runtime not being available as a programmatic API. D3_2_NOT_RUN.md documents the exact blocker and three unblock options."
     }
   },
   "verdict": "D3_PARTIALLY_PROVEN",
-  "verdict_justification": "G0/G1/G2/G3/G6(v1)/G12 PASS with runtime evidence. G4/G5/G8/G10/G11 PARTIAL_PASS with scoped remaining work. G7 NOT_RUN — requires live LLM. G9 BLOCKED behind G7+G8. G6F UNSUPPORTED_BY_DESIGN. D3.1 does NOT change the D3 verdict: production-layout closure removes portability and correctness gaps but leaves G7 unaddressed. Verdict cannot escalate to D3_PROVEN until the LLM-driven behavioural benefit is measured.",
-  "consequence": "Per D3.1 prompt: MASTER_IMPLEMENTATION_PLAN.md still MUST NOT be written. `D3_PROOF_PLAN.md` remains the active plan; D3.1 checkpoint is captured in `D3_1_PRODUCTION_LAYOUT_AUDIT.md`. Next stage: real LLM-driven test-design run followed by atdd run, then baseline-vs-D3.1 evals.",
+  "verdict_justification": "D3.2 closes the deterministic side of live invocation (G13 PASS): two-phase wrapper, run-scoped layout, strict identity, rust_scope, snapshot/delta, single-source obligation matrix with full coverage, hardened bootstrap and CI, verification identity fields. The LLM side (G14) remains NOT_RUN — no BMAD Skill runtime is programmatically dispatchable in this session. Verdict remains D3_PARTIALLY_PROVEN and cannot escalate to D3_PROVEN until G7 + G14 close.",
+  "consequence": "MASTER_IMPLEMENTATION_PLAN.md still must NOT be written. Pilot baseline-vs-D3.2 evals BLOCKED behind at least one green live smoke run. See D3_2_NOT_RUN.md for the exact unblock actions.",
   "next_actions": [
-    "Real LLM-driven test-design run (Stage-01 of D3_PROOF_PLAN).",
-    "Real LLM-driven atdd run.",
-    "Baseline vs D3.1 behavioural evals (Stage-02).",
-    "Only then: rdx-tea-validate subcommand (Stage-03) and enforcement plane."
+    "One live smoke run of test-design with a real async Rust fixture using the deterministic install-tree overlay.",
+    "Repeat for atdd and non-Rust control.",
+    "Only then: pilot baseline-vs-D3.2 (N=3 per arm) via bmad-eval-runner.",
+    "Only after pilot green: mass N≥10/N≥20 evals.",
+    "Do not write MASTER_IMPLEMENTATION_PLAN.md until G7 closes."
   ]
 }

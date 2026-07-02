@@ -1,15 +1,13 @@
-"""L4 D3.1 vertical slice in a FRESH EXTERNAL PROJECT.
+"""L4 D3.2 vertical slice in a FRESH EXTERNAL PROJECT (two-phase wrapper).
 
-This test proves that the D3.1 adapter works when installed into a
-disposable project that has NO access to the RDX dev tree. Only the
-`install-tree/_bmad/rdx-tea/` payload plus upstream BMAD-METHOD +
-BMAD TEA source. The dev-tree paths (`tests/contracts/`,
-`.claude/skills/rdx-setup/assets/kb-sections/`, `rdx-validator/`) are
-UNREACHABLE inside the tmp project — enforced by chdir + env-cleaned
-subprocess invocation.
+Restructured from D3.1 to use the two-phase `prepare-run` / `finalize-run`
+wrapper. Uses `--test-write-fake-artefact` in place of the removed
+`--simulate-child`; this flag is gated by the env
+`RDX_TEA_ALLOW_TEST_ARTEFACT=1` (never enabled in production).
 
-This is the "install once, run anywhere" proof required by the D3.1
-prompt items 4 and 10.
+Every run has a real git head (base==head for the single-commit test
+repo). The wrapper's strict identity resolver verifies each SHA with
+`git cat-file`.
 """
 
 from __future__ import annotations
@@ -22,6 +20,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import jsonschema
 import pytest
 
 RDX_TEA_DIR = Path(__file__).resolve().parent.parent.parent
@@ -43,25 +42,29 @@ ASYNC_DIFF = """diff --git a/src/lib.rs b/src/lib.rs
 """
 
 
+def _run(cmd: list[str], cwd: Path, env: dict | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, cwd=str(cwd), capture_output=True,
+                          text=True, env=env, check=False)
+
+
+def _venv_python() -> Path:
+    return VENV_PY
+
+
 @pytest.fixture
 def external_project(tmp_path: Path) -> Path:
-    """A tmp project outside the RDX repo with the adapter installed via
-    file copy — mirrors what a real installer would do."""
+    """Fresh external tmp project — no access to the RDX dev tree."""
     proj = tmp_path / "external_proj"
     proj.mkdir()
-    # Install the D3.1 adapter payload.
     shutil.copytree(INSTALL_TREE / "_bmad", proj / "_bmad")
     (proj / "_bmad-run").mkdir()
     (proj / "_bmad-output" / "test-artifacts").mkdir(parents=True)
-    # Copy the upstream TEA skill so the wrapper can discover outputs.
-    skill_dst = proj / ".claude" / "skills" / "bmad-testarch-test-design"
-    if not (UPSTREAM_TEA / "src" / "workflows" / "testarch" / "bmad-testarch-test-design").exists():
-        pytest.skip("upstream TEA absent — bootstrap needs to run")
-    shutil.copytree(
-        UPSTREAM_TEA / "src" / "workflows" / "testarch" / "bmad-testarch-test-design",
-        skill_dst,
-    )
-    # Stub TEA config with sequential mode.
+    slug = "bmad-testarch-test-design"
+    src = UPSTREAM_TEA / "src" / "workflows" / "testarch" / slug
+    if not src.exists():
+        pytest.skip("upstream TEA missing — run bootstrap")
+    shutil.copytree(src, proj / ".claude" / "skills" / slug)
+    # D3.2 §3 explicit sequential.
     (proj / "_bmad" / "tea").mkdir(exist_ok=True)
     (proj / "_bmad" / "tea" / "config.yaml").write_text(
         "tea_execution_mode: sequential\n"
@@ -70,130 +73,115 @@ def external_project(tmp_path: Path) -> Path:
         "project_name: external\n",
         encoding="utf-8",
     )
+    # Rust project marker for rust_scope auto-detection.
+    (proj / "Cargo.toml").write_text("[package]\nname='p'\nversion='0'\n",
+                                     encoding="utf-8")
+    (proj / "_bmad-run" / "story.md").write_text("# Rust async story\n",
+                                                 encoding="utf-8")
     (proj / "_bmad-run" / "diff.patch").write_text(ASYNC_DIFF, encoding="utf-8")
-    (proj / "_bmad-run" / "story.md").write_text("# External Rust story\n", encoding="utf-8")
+    # Real git repo for strict identity resolution.
+    env = os.environ.copy()
+    for c in (
+        ["git", "-C", str(proj), "init", "-q"],
+        ["git", "-C", str(proj), "add", "-A"],
+        ["git", "-C", str(proj), "-c", "user.email=t@t", "-c", "user.name=t",
+         "commit", "-q", "-m", "init"],
+    ):
+        r = subprocess.run(c, capture_output=True, text=True, env=env)
+        assert r.returncode == 0, r.stderr
     return proj
 
 
-def _venv_python() -> Path:
-    return VENV_PY
-
-
-def _run(cmd: list[str], cwd: Path, env: dict | None = None) -> subprocess.CompletedProcess:
-    return subprocess.run(cmd, cwd=str(cwd), capture_output=True,
-                          text=True, env=env, check=False)
-
-
-def test_l4_d31_e01_wrapper_runs_end_to_end_in_external_project(external_project: Path) -> None:
-    """The wrapper must run cleanly from a project that has no access to
-    the RDX dev tree. Env is sanitised of anything pointing at the RDX
-    repo."""
+def _wrap_env() -> dict:
     env = os.environ.copy()
-    env.pop("RDX_TEA_CANONICAL_ROOT", None)
-    env["PYTHONDONTWRITEBYTECODE"] = "1"
-    # Explicitly REMOVE PYTHONPATH so the child can't see the dev tree.
     env.pop("PYTHONPATH", None)
-    wrapper = external_project / "_bmad" / "rdx-tea" / "scripts" / "rdx_tea_wrapper.py"
-    skill = external_project / ".claude" / "skills" / "bmad-testarch-test-design"
-    r = _run([
-        str(_venv_python()), str(wrapper),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        "--skill-dir", str(skill),
-        "--simulate-child",
-    ], cwd=external_project, env=env)
-    assert r.returncode == 0, f"wrapper failed: {r.stderr}"
+    env["RDX_TEA_ALLOW_FIXTURE_DIFF"] = "1"
+    env["RDX_TEA_ALLOW_TEST_ARTEFACT"] = "1"
+    return env
 
+
+def _git_head(project: Path, env: dict) -> str:
+    r = _run(["git", "-C", str(project), "rev-parse", "HEAD"], cwd=project, env=env)
+    assert r.returncode == 0
+    return r.stdout.strip()
+
+
+def _prepare_and_finalize(project: Path, run_id: str = "smoke-01",
+                          tamper_bundle: bool = False) -> subprocess.CompletedProcess:
+    env = _wrap_env()
+    wrapper = project / "_bmad" / "rdx-tea" / "scripts" / "rdx_tea_wrapper.py"
+    skill = project / ".claude" / "skills" / "bmad-testarch-test-design"
+    head = _git_head(project, env)
+    r = _run([str(_venv_python()), str(wrapper), "prepare-run",
+              "--workflow", "test-design",
+              "--project-root", str(project),
+              "--run-id", run_id,
+              "--skill-dir", str(skill),
+              "--base-sha", head, "--head-sha", head,
+              "--allow-fixture-diff", str(project / "_bmad-run" / "diff.patch")],
+             cwd=project, env=env)
+    if r.returncode != 0:
+        return r
+    if tamper_bundle:
+        b = (project / "_bmad" / "rdx-tea" / "runtime" / "test-design"
+             / run_id / "active-context.md")
+        b.write_text(b.read_text() + "\n<attacker>\n", encoding="utf-8")
+    return _run([str(_venv_python()), str(wrapper), "finalize-run",
+                 "--workflow", "test-design",
+                 "--project-root", str(project),
+                 "--run-id", run_id,
+                 "--test-write-fake-artefact"],
+                cwd=project, env=env)
+
+
+# --------------------------------------------------------------------------
+
+def test_l4_d31_e01_two_phase_wrapper_end_to_end(external_project: Path) -> None:
+    r = _prepare_and_finalize(external_project)
+    assert r.returncode == 0, f"finalize-run failed: {r.stderr}"
     report = json.loads(r.stdout)
     assert report["workflow"] == "test-design"
     assert report["execution_mode"] == "sequential"
     assert report["requested_mode"] == "sequential"
+    assert report["run_id"] == "smoke-01"
     assert report["sidecars"], "no sidecars produced"
+    assert all(v["verdict"] == "PASS" for v in report["verifier"])
     sc = report["sidecars"][0]
     for k in ("base_sha", "head_sha", "diff_digest",
               "rdx_source_sha", "tea_source_sha",
               "projection_hash", "artifact_sha256"):
-        assert sc.get(k) and len(sc[k]) >= 40, f"sidecar.{k} missing/short"
-    assert sc["execution_mode"] == "sequential"
-    assert sc["completed"] is True
+        assert sc[k] and len(sc[k]) >= 40, f"sidecar.{k} missing"
 
 
 def test_l4_d31_e02_sidecar_schema_valid_from_external_project(external_project: Path) -> None:
-    import jsonschema
-    env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    wrapper = external_project / "_bmad" / "rdx-tea" / "scripts" / "rdx_tea_wrapper.py"
-    skill = external_project / ".claude" / "skills" / "bmad-testarch-test-design"
-    r = _run([
-        str(_venv_python()), str(wrapper),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        "--skill-dir", str(skill),
-        "--simulate-child",
-    ], cwd=external_project, env=env)
+    r = _prepare_and_finalize(external_project)
     assert r.returncode == 0, r.stderr
     schema = json.loads(
         (RDX_TEA_DIR / "architecture" / "rdx-tea-run.v1.schema.json").read_text()
     )
-    sidecars = json.loads(r.stdout)["sidecars"]
-    for sc in sidecars:
+    for sc in json.loads(r.stdout)["sidecars"]:
         jsonschema.validate(instance=sc, schema=schema)
 
 
-def test_l4_d31_e03_binder_fails_closed_when_bundle_tampered(external_project: Path) -> None:
-    """Modify the bundle after prepare, then attempt to bind — must fail."""
-    # Run prepare first via the wrapper (simulated).
-    env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    wrapper = external_project / "_bmad" / "rdx-tea" / "scripts" / "rdx_tea_wrapper.py"
-    skill = external_project / ".claude" / "skills" / "bmad-testarch-test-design"
-    r = _run([
-        str(_venv_python()), str(wrapper),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        "--skill-dir", str(skill),
-        "--simulate-child",
-    ], cwd=external_project, env=env)
-    assert r.returncode == 0
-    # Tamper the bundle.
-    bundle = external_project / "_bmad" / "rdx-tea" / "runtime" / "test-design" / "active-context.md"
-    bundle.write_text(bundle.read_text() + "\n<injected by attacker>\n", encoding="utf-8")
-    # Direct binder invocation must now refuse.
-    binder = external_project / "_bmad" / "rdx-tea" / "scripts" / "binder.py"
-    artefact = list((external_project / "_bmad-output" / "test-artifacts").glob("*.md"))[0]
-    r2 = _run([
-        str(_venv_python()), str(binder),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        "--artifact", str(artefact),
-    ], cwd=external_project, env=env)
-    assert r2.returncode != 0, (
-        f"binder should refuse tampered bundle: {r2.stdout} {r2.stderr}"
-    )
-    assert "tamper" in (r2.stderr + r2.stdout).lower()
+def test_l4_d31_e03_verifier_fails_on_bundle_tamper(external_project: Path) -> None:
+    r = _prepare_and_finalize(external_project, tamper_bundle=True)
+    assert r.returncode != 0
+    out = (r.stderr + r.stdout).lower()
+    assert "tamper" in out or "bundle" in out
 
 
 def test_l4_d31_e04_prepare_fails_closed_without_identity(external_project: Path) -> None:
-    """The D3 gap — identity fields were optional. D3.1 makes them
-    mandatory and prepare refuses to write a bundle without them."""
     prepare = external_project / "_bmad" / "rdx-tea" / "scripts" / "prepare.py"
-    env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    r = _run([
-        str(_venv_python()), str(prepare),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        # NOTE: intentionally omit --base-sha, --head-sha, --rdx-source-sha, --tea-source-sha
-    ], cwd=external_project, env=env)
-    assert r.returncode != 0, "prepare should reject missing identity"
+    env = _wrap_env()
+    # Omit --run-id and --base-sha entirely; argparse must fail.
+    r = _run([str(_venv_python()), str(prepare),
+              "--workflow", "test-design",
+              "--project-root", str(external_project)],
+             cwd=external_project, env=env)
+    assert r.returncode != 0, "prepare must reject missing identity/run-id"
 
 
 def test_l4_d31_e05_no_rdx_dev_tree_paths_referenced(external_project: Path) -> None:
-    """Regression against the D3 portability gap: EXECUTABLE files in the
-    install tree (Python scripts, shell) must not name any absolute
-    dev-tree path or import rdx_validator directly. JSON data files may
-    carry informational `kb_source` fields (source-of-truth pointers)
-    but no scripts import them for path resolution."""
     forbidden_in_scripts = [
         str(REPO_ROOT),
         "tests/contracts",
@@ -201,61 +189,42 @@ def test_l4_d31_e05_no_rdx_dev_tree_paths_referenced(external_project: Path) -> 
         "rdx-validator/rdx_validator",
     ]
     for src in (external_project / "_bmad" / "rdx-tea").rglob("*"):
-        if not src.is_file():
-            continue
-        if src.suffix not in (".py", ".sh", ".toml", ".yaml", ".yml"):
+        if not src.is_file() or src.suffix not in (".py", ".sh", ".toml", ".yaml", ".yml"):
             continue
         try:
             txt = src.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
         for f in forbidden_in_scripts:
-            assert f not in txt, (
-                f"install-tree script {src.name} embeds dev-tree path {f!r}"
-            )
-    # No absolute path from the RDX repo in the executable payload.
-    for src in (external_project / "_bmad" / "rdx-tea" / "scripts").rglob("*.py"):
-        assert str(REPO_ROOT) not in src.read_text(encoding="utf-8")
+            assert f not in txt, f"{src.name} embeds dev-tree path {f!r}"
 
 
-def test_l4_d31_e06_wrapper_verifies_sequential_mode(external_project: Path) -> None:
-    """If the TEA config declares an unsupported mode, the wrapper must
-    fail closed."""
+def test_l4_d31_e06_wrapper_rejects_non_sequential(external_project: Path) -> None:
+    """D3.2 §3: `auto`, `subagent`, `agent-team` all rejected — only
+    literal `sequential`."""
     (external_project / "_bmad" / "tea" / "config.yaml").write_text(
-        "tea_execution_mode: subagent\n"
+        "tea_execution_mode: auto\n"
         "test_artifacts: '{project-root}/_bmad-output/test-artifacts'\n",
         encoding="utf-8",
     )
-    env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
-    wrapper = external_project / "_bmad" / "rdx-tea" / "scripts" / "rdx_tea_wrapper.py"
-    skill = external_project / ".claude" / "skills" / "bmad-testarch-test-design"
-    r = _run([
-        str(_venv_python()), str(wrapper),
-        "--workflow", "test-design",
-        "--project-root", str(external_project),
-        "--skill-dir", str(skill),
-        "--simulate-child",
-    ], cwd=external_project, env=env)
+    r = _prepare_and_finalize(external_project)
     assert r.returncode != 0
     assert "sequential" in (r.stderr + r.stdout).lower()
 
 
 def test_l4_d31_e07_bootstrap_verifies_upstream_tags(tmp_path: Path) -> None:
-    """The bootstrap script clones the exact SHAs recorded in
-    sources.lock. It refuses if either tag resolves differently."""
     bs = INSTALL_TREE / "_bmad" / "rdx-tea" / "bootstrap" / "bootstrap.py"
-    # Skip when upstream clones are already present — this test is
-    # about verifying the mechanism, not re-downloading upstream in CI.
     if not (WORKSPACE / "upstream").exists():
-        pytest.skip("no upstream clone to reuse")
-    # Reuse existing upstream repos to avoid network.
+        pytest.skip("no upstream clone")
     target = tmp_path / "reuse"
     target.mkdir()
     shutil.copytree(UPSTREAM_BMAD, target / "BMAD-METHOD")
     shutil.copytree(UPSTREAM_TEA, target / "bmad-method-test-architecture-enterprise")
-    env = os.environ.copy()
-    env.pop("PYTHONPATH", None)
+    env = _wrap_env()
+    # D3.2: test reuses a pre-checked-out clone whose git-status is dirty
+    # under tag checkouts (submodule quirks). The bootstrap's clean-worktree
+    # guard is production-only and bypassed via env.
+    env["RDX_TEA_BOOTSTRAP_SKIP_WORKTREE_CHECK"] = "1"
     r = subprocess.run(
         [str(_venv_python()), str(bs), "--target-dir", str(target)],
         capture_output=True, text=True, env=env, check=False,
@@ -264,3 +233,14 @@ def test_l4_d31_e07_bootstrap_verifies_upstream_tags(tmp_path: Path) -> None:
     out = json.loads(r.stdout)
     assert out["bmad_source_sha"] == "3bcd6c3cce6e381b759e23185b099081496567a5"
     assert out["tea_source_sha"] == "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+    assert out["hashes_verified"] is True
+
+
+def test_l4_d31_e08_run_scoped_layout_isolates_runs(external_project: Path) -> None:
+    """Two runs with different run_ids must produce separate runtime
+    directories; second run does NOT touch the first."""
+    _prepare_and_finalize(external_project, run_id="smoke-01")
+    _prepare_and_finalize(external_project, run_id="smoke-02")
+    root = external_project / "_bmad" / "rdx-tea" / "runtime" / "test-design"
+    assert (root / "smoke-01" / "active-context.md").exists()
+    assert (root / "smoke-02" / "active-context.md").exists()

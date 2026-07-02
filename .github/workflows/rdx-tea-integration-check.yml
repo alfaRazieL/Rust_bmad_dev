@@ -59,12 +59,29 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install pytest jsonschema pyyaml
+      - name: bootstrap-upstream
+        env:
+          RDX_TEA_BOOTSTRAP_SKIP_WORKTREE_CHECK: "0"
+        run: |
+          mkdir -p rdx-workspace/upstream
+          python rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py \
+              --target-dir rdx-workspace/upstream
       - name: baseline-rdx-suite
         run: |
-          python -m pytest -q --tb=line
+          python -m pytest -q --tb=line --no-header
       - name: adapter-suite
         run: |
-          python -m pytest rdx-tea/tests -q --tb=line
+          python -m pytest rdx-tea/tests -q --tb=line --no-header
+      - name: verify-no-skip-in-upstream-tests
+        run: |
+          python -m pytest rdx-tea/tests/bmad-tea/ -q --tb=line \
+              -o "cache_dir=/tmp/pcache" \
+              --no-header \
+              --collect-only 2>&1 | tee /tmp/collect.log
+          if grep -q SKIPPED /tmp/collect.log; then
+            echo "::error::upstream skip detected — bootstrap must have failed"
+            exit 6
+          fi
       - name: verify-branch-and-remote
         run: |
           set -euo pipefail
