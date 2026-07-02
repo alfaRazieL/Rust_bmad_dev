@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/.venv-baseline/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+collecting ... collected 11 items
+
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_exists_and_parses_kb SKIPPED [  9%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_every_rule_has_mandatory_fields SKIPPED [ 18%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_rp_async_005_is_semantic SKIPPED [ 27%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_core_rules_parsed SKIPPED [ 36%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_pack_membership_correct SKIPPED [ 45%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_fails_closed_on_malformed_input SKIPPED [ 54%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_deterministic_order SKIPPED [ 63%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_source_line_ascending_within_file SKIPPED [ 72%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_no_rust_prefix_ids SKIPPED [ 81%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_source_hash_stable SKIPPED [ 90%]
+rdx-tea/tests/unit/test_l1_rdx_parser_v2.py::test_l1_parser_v2_rule_ids_match_rule_check_map SKIPPED [100%]
+
+============================= 11 skipped in 0.12s ==============================
