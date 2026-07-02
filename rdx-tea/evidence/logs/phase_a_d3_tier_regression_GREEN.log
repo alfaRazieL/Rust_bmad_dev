@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/.venv-baseline/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+collecting ... collected 38 items
+
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[core] PASSED [  2%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[router] PASSED [  5%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[packs] PASSED [  7%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[gov] PASSED [ 10%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_status_vocabulary_complete PASSED [ 13%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_packs_canonical PASSED [ 15%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_rule_ids_prefixes PASSED [ 18%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_story_tag_required_packs_preserved PASSED [ 21%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_rule_check_map_prefixes PASSED [ 23%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_reads_only_canonical_inputs PASSED [ 26%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_is_deterministic PASSED [ 28%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_covers_all_packs PASSED [ 31%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_emits_rdx_tea_index_row_per_pack PASSED [ 34%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_canonical_inputs_are_only_repo_files PASSED [ 36%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_canonical_inputs_all_exist PASSED [ 39%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_load_router_shape PASSED [ 42%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_load_router_uses_canonical_file PASSED [ 44%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_load_status_has_full_vocabulary PASSED [ 47%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_tier_for[meta0-extended] PASSED [ 50%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_tier_for[meta1-specialized] PASSED [ 52%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_tier_for[meta2-specialized] PASSED [ 55%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_tier_for[meta3-specialized] PASSED [ 57%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_tier_matches_expected_packs PASSED [ 60%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_pack_fragment_contains_frontmatter PASSED [ 63%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_pack_fragment_includes_every_related_rule_id PASSED [ 65%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_pack_fragment_lists_all_verdicts_alphabetically PASSED [ 68%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_index_csv_header_matches_tea_index_schema PASSED [ 71%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_index_csv_has_one_row_per_pack_and_no_duplicates PASSED [ 73%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_index_csv_fragment_files_exist_when_emitted PASSED [ 76%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_render_all_is_deterministic_across_processes PASSED [ 78%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_render_all_covers_all_12_packs_plus_index PASSED [ 81%]
+rdx-tea/tests/unit/test_l1_projection_unit.py::test_l1_render_all_no_wallclock_or_random_content PASSED [ 84%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_no_rdx_pack_is_tea_core PASSED [ 86%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_default_tier_is_specialized PASSED [ 89%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_only_test_pack_may_be_extended PASSED [ 92%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_default_is_specialized PASSED [ 94%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_strong_confidence_is_specialized PASSED [ 97%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_medium_confidence_is_specialized_unless_testing PASSED [100%]
+
+============================== 38 passed in 0.05s ==============================

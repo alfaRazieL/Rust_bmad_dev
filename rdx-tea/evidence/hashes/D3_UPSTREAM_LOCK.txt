@@ -1,0 +1,22 @@
+# D3 upstream source lock — collected 2026-07-02T12:50:54Z
+
+## BMAD-METHOD
+upstream_repo: https://github.com/bmad-code-org/BMAD-METHOD
+main_head: 67f4499e31304f3c889f88b833dbef49d432e07e
+v6.9.0_tag: 6ac4c26b699579cbc64c296ac1fddfecfc405d72 (2026-06-22)
+v6.8.0_tag: 3bcd6c3cce6e381b759e23185b099081496567a5 (2026-05-25)
+host_matches_tag: v6.8.0 (bit-exact on resolve_customization.py)
+
+## BMAD TEA
+upstream_repo: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+main_head: 8734d51f24071ddbcb3617390b5fcddb4128ef77 (= v1.19.0)
+host_matches_tag: v1.19.0 (bit-exact on test-design/SKILL.md and bmad-tea/customize.toml)
+
+## Comparison hashes
+host_resolve_customization.py sha256: a56abc64ffc8924f8ded95562c7ef3f6d7f1b18f0724289fd3b95fda3567dab4
+upstream_v6.8.0 resolve_customization.py sha256: a56abc64ffc8924f8ded95562c7ef3f6d7f1b18f0724289fd3b95fda3567dab4 (IDENTICAL)
+upstream_v6.9.0 resolve_customization.py sha256: 23fb9040b08c7eb975aeabc4245ef50e158516f5082eebc9ae41700641338498 (docstring-only drift)
+host_bmad-tea/customize.toml sha256: 2864b07f57c631473380fb4e7cac49282e7585d191e266088337314c8e2b7937
+upstream_v1.19.0 bmad-tea/customize.toml sha256: 2864b07f57c631473380fb4e7cac49282e7585d191e266088337314c8e2b7937 (IDENTICAL)
+host_bmad-testarch-test-design/customize.toml sha256: c83a85c3de1ee5ff9acc94b9b8a96c563d9573520ea791c54d35f468568c6695
+upstream_v1.19.0 test-design/customize.toml sha256: c83a85c3de1ee5ff9acc94b9b8a96c563d9573520ea791c54d35f468568c6695 (IDENTICAL)

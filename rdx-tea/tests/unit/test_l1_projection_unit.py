@@ -87,13 +87,16 @@ def test_l1_load_status_has_full_vocabulary() -> None:
 # Tier classification
 # --------------------------------------------------------------------------
 
+# D3 correction (BUILDER_TEA_RECONCILIATION §3.3, D3_CORRECTION_AUDIT §3.3):
+# no RDX pack is `core`; default is `specialized`; `testing` pack may be
+# `extended`. The confidence-class → tier mapping used in D2 is retired.
 @pytest.mark.parametrize(
     "meta,expected_tier",
     [
-        ({"confidence_class": "STRONG"}, "core"),
-        ({"confidence_class": "MEDIUM"}, "extended"),
-        ({"confidence_class": "WEAK"}, "specialized"),
-        ({}, "extended"),   # default when confidence missing
+        ({"pack_id": "testing"}, "extended"),
+        ({"pack_id": "async"}, "specialized"),
+        ({"pack_id": "unsafe"}, "specialized"),
+        ({}, "specialized"),
     ],
 )
 def test_l1_tier_for(meta: dict, expected_tier: str) -> None:
@@ -101,23 +104,17 @@ def test_l1_tier_for(meta: dict, expected_tier: str) -> None:
 
 
 def test_l1_tier_matches_expected_packs() -> None:
-    """Async/unsafe/ffi/macro/cargo → core; api/data/db/time → extended;
-    ops/perf/testing on the WEAK/STORY tier chart (testing is MEDIUM →
-    extended, ops/perf are WEAK → specialized)."""
+    """D3 policy: only `testing` may be `extended`; every other pack is
+    `specialized`. Nothing is `core`."""
     r = projection._load_router()
-    tiers = {n: projection._tier_for(p) for n, p in r["packs"].items()}
-    assert tiers["async"] == "core"
-    assert tiers["unsafe"] == "core"
-    assert tiers["ffi"] == "core"
-    assert tiers["macro"] == "core"
-    assert tiers["cargo"] == "core"
-    assert tiers["api"] == "extended"
+    tiers = {n: projection._tier_for({**p, "pack_id": n}) for n, p in r["packs"].items()}
     assert tiers["testing"] == "extended"
-    assert tiers["data-security-io"] == "extended"
-    assert tiers["db"] == "extended"
-    assert tiers["time-config-client"] == "extended"
-    assert tiers["ops"] == "specialized"
-    assert tiers["perf"] == "specialized"
+    for name, t in tiers.items():
+        if name == "testing":
+            continue
+        assert t == "specialized", f"{name} must be specialized, got {t}"
+    # And the invariant we most care about
+    assert "core" not in tiers.values()
 
 
 # --------------------------------------------------------------------------

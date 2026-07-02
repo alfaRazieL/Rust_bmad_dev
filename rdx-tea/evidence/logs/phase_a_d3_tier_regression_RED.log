@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/.venv-baseline/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+collecting ... collected 6 items
+
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_no_rdx_pack_is_tea_core FAILED [ 16%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_default_tier_is_specialized FAILED [ 33%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_only_test_pack_may_be_extended FAILED [ 50%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_default_is_specialized FAILED [ 66%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_strong_confidence_is_specialized FAILED [ 83%]
+rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_medium_confidence_is_specialized_unless_testing PASSED [100%]
+
+=================================== FAILURES ===================================
+__________________ test_l1_regression_no_rdx_pack_is_tea_core __________________
+rdx-tea/tests/unit/test_l1_regressions_d3.py:51: in test_l1_regression_no_rdx_pack_is_tea_core
+    assert not cores, (
+E   AssertionError: D2 reconciliation forbids tier=core for RDX-owned packs; generator still marks ['rdx-tea-async', 'rdx-tea-cargo', 'rdx-tea-ffi', 'rdx-tea-macro', 'rdx-tea-unsafe'] as core
+E   assert not ['rdx-tea-async', 'rdx-tea-cargo', 'rdx-tea-ffi', 'rdx-tea-macro', 'rdx-tea-unsafe']
+________________ test_l1_regression_default_tier_is_specialized ________________
+rdx-tea/tests/unit/test_l1_regressions_d3.py:72: in test_l1_regression_default_tier_is_specialized
+    assert tier == "specialized", (
+E   AssertionError: pack row rdx-tea-api has tier=extended, expected specialized
+E   assert 'extended' == 'specialized'
+E     
+E     - specialized
+E     + extended
+______________ test_l1_regression_only_test_pack_may_be_extended _______________
+rdx-tea/tests/unit/test_l1_regressions_d3.py:86: in test_l1_regression_only_test_pack_may_be_extended
+    assert "testing" in rid, (
+E   AssertionError: pack row rdx-tea-api marked extended but is not the testing pack
+E   assert 'testing' in 'rdx-tea-api'
+______________ test_l1_regression_tier_for_default_is_specialized ______________
+rdx-tea/tests/unit/test_l1_regressions_d3.py:93: in test_l1_regression_tier_for_default_is_specialized
+    assert projection._tier_for({}) == "specialized"
+E   AssertionError: assert 'extended' == 'specialized'
+E     
+E     - specialized
+E     + extended
+_________ test_l1_regression_tier_for_strong_confidence_is_specialized _________
+rdx-tea/tests/unit/test_l1_regressions_d3.py:98: in test_l1_regression_tier_for_strong_confidence_is_specialized
+    assert projection._tier_for({"confidence_class": "STRONG"}) != "core"
+E   AssertionError: assert 'core' != 'core'
+E    +  where 'core' = <function _tier_for at 0x106517c10>({'confidence_class': 'STRONG'})
+E    +    where <function _tier_for at 0x106517c10> = projection._tier_for
+=========================== short test summary info ============================
+FAILED rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_no_rdx_pack_is_tea_core
+FAILED rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_default_tier_is_specialized
+FAILED rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_only_test_pack_may_be_extended
+FAILED rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_default_is_specialized
+FAILED rdx-tea/tests/unit/test_l1_regressions_d3.py::test_l1_regression_tier_for_strong_confidence_is_specialized
+========================= 5 failed, 1 passed in 0.02s ==========================

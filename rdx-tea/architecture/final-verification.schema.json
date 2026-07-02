@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/architecture/final-verification.schema.json",
+  "title": "RDX-TEA final verification envelope",
+  "description": "Machine-readable G-gate matrix for the RDX × TEA integration proof. Referenced by rdx-tea/evidence/final/FINAL_VERIFICATION.json and rdx-tea/evidence/final/D3_FINAL_VERIFICATION.json.",
+  "type": "object",
+  "required": [
+    "rdx_tea_verification_version",
+    "generated",
+    "branch",
+    "base_main_sha",
+    "source_lock",
+    "gates",
+    "verdict"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "rdx_tea_verification_version": {
+      "type": "string",
+      "enum": ["v1", "v2"]
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "branch": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._/-]+$"
+    },
+    "base_main_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "current_head_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_lock": { "type": "string" },
+    "notes": { "type": "string" },
+    "gates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "PARTIAL_PASS",
+              "FAIL",
+              "NOT_RUN",
+              "BLOCKED",
+              "INCONCLUSIVE",
+              "SUPERSEDED",
+              "UNSUPPORTED_BY_DESIGN"
+            ]
+          },
+          "blocked_on": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "PROVEN",
+        "PARTIALLY_PROVEN",
+        "NOT_PROVEN",
+        "NOT_FEASIBLE",
+        "D3_PROVEN",
+        "D3_PARTIALLY_PROVEN",
+        "D3_REJECTED",
+        "D3_NOT_FEASIBLE"
+      ]
+    },
+    "verdict_justification": { "type": "string" },
+    "consequence": { "type": "string" },
+    "next_actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

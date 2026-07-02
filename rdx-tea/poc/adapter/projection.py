@@ -52,15 +52,15 @@ def _load_status() -> dict:
 def _tier_for(pack_meta: dict) -> str:
     """Deterministic tier classification.
 
-    Rules (source: prompt §8, plus TEA convention in `tea-index.csv`):
-      * STRONG + AUTO_ACTIVATE  → 'core'        (unconditional, high confidence)
-      * MEDIUM                  → 'extended'    (opt-in or auto-suggest)
-      * WEAK                    → 'specialized' (STORY_TAG_REQUIRED, weak signal)
+    Policy per `BUILDER_TEA_RECONCILIATION.md §3.3` +
+    `D3_CORRECTION_AUDIT.md §3.3`:
+      * default → 'specialized'
+      * `pack_id == 'testing'` → 'extended'
+      * NEVER 'core' — TEA's 'core' fragments are reserved for
+        universally-loaded TEA-native testing knowledge, not for
+        Rust-specific overlays.
     """
-    conf = pack_meta.get("confidence_class", "MEDIUM")
-    if conf == "STRONG":
-        return "core"
-    if conf == "MEDIUM":
+    if pack_meta.get("pack_id") == "testing":
         return "extended"
     return "specialized"
 
@@ -196,7 +196,10 @@ def render_index_csv() -> str:
         # Tags include the pack name, canonical prefix, and confidence class
         # so TEA workflows can select fragments by tag matching.
         tags = ";".join([pack_name, "rdx", "rust", pack.get("confidence_class", "MEDIUM").lower()])
-        tier = _tier_for(pack)
+        # Pass the pack name into _tier_for so the policy in
+        # BUILDER_TEA_RECONCILIATION §3.3 can distinguish the `testing`
+        # pack from every other pack.
+        tier = _tier_for({**pack, "pack_id": pack_name})
         fragment_file = f"knowledge/rdx-tea-{pack_name}.md"
         writer.writerow([rid, name, description, tags, tier, fragment_file])
     return buf.getvalue()
