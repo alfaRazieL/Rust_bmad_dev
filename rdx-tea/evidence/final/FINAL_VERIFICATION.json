@@ -1,0 +1,101 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/architecture/final-verification.schema.json",
+  "rdx_tea_verification_version": "v1",
+  "generated": "2026-07-02T09:20:40Z",
+  "branch": "rdx-tea-integration",
+  "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "source_lock": "rdx-tea/research/SOURCE_LOCK.md",
+  "notes": "Values below are set only for gates that have actual runtime evidence. NOT_RUN and BLOCKED must not be silently promoted to PASS (prompt §14).",
+  "gates": {
+    "G0_rdx_baseline": {
+      "status": "PASS",
+      "evidence": [
+        "rdx-tea/evidence/logs/phase0_baseline_pytest.log"
+      ],
+      "notes": "307 tests, 0 failures, 0 skips, 15.09s wallclock at SHA d8140a25 (venv rdx-tea/.venv-baseline). Same suite still green after adding 32 knowledge-plane tests (regression run: 339/339 in 14.26s)."
+    },
+    "G1_official_extension_surface": {
+      "status": "PASS",
+      "evidence": [
+        "rdx-tea/research/BMAD_CORE_EXTENSION_SURFACE.md",
+        "rdx-tea/evidence/screenshots-or-transcripts/phase1-explore-tea-surface.md",
+        "rdx-tea/evidence/screenshots-or-transcripts/phase2-builder-review.md",
+        "rdx-tea/evidence/screenshots-or-transcripts/phase2-tea-review.md",
+        "rdx-tea/research/BUILDER_TEA_RECONCILIATION.md"
+      ],
+      "notes": "Two independent subagent reviews (Builder + TEA) confirm the three-layer TOML merge, persistent_facts glob loading, tea-index.csv registry, subagent boundary semantics. Both reviewers left blocking objections on Variant D as originally stated; they map to the Variant D2 amendments in ADR-001. Upstream SHAs for BMAD Core / Builder / TEA remain PENDING in SOURCE_LOCK §4."
+    },
+    "G2_canonical_projection": {
+      "status": "PASS",
+      "evidence": [
+        "rdx-tea/evidence/logs/phase4_l0_projection_GREEN.log",
+        "rdx-tea/evidence/hashes/PHASE4_projection_output.txt",
+        "rdx-tea/tests/contracts/test_l0_projection.py",
+        "rdx-tea/tests/unit/test_l1_projection_unit.py",
+        "rdx-tea/poc/adapter/projection.py"
+      ],
+      "notes": "13 L0 + 19 L1 tests green. Generator reads only files inside tests/contracts/ and .claude/skills/rdx-setup/assets/kb-sections/. Byte-identical re-run confirmed. All 12 packs mapped, all rule-ID prefixes preserved, 14-verdict vocabulary imported verbatim including EVIDENCE_REQUIRED (not EVIDENCE_MISSING)."
+    },
+    "G3_router_parity": {
+      "status": "PARTIAL_PASS",
+      "evidence": [
+        "rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_packs_canonical",
+        "rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_rule_ids_prefixes",
+        "rdx-tea/tests/contracts/test_l0_projection.py::test_l0_story_tag_required_packs_preserved"
+      ],
+      "notes": "Contract-level parity proven (pack list, activation_policy, confidence_class, story-tag policy set, RP- prefix preservation). Fixture-based positive/negative/ambiguous replay tests over 12 packs × 13 fixture shapes NOT yet written under rdx-tea/tests/unit/ (existing RDX tests/unit/validator/test_l2_router_packs.py covers 26 fixtures at head — reused as baseline evidence but not re-run against the projection)."
+    },
+    "G4_safe_lifecycle": {
+      "status": "NOT_RUN",
+      "evidence": [],
+      "notes": "No install / update / uninstall / rollback / interrupted-install test written. rdx-tea/poc/adapter/projection.py has an emit_to_disk function but no idempotence test on adversarial fixtures (existing [agent], arrays, comments, nested tables per prompt §5.5). PROOF_COMPLETION_PLAN Stage 3 covers this."
+    },
+    "G5_real_tea_workflows": {
+      "status": "NOT_RUN",
+      "evidence": [],
+      "notes": "No real TEA workflow was executed. bmad-testarch-* skills are installed on host (visible under .claude/skills/) but never invoked in-context during this work window. Prompt §14 G5 requires 'настоящие TEA workflows используют выбранные fragments; artifacts реально созданы; sequential работает.' PROOF_COMPLETION_PLAN Stage 5 covers this."
+    },
+    "G6_worker_propagation": {
+      "status": "NOT_RUN",
+      "evidence": [],
+      "notes": "Subagent seed mechanism DESIGNED in ADR-001 §7 but not implemented and not spy-tested. Both reviews (Builder BO#1, TEA §3) mark this as the single biggest architectural risk in Variant D2. PROOF_COMPLETION_PLAN Stage 6 covers this."
+    },
+    "G7_measured_quality_benefit": {
+      "status": "NOT_RUN",
+      "evidence": [],
+      "notes": "No baseline-vs-candidate behavioural eval. rdx-tea/evals/baseline/ and rdx-tea/evals/variant-d/ contain no cases yet. Prompt §12 L5 requires N>=10 for behavioural claims, N>=20 for critical claims. Both reviews flag this as blocking (Builder BO#6, TEA §8, TEA BO#7). PROOF_COMPLETION_PLAN Stage 7 covers this."
+    },
+    "G8_rdx_validator_integration": {
+      "status": "BLOCKED",
+      "blocked_on": ["G5", "G6", "G7"],
+      "evidence": [],
+      "notes": "Enforcement-plane gate. Cannot be attempted until G5/G6/G7 close per knowledge-plane-first memo. ADR-001 §10 sketches the rdx-tea-validate subcommand but no code yet."
+    },
+    "G9_modes_and_enforcement": {
+      "status": "BLOCKED",
+      "blocked_on": ["G8"],
+      "evidence": [],
+      "notes": "Enforcement-plane gate. MODE_0..MODE_4 tie-in described in ADR-001 §13 but not tested."
+    },
+    "G10_tamper_resistance": {
+      "status": "BLOCKED",
+      "blocked_on": ["G8", "G9"],
+      "evidence": [],
+      "notes": "Enforcement-plane gate. Tamper cases enumerated in prompt §12 L7 (24+ scenarios). None attempted."
+    },
+    "G11_upgrade_compatibility": {
+      "status": "BLOCKED",
+      "blocked_on": ["G4", "G8"],
+      "evidence": [],
+      "notes": "Enforcement-plane gate. ADR-001 §17 sketches hash-mismatch upgrade behaviour but not tested."
+    }
+  },
+  "verdict": "PARTIALLY_PROVEN",
+  "verdict_justification": "G0 baseline green; G1 extension surface source-verified by two independent reviews; G2 canonical projection PoC deterministic and hash-stable; G3 Router parity partially proven at contract level. G4..G7 knowledge-plane gates are NOT_RUN (no real TEA execution, no subagent spy, no lifecycle test, no behavioural eval). G8..G11 enforcement-plane gates are BLOCKED behind their knowledge-plane prerequisites per the knowledge-plane-first rule. Verdict cannot be PROVEN because G4..G7 have no runtime evidence.",
+  "consequence": "Per prompt §15 second sub-section, no full MASTER_IMPLEMENTATION_PLAN.md is emitted. Instead, rdx-tea/implementation-plan/PROOF_COMPLETION_PLAN.md provides stage-based instructions to close the NOT_RUN gates. Production stages remain drafts.",
+  "next_actions": [
+    "Complete Stage 3–7 of PROOF_COMPLETION_PLAN in separate fresh contexts.",
+    "Re-run FINAL_VERIFICATION after each stage; update this file's addenda.",
+    "Do not attempt G8..G11 until G4..G7 all show PASS."
+  ]
+}

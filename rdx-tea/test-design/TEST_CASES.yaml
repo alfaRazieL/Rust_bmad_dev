@@ -1,0 +1,376 @@
+# TEST_CASES.yaml — Variant D2 verification catalog
+#
+# Every row is a test case. Fields per prompt §17:
+#   id, layer, requirement, risk, fixture, precondition, command,
+#   expected_result, verdict_authority, blocking_mode, implementation_stage,
+#   evidence_path, status, repeat_count, statistical_threshold
+#
+# Two large classes of rows:
+#   1. IMPLEMENTED (green now at SHA d8140a25…, evidence saved)
+#   2. PLANNED — enumerated for PROOF_COMPLETION_PLAN stages 2-8
+#
+# See TEST_TRACEABILITY_MATRIX.md for claim→test coverage.
+
+meta:
+  base_sha: d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d
+  branch: rdx-tea-integration
+  test_environment_venv: rdx-tea/.venv-baseline
+  python: 3.14.4
+  pytest: 9.1.1
+  parametrized_invocations_note: |
+    Where a case name ends with `[…]` it is a parametrized invocation.
+    Count of pytest node IDs vs count of unique test intents kept
+    separate per prompt §11.2.
+
+# ==========================================================================
+# IMPLEMENTED — GREEN at checkpoint
+# ==========================================================================
+
+- id: L0-SRC-01
+  layer: L0
+  requirement: SOURCE_LOCK hash integrity for section-4-core.md
+  risk: HIGH (silently stale canonical input invalidates every downstream test)
+  fixture: null
+  precondition: rdx-tea/.venv-baseline present; branch = rdx-tea-integration
+  command: rdx-tea/.venv-baseline/bin/python -m pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4 (current)
+  evidence_path: rdx-tea/evidence/logs/phase4_l0_projection_GREEN.log
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+  parametrizations: [core, router, packs, gov]
+
+- id: L0-STATUS-01
+  layer: L0
+  requirement: Full 14-verdict + 3-severity vocabulary; correct spelling EVIDENCE_REQUIRED
+  risk: HIGH (prompt §5.1)
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_status_vocabulary_complete -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: rdx-tea/evidence/logs/phase4_l0_projection_GREEN.log
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+
+- id: L0-ROUTER-01
+  layer: L0
+  requirement: Canonical Router pack list, confidence, activation policy, related-rule counts
+  risk: HIGH (prompt §5.3)
+  fixture: tests/contracts/router-rules.json
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_packs_canonical -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+
+- id: L0-ROUTER-02
+  layer: L0
+  requirement: Every pack rule ID uses RP- prefix (no RUST-*)
+  risk: HIGH (prompt §5.2)
+  fixture: tests/contracts/router-rules.json
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_rule_ids_prefixes -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+
+- id: L0-ROUTER-03
+  layer: L0
+  requirement: STORY_TAG_REQUIRED packs are exactly {api, testing, ops, perf}
+  risk: HIGH (prompt §5.3)
+  fixture: tests/contracts/router-rules.json
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_story_tag_required_packs_preserved -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+
+- id: L0-RCM-01
+  layer: L0
+  requirement: rule-check-map contains 18 CORE + 14 RP + 5 GOV = 37 rules
+  risk: MEDIUM
+  fixture: tests/contracts/rule-check-map.json
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_rule_check_map_prefixes -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+  repeat_count: 1
+  statistical_threshold: n/a
+
+- id: L0-PROJ-01
+  layer: L0
+  requirement: Generator reads only files under tests/contracts/ or KB dir
+  risk: HIGH (prompt §5.4)
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_reads_only_canonical_inputs -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+  repeat_count: 1
+
+- id: L0-PROJ-02
+  layer: L0
+  requirement: Generator is deterministic across processes (byte-identical)
+  risk: HIGH
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_is_deterministic -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same, plus rdx-tea/evidence/hashes/PHASE4_projection_output.txt
+  status: PASS
+  repeat_count: 2 (implicit re-run)
+
+- id: L0-PROJ-03
+  layer: L0
+  requirement: Generator covers all 12 packs
+  risk: HIGH
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_covers_all_packs -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+
+- id: L0-PROJ-04
+  layer: L0
+  requirement: rdx-tea-index.csv row per pack + schema mirror
+  risk: HIGH
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_emits_rdx_tea_index_row_per_pack -v
+  expected_result: pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: same
+  status: PASS
+
+# L1 (19 tests) — represented in aggregate.
+- id: L1-PROJ-01..19
+  layer: L1
+  requirement: Projection generator unit contract (parser, IR, tier, fragment renderer, index CSV, determinism, no wallclock)
+  risk: HIGH
+  fixture: null
+  precondition: same
+  command: pytest rdx-tea/tests/unit/test_l1_projection_unit.py -v
+  expected_result: 19 pass
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: Phase 4
+  evidence_path: rdx-tea/evidence/logs/phase4_l0_projection_GREEN.log (both L0+L1 recorded together)
+  status: PASS
+
+- id: BASELINE-RDX-01
+  layer: baseline
+  requirement: Shipped RDX 1.1 suite is green at d8140a25 (307/0/0)
+  risk: HIGH (prompt §7 pre-condition; §24 stop condition on regression)
+  fixture: null
+  precondition: rdx-tea/.venv-baseline, PYTHONPATH via conftest.py
+  command: rdx-tea/.venv-baseline/bin/python -m pytest -v --tb=short --durations=15
+  expected_result: 307 pass in ≤ 30s
+  verdict_authority: pytest
+  blocking_mode: MODE_2+ (baseline required)
+  implementation_stage: Phase 0
+  evidence_path: rdx-tea/evidence/logs/phase0_baseline_pytest.log
+  status: PASS
+
+# ==========================================================================
+# PLANNED — enumeration only (owned by PROOF_COMPLETION_PLAN stages 2-8)
+# ==========================================================================
+
+- id: L2-{pack}-{shape}
+  layer: L2
+  requirement: Router fixture replay through the projection (activation matches canonical Router)
+  risk: HIGH (prompt §12 L2)
+  fixture: per-pack diffs in tests/fixtures/diffs/ (existing set of 26 nodes) + 130+ new for missing pack × shape combinations
+  precondition: projection generator + Router adapter functions
+  command: pytest rdx-tea/tests/unit/test_l2_router_replay.py -v
+  expected_result: pass on strong positive/negative; ambiguous marked ambiguous
+  verdict_authority: pytest
+  blocking_mode: MODE_1+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 2
+  evidence_path: rdx-tea/evidence/logs/stage2-l2-router-replay.log (planned)
+  status: PLANNED
+  repeat_count: 1 per node
+  statistical_threshold: FN ≤ 2% on strong positive; FP ≤ 5% on negative controls
+  approximate_count: 12 packs × 13 shapes = 156 nodes
+
+- id: L3-RUST-{project-kind}
+  layer: L3
+  requirement: Real cargo project probe (safe lib, CLI, async, workspace, unsafe, FFI, macro, API/SemVer, features/MSRV, serde, DB, time/retry, ops/tracing, perf/no_std/WASM, green + red controls)
+  risk: HIGH (prompt §12 L3)
+  fixture: rdx-tea/fixtures/rust-projects/{kind}/ (planned)
+  precondition: rustc 1.90.0, cargo 1.90.0 already verified
+  command: rdx-tea/scripts/run-l3-cargo.sh
+  expected_result: activate the right packs on green, blocking finding on red
+  verdict_authority: cargo + projection Router adapter
+  blocking_mode: MODE_1+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 3
+  evidence_path: rdx-tea/evidence/logs/stage3-l3-cargo-*.log
+  status: PLANNED
+  approximate_count: 15 projects × 2 states
+
+- id: L4-INSTALL-{scenario}
+  layer: L4
+  requirement: Install / merge / update / uninstall on disposable projects (fresh install, existing customization, update semantics, rollback, interrupted install, partial install, path-traversal / symlink)
+  risk: HIGH (prompt §5.5, §12 lifecycle)
+  fixture: rdx-tea/fixtures/existing-customizations/
+  precondition: real resolve_customization.py invocations
+  command: pytest rdx-tea/tests/lifecycle/ -v
+  expected_result: valid TOML output; user customization preserved; idempotent update; clean uninstall/rollback
+  verdict_authority: pytest + TOML parse check
+  blocking_mode: MODE_2+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 4
+  evidence_path: rdx-tea/evidence/logs/stage4-lifecycle-*.log
+  status: PLANNED
+  approximate_count: 12 scenarios × 3 modes = 36
+
+- id: L4-TEA-{workflow}-{mode}
+  layer: L4
+  requirement: Real TEA workflow run (each of 8 workflows × sequential/subagent/agent-team where supported); RDX fragments actually load; artefact written; active_packs recorded
+  risk: HIGH (prompt §12 L4; §5.8)
+  fixture: rdx-tea/fixtures/stories/rust-*.md
+  precondition: adapter installed in disposable project
+  command: rdx-tea/scripts/run-l4-tea.sh {workflow} {mode}
+  expected_result: fragment names appear in loaded context; artefact under {test_artifacts}/*; active_packs frontmatter present
+  verdict_authority: artefact parser + subagentContext spy
+  blocking_mode: MODE_1+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 5
+  evidence_path: rdx-tea/evidence/artifacts/stage5-tea-{workflow}-{mode}/
+  status: PLANNED
+  approximate_count: 8 workflows × ≤3 modes ≈ 20 sanity runs
+
+- id: L5-EVAL-BASELINE-{workflow}
+  layer: L5
+  requirement: Baseline eval (bmad-eval-runner baseline mode) — TEA workflow WITHOUT adapter
+  risk: HIGH (prompt §12 L5)
+  fixture: rdx-tea/evals/baseline/cases.yaml
+  precondition: fresh clean project
+  command: bmad-eval-runner baseline --skill bmad-testarch-{workflow} --N 10
+  expected_result: 10 runs recorded; grading rubric applied
+  verdict_authority: grader
+  blocking_mode: MODE_3+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 7
+  evidence_path: rdx-tea/evals/baseline/{workflow}/transcripts/
+  status: PLANNED
+  repeat_count: 10
+  statistical_threshold: baseline stability CI must not exceed measurement error
+
+- id: L5-EVAL-VARIANT-{workflow}-{scenario}
+  layer: L5
+  requirement: Variant eval — TEA workflow WITH adapter overlay; N=20 for critical scenarios (Router never skipped, no self-attested Cat-1, unsafe/FFI escalation, no irrelevant pack on negative controls, worker payload preservation)
+  risk: HIGH (prompt §12 L5)
+  fixture: rdx-tea/evals/variant-d/cases.yaml
+  precondition: adapter installed
+  command: bmad-eval-runner variant --skill bmad-testarch-{workflow} --variant-path rdx-tea/poc/overlays --N 20
+  expected_result: measurable improvement per rubric
+  verdict_authority: grader
+  blocking_mode: MODE_3+
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 7
+  evidence_path: rdx-tea/evals/variant-d/{workflow}/{scenario}/transcripts/
+  status: PLANNED
+  repeat_count: 20 for critical claims, 10 for ordinary
+  statistical_threshold: |
+    delta_rule_recall > baseline_ci_upper
+    delta_false_positive_rate < 5pp
+    worker_payload_preservation_rate >= 95%
+
+- id: L6-CI-{scenario}
+  layer: L6
+  requirement: pre-push hook + rdx-tea-gate.yml behaviour
+  risk: HIGH (prompt §12 L6)
+  fixture: disposable test repos
+  precondition: adapter installed
+  command: pytest rdx-tea/tests/ci/ -v
+  expected_result: matches baseline pre-push / CI behaviour; --validator-source enforced
+  verdict_authority: pytest
+  blocking_mode: MODE_3
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 8
+  evidence_path: rdx-tea/evidence/logs/stage8-l6-*.log
+  status: PLANNED
+  approximate_count: 15
+
+- id: L7-MUT-{n}
+  layer: L7
+  requirement: 24 mutation / tamper scenarios enumerated in prompt §12 L7
+  risk: HIGH
+  fixture: mutation harness
+  precondition: adapter installed + validator extension
+  command: pytest rdx-tea/tests/mutation/ -v
+  expected_result: every scenario caught with FAIL / REGRESSION_FAILURE / BLOCKED
+  verdict_authority: pytest + validator
+  blocking_mode: MODE_3
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 8
+  evidence_path: rdx-tea/evidence/logs/stage8-l7-*.log
+  status: PLANNED
+  approximate_count: 24
+
+- id: L8-JUDGMENT-{n}
+  layer: L8
+  requirement: Cat-3 scope, Cat-4 approval binding, protected instruction artefacts, TEA gate vs RDX verdict split
+  risk: HIGH
+  fixture: null
+  precondition: enforcement plane wired
+  command: pytest rdx-tea/tests/acceptance/ -v
+  expected_result: All Cat authority invariants preserved
+  verdict_authority: pytest
+  blocking_mode: MODE_4
+  implementation_stage: PROOF_COMPLETION_PLAN Stage 9
+  evidence_path: rdx-tea/evidence/logs/stage9-*.log
+  status: PLANNED
+  approximate_count: 8
+
+# ==========================================================================
+# SUMMARY
+# ==========================================================================
+summary:
+  implemented_pytest_nodes: 339        # 307 RDX baseline + 13 L0 projection + 19 L1 unit
+  implemented_unique_intents: 33       # 307 has ~50 file-level intents; new adds ~28 unique intents; ~33 baseline-critical
+  planned_pytest_nodes_target: 300     # per prompt §11.2 lower bound
+  planned_estimated_from_this_catalog:
+    L2_router_replay: 156
+    L3_cargo_projects: 30
+    L4_lifecycle: 36
+    L4_real_tea: 20
+    L5_baseline: 80        # 8 workflows × 10 N
+    L5_variant: 160        # 8 workflows × 2 scenarios × 10 N + 5 critical × 20 N
+    L6_ci: 15
+    L7_mutation: 24
+    L8_judgment: 8
+    total: 529
