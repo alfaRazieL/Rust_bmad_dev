@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/.venv-baseline/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+collecting ... collected 13 items
+
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[core] PASSED [  7%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[router] PASSED [ 15%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[packs] PASSED [ 23%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_source_lock_hash[gov] PASSED [ 30%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_status_vocabulary_complete PASSED [ 38%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_packs_canonical PASSED [ 46%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_router_rule_ids_prefixes PASSED [ 53%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_story_tag_required_packs_preserved PASSED [ 61%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_rule_check_map_prefixes PASSED [ 69%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_reads_only_canonical_inputs SKIPPED [ 76%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_is_deterministic SKIPPED [ 84%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_covers_all_packs SKIPPED [ 92%]
+rdx-tea/tests/contracts/test_l0_projection.py::test_l0_projection_generator_emits_rdx_tea_index_row_per_pack SKIPPED [100%]
+
+========================= 9 passed, 4 skipped in 0.01s =========================

@@ -1,0 +1,13 @@
+id,name,description,tags,tier,fragment_file
+rdx-tea-api,"Public API, SemVer, and documentation","RDX projection for Rust risk pack 'api' — activation=STORY_TAG_REQUIRED, confidence=MEDIUM",api;rdx;rust;medium,extended,knowledge/rdx-tea-api.md
+rdx-tea-async,Async and concurrency,"RDX projection for Rust risk pack 'async' — activation=AUTO_ACTIVATE, confidence=STRONG",async;rdx;rust;strong,core,knowledge/rdx-tea-async.md
+rdx-tea-cargo,"Cargo, features, workspace, toolchain, and dependencies","RDX projection for Rust risk pack 'cargo' — activation=AUTO_ACTIVATE, confidence=STRONG",cargo;rdx;rust;strong,core,knowledge/rdx-tea-cargo.md
+rdx-tea-data-security-io,"Data, security, and external I/O","RDX projection for Rust risk pack 'data-security-io' — activation=AUTO_SUGGEST, confidence=MEDIUM",data-security-io;rdx;rust;medium,extended,knowledge/rdx-tea-data-security-io.md
+rdx-tea-db,"Database, messaging, and distributed state","RDX projection for Rust risk pack 'db' — activation=AUTO_SUGGEST, confidence=MEDIUM",db;rdx;rust;medium,extended,knowledge/rdx-tea-db.md
+rdx-tea-ffi,FFI and plugin ABI,"RDX projection for Rust risk pack 'ffi' — activation=AUTO_ACTIVATE, confidence=STRONG",ffi;rdx;rust;strong,core,knowledge/rdx-tea-ffi.md
+rdx-tea-macro,"Macros, build scripts, and generated code","RDX projection for Rust risk pack 'macro' — activation=AUTO_ACTIVATE, confidence=STRONG",macro;rdx;rust;strong,core,knowledge/rdx-tea-macro.md
+rdx-tea-ops,"Operations, observability, and rollback","RDX projection for Rust risk pack 'ops' — activation=STORY_TAG_REQUIRED, confidence=WEAK",ops;rdx;rust;weak,specialized,knowledge/rdx-tea-ops.md
+rdx-tea-perf,"Performance, portability, no_std, WASM, and embedded","RDX projection for Rust risk pack 'perf' — activation=STORY_TAG_REQUIRED, confidence=WEAK",perf;rdx;rust;weak,specialized,knowledge/rdx-tea-perf.md
+rdx-tea-testing,Testing beyond the core loop,"RDX projection for Rust risk pack 'testing' — activation=STORY_TAG_REQUIRED, confidence=MEDIUM",testing;rdx;rust;medium,extended,knowledge/rdx-tea-testing.md
+rdx-tea-time-config-client,"Time, configuration, and API clients","RDX projection for Rust risk pack 'time-config-client' — activation=AUTO_SUGGEST, confidence=MEDIUM",time-config-client;rdx;rust;medium,extended,knowledge/rdx-tea-time-config-client.md
+rdx-tea-unsafe,Unsafe and memory,"RDX projection for Rust risk pack 'unsafe' — activation=AUTO_ACTIVATE, confidence=STRONG",unsafe;rdx;rust;strong,core,knowledge/rdx-tea-unsafe.md
