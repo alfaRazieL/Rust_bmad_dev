@@ -1,0 +1,105 @@
+name: rdx-tea-integration branch check
+
+# Fail-closed CI for the rdx-tea-integration branch ONLY.
+#
+# This workflow deliberately does NOT trigger on push or PR events
+# targeting `main`. If a copy of it were ever merged into `main` and
+# the trigger set widened, the top-level guard steps below would still
+# refuse to run the suite outside the intended branch.
+#
+# Owned by the RDX-TEA adapter D3.1 closure. See
+# rdx-tea/research/D3_1_PRODUCTION_LAYOUT_AUDIT.md §10.
+
+on:
+  push:
+    branches:
+      - rdx-tea-integration
+  pull_request:
+    branches:
+      - rdx-tea-integration
+
+concurrency:
+  group: rdx-tea-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: refuse-on-main
+    runs-on: ubuntu-latest
+    steps:
+      - name: assert-not-main
+        run: |
+          set -euo pipefail
+          echo "ref=$GITHUB_REF base=${GITHUB_BASE_REF:-none} head=${GITHUB_HEAD_REF:-none}"
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "::error::this workflow must not run on main" >&2
+            exit 3
+          fi
+          if [ "${GITHUB_BASE_REF:-}" = "main" ]; then
+            echo "::error::pull requests against main are not accepted by this workflow" >&2
+            exit 3
+          fi
+
+  test:
+    name: rdx-tea pytest
+    needs: guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: set-up-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install-deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest jsonschema pyyaml
+      - name: baseline-rdx-suite
+        run: |
+          python -m pytest -q --tb=line
+      - name: adapter-suite
+        run: |
+          python -m pytest rdx-tea/tests -q --tb=line
+      - name: verify-branch-and-remote
+        run: |
+          set -euo pipefail
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF##refs/heads/}}"
+          if [ "$BRANCH" != "rdx-tea-integration" ]; then
+            echo "::error::branch must be rdx-tea-integration, got $BRANCH" >&2
+            exit 4
+          fi
+          echo "branch OK: $BRANCH"
+
+  no-main-modifications:
+    name: no changes outside rdx-tea and .github
+    needs: guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: check-diff-scope
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=100
+          BASE=$(git merge-base origin/main HEAD)
+          if [ -z "$BASE" ]; then
+            echo "::warning::cannot compute merge-base with main; skipping scope check"
+            exit 0
+          fi
+          # Every changed path since the branch left main must lie under
+          # rdx-tea/ or .github/workflows/rdx-tea-*.yml. Any other change
+          # is refused so a hostile PR to this branch cannot ship a
+          # production-file edit.
+          bad=$(git diff --name-only "$BASE"..HEAD | grep -Ev '^rdx-tea/|^\.github/workflows/rdx-tea-' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::changes outside rdx-tea/ detected:" >&2
+            echo "$bad" >&2
+            exit 5
+          fi
+          echo "scope OK: only rdx-tea/ and .github/workflows/rdx-tea-*.yml changed"

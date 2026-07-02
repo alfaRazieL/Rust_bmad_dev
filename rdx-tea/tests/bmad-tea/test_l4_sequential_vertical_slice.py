@@ -42,8 +42,8 @@ UPSTREAM_BMAD = WORKSPACE / "upstream" / "BMAD-METHOD"
 RESOLVER = UPSTREAM_BMAD / "src" / "scripts" / "resolve_customization.py"
 VENV_PY = RDX_TEA_DIR / ".venv-baseline" / "bin" / "python"
 
-PREPARE_PY = RDX_TEA_DIR / "poc" / "adapter" / "prepare.py"
-BINDER_PY = RDX_TEA_DIR / "poc" / "adapter" / "binder.py"
+PREPARE_PY = RDX_TEA_DIR / "poc" / "install-tree" / "_bmad" / "rdx-tea" / "scripts" / "prepare.py"
+BINDER_PY = RDX_TEA_DIR / "poc" / "install-tree" / "_bmad" / "rdx-tea" / "scripts" / "binder.py"
 SIDECAR_SCHEMA = RDX_TEA_DIR / "architecture" / "rdx-tea-run.v1.schema.json"
 
 
@@ -110,12 +110,22 @@ def _run_resolver(proj: Path, workflow_skill_slug: str) -> dict:
     return json.loads(r.stdout)["workflow"]
 
 
+DEFAULT_IDENTITY = {
+    "base_sha":  "1" * 40,
+    "head_sha":  "2" * 40,
+    "diff_digest": "",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+}
+
+
 def _run_prepare(proj: Path, workflow_short: str, diff: str) -> dict:
     (proj / "_bmad-run" / "diff.patch").write_text(diff)
     (proj / "_bmad-run" / "story.md").write_text("# Rust async story\n")
     return prepare_mod.prepare(
         project_root=proj,
         workflow=workflow_short,
+        identity=dict(DEFAULT_IDENTITY),
         story_path=proj / "_bmad-run" / "story.md",
         diff_path=proj / "_bmad-run" / "diff.patch",
     )
@@ -236,7 +246,8 @@ def test_l4_e04_binder_fails_closed_without_prepare_manifest(tmp_path: Path) -> 
     proj.mkdir()
     fake_artifact = proj / "artefact.md"
     fake_artifact.write_text("no bundle loaded")
-    with pytest.raises(SystemExit):
+    # D3.1 binder raises the typed BinderError instead of SystemExit.
+    with pytest.raises((SystemExit, binder_mod.BinderError)):
         binder_mod.bind(project_root=proj, workflow="test-design", artifact=fake_artifact)
 
 

@@ -18,23 +18,38 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import sys
 from pathlib import Path
 
 import pytest
 
 RDX_TEA_DIR = Path(__file__).resolve().parent.parent.parent
 REPO_ROOT = RDX_TEA_DIR.parent
-PREPARE_PY = RDX_TEA_DIR / "poc" / "adapter" / "prepare.py"
+# D3.1: use the production-layout install tree.
+INSTALL_SCRIPTS = RDX_TEA_DIR / "poc" / "install-tree" / "_bmad" / "rdx-tea" / "scripts"
 
 
 def _load_prepare():
-    spec = importlib.util.spec_from_file_location("prepare", PREPARE_PY)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)   # type: ignore[union-attr]
-    return m
+    if str(INSTALL_SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(INSTALL_SCRIPTS))
+    import importlib
+    if "rdx_parser" in sys.modules:
+        del sys.modules["rdx_parser"]
+    if "prepare" in sys.modules:
+        del sys.modules["prepare"]
+    return importlib.import_module("prepare")
 
 
 prepare_mod = _load_prepare()
+
+
+DEFAULT_IDENTITY = {
+    "base_sha":  "1" * 40,
+    "head_sha":  "2" * 40,
+    "diff_digest": "",   # computed by prepare
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+}
 
 
 # ---------------------------------------------------------------- helpers
@@ -111,6 +126,7 @@ def _prepare_run(project: Path, workflow: str, diff: str, story: str = "",
     manifest = prepare_mod.prepare(
         project_root=project,
         workflow=workflow,
+        identity=dict(DEFAULT_IDENTITY),
         story_path=story_path,
         diff_path=diff_path,
         tags_path=tags_path,
@@ -142,12 +158,27 @@ def test_l2_d03_non_rust_diff_produces_empty_bundle(project: Path) -> None:
 
 
 def test_l2_d04_bundle_never_contains_rdx_verdict_vocabulary(project: Path) -> None:
+    """D3.1: precise check. The bundle carries KB rule bodies which
+    include natural English `PASS`/`FAIL` uses (e.g. "type-check passes").
+    The invariant we need is that the bundle never emits a *verdict
+    field* the LLM can be baited into filling: no `verdict:` YAML key,
+    no `cat1_verdict`, no `rdx_verdict`, no leading verdict token."""
     m, body = _prepare_run(project, "test-design", ASYNC_POSITIVE_DIFF)
-    # ADR-002 §5.5: LLM-side bundle must not carry the RDX verdict
-    # enum — validator writes verdicts, LLM does not.
-    for banned in ("PASS", "FAIL", "APPROVAL_REQUIRED", "REVIEW_REQUIRED",
-                   "EVIDENCE_REQUIRED", "REGRESSION_FAILURE"):
-        assert banned not in body, f"bundle leaked RDX verdict word {banned!r}"
+    banned_keys = (
+        "verdict:", "verdict :", "rdx_verdict:", "cat1_verdict:",
+        "cat2_verdict:", "cat3_verdict:", "cat4_verdict:",
+    )
+    for k in banned_keys:
+        assert k not in body, f"bundle leaked verdict field {k!r}"
+    # And the schema-forbidden verdicts must not appear as YAML values
+    # on any line ("- PASS", "  PASS", etc.).
+    for line in body.splitlines():
+        stripped = line.lstrip("- ").strip()
+        assert stripped not in ("PASS", "FAIL", "APPROVAL_REQUIRED",
+                                "REVIEW_REQUIRED", "EVIDENCE_REQUIRED",
+                                "REGRESSION_FAILURE"), (
+            f"bundle line looks like a verdict value: {line!r}"
+        )
 
 
 def test_l2_d05_bundle_bytes_deterministic(project: Path) -> None:
@@ -175,23 +206,35 @@ def test_l2_d06_stale_bundle_atomically_replaced(project: Path) -> None:
 
 
 def test_l2_d07_router_parity_with_rdx_validator(project: Path) -> None:
+    """D3.1: exact equality between (Router ∩ obligation-matrix) and
+    the packs emitted by prepare. No `subset` slack."""
+    if str(REPO_ROOT / "rdx-validator") not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT / "rdx-validator"))
     from rdx_validator.router import RouterRules, activated_pack_names, replay
+    from obligation_matrix import matrix_for   # via install-tree scripts path
     router = RouterRules.load(REPO_ROOT / "tests" / "contracts" / "router-rules.json")
-    canonical = activated_pack_names(replay(ASYNC_POSITIVE_DIFF, router, []))
+    canonical = set(activated_pack_names(replay(ASYNC_POSITIVE_DIFF, router, [])))
     m, _ = _prepare_run(project, "test-design", ASYNC_POSITIVE_DIFF)
-    prepared = sorted([p["pack_id"] for p in m["active_packs"]])
-    # prepared is filtered by the workflow obligation matrix; the canonical
-    # set MUST be a superset.
-    for pid in prepared:
-        assert pid in canonical, f"prepare emitted {pid}, RDX Router did not"
+    prepared = set(p["pack_id"] for p in m["active_packs"])
+    expected = canonical & matrix_for("test-design")["packs"]
+    assert prepared == expected, (
+        f"parity break: prepared={prepared} vs expected={expected} "
+        f"(canonical={canonical})"
+    )
 
 
 def test_l2_d08_manifest_carries_source_hashes(project: Path) -> None:
+    """D3.1: manifest carries a deterministic snapshot hash across ALL
+    canonical files, plus KB per-file map. Identity block is mandatory."""
     m, _ = _prepare_run(project, "test-design", ASYNC_POSITIVE_DIFF)
-    assert m["rdx_router_sha256"], "router sha missing"
+    assert m["rdx_canonical_snapshot_sha256"], "canonical snapshot sha missing"
     assert m["rdx_kb_source_hashes"], "KB sha map missing"
     for k in m["rdx_kb_source_hashes"]:
         assert k.endswith(".md")
+    idn = m["identity"]
+    for k in ("base_sha", "head_sha", "diff_digest",
+              "rdx_source_sha", "tea_source_sha"):
+        assert idn[k] and len(idn[k]) >= 40, f"identity.{k} missing/short"
 
 
 def test_l2_d09_workflow_obligation_matrix_applied(project: Path) -> None:
@@ -204,7 +247,10 @@ def test_l2_d09_workflow_obligation_matrix_applied(project: Path) -> None:
 
 
 def test_l2_d10_story_tag_required_pack_gated_on_tag(project: Path) -> None:
-    """`api` is STORY_TAG_REQUIRED. Without a tag, no api pack."""
+    """D3.1: `api` is STORY_TAG_REQUIRED. Behaviour must be exact:
+      - without the tag → NOT activated
+      - with the tag    → activated
+    No `or True` escape hatch."""
     api_diff = """diff --git a/src/lib.rs b/src/lib.rs
 index a..b 100644
 --- a/src/lib.rs
@@ -216,9 +262,16 @@ index a..b 100644
 """
     m_no_tag, _ = _prepare_run(project, "test-design", api_diff)
     ids_no_tag = {p["pack_id"] for p in m_no_tag["active_packs"]}
-    # api requires a story tag to auto-activate; without it, not activated.
-    # (verified against `tests/contracts/router-rules.json` STORY_TAG_REQUIRED)
-    assert "api" not in ids_no_tag or True  # tolerate MEDIUM inclusion
+    assert "api" not in ids_no_tag, (
+        f"api must NOT activate without story tag, got {ids_no_tag}"
+    )
+
+    m_with_tag, _ = _prepare_run(project, "test-design", api_diff,
+                                  tags=["api"])
+    ids_with_tag = {p["pack_id"] for p in m_with_tag["active_packs"]}
+    assert "api" in ids_with_tag, (
+        f"api MUST activate with story tag `api`, got {ids_with_tag}"
+    )
 
 
 def test_l2_d11_multiple_packs_both_appear(project: Path) -> None:
