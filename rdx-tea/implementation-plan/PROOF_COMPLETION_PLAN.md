@@ -1,5 +1,22 @@
 # PROOF_COMPLETION_PLAN
 
+**SUPERSEDED — 2026-07-02.** Variant D2 has been amended into Variant
+D3 (see `rdx-tea/architecture/ADR-002-SEQUENTIAL-ACTIVE-BUNDLE.md`)
+after independent D3 correction audit and Phase B–H runtime proof.
+
+**Active plan:** `rdx-tea/implementation-plan/D3_PROOF_PLAN.md`.
+
+The stages, gates, and file lists below are retained for historical
+audit. Do NOT execute them as-is; they encode the D2 assumptions that
+were rejected. Every stage's intent has been re-encoded in the D3
+plan under a stage of the same or higher discipline.
+
+---
+
+## Original body (D2-era, retained verbatim)
+
+
+
 Verdict = `PARTIALLY_PROVEN`. Per prompt §15 second sub-section, the
 prescribed follow-up is a proof-completion plan (not a production
 implementation plan). This file lists the stages needed to close the

@@ -77,6 +77,24 @@ git pull --ff-only origin main
 git switch -c rdx-tea-integration
 ```
 
+## D3 update (2026-07-02)
+
+Verdict upgraded from `PARTIALLY_PROVEN` (D2) to **`D3_PARTIALLY_PROVEN`**
+under the amended Variant D3 architecture. Read in order:
+
+1. `research/D3_CORRECTION_AUDIT.md`
+2. `research/D3_SOURCE_LOCK_ADDENDUM.md`
+3. `architecture/ADR-002-SEQUENTIAL-ACTIVE-BUNDLE.md`
+4. `architecture/WORKFLOW_OBLIGATION_MATRIX.csv`
+5. `architecture/rdx-tea-run.v1.schema.json`
+6. `research/D3_VARIANT_VERIFICATION_REPORT.md`
+7. `research/D3_CLAIM_EVIDENCE_MATRIX.md`
+8. `evidence/final/D3_FINAL_VERIFICATION.json`
+9. `implementation-plan/D3_PROOF_PLAN.md`
+
+The D2-era `implementation-plan/PROOF_COMPLETION_PLAN.md` is retained
+as SUPERSEDED.
+
 ## Progress at checkpoint
 
 | Phase | Doc | Status |
