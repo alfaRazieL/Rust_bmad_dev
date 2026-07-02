@@ -1,0 +1,11 @@
+{
+  "test_id": "T-L4-WR-002",
+  "description": "Wrapper must detect child-emitted ERROR_MARKER and continue to validator step (recording wrapper_status=child_error) rather than crashing the entire workflow.",
+  "expected_status": "PASS",
+  "expected_exit_code": 0,
+  "skill_must_declare": [
+    "child error detection (ERROR_MARKER or equivalent sentinel)",
+    "wrapper_status=child_error recording",
+    "continuation to validator step on child error"
+  ]
+}

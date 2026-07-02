@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rdx.local/schemas/rdx-judgment-finding.v1.json",
+  "title": "RDX Judgment Finding v1",
+  "description": "Shape of a single finding emitted by the rdx-judgment skill (Cat-3 evaluator). One finding per rule per location. Verdict semantics per RDX_IMPLEMENTATION_PLAN_TESTED.md §7.2.",
+  "type": "object",
+  "required": [
+    "rule_id",
+    "location",
+    "contract_ref",
+    "reasoning",
+    "verdict",
+    "confidence",
+    "suggested_routing"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "pattern": "^(CORE|RP|GOV)-[A-Z]+(-[0-9]+)+|^CORE-[0-9]+$|^GOV-[0-9]+$",
+      "description": "Canonical rule ID — must match an entry in rule-check-map.json."
+    },
+    "category": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4],
+      "description": "Rule category. If set, MUST match rule-check-map.json. Used by the Cat-1 immutability guard."
+    },
+    "location": {
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": true,
+      "properties": {
+        "file": {"type": "string", "minLength": 1},
+        "line": {"type": "integer", "minimum": 0},
+        "span": {"type": "string"}
+      }
+    },
+    "contract_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Reference to the rule contract (e.g. 'RDX KB section-6.2', 'GOV-003 governance doc')."
+    },
+    "reasoning": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Why this finding applies — must cite evidence from the diff/code/story, not personal preference."
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "DECISION_REQUIRED",
+        "SPECIALIST_REQUIRED",
+        "INSUFFICIENT_EVIDENCE"
+      ],
+      "description": "Evaluator verdict. PASS/FAIL set by evaluator for Cat-3 only. Cat-1/2 verdicts are set by the validator; rdx-judgment must NOT emit a finding whose category=1 and verdict in {PASS,FAIL} (see allOf below)."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Evaluator confidence in [0,1]. Low confidence + verdict=PASS → INSUFFICIENT_EVIDENCE."
+    },
+    "suggested_routing": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "DECISION_REQUIRED",
+        "SPECIALIST_REQUIRED",
+        "INSUFFICIENT_EVIDENCE",
+        "DEFER_TO_VALIDATOR"
+      ],
+      "description": "Where to route the finding next. DEFER_TO_VALIDATOR is the canonical answer when category=1 — the evaluator cannot decide."
+    },
+    "set_by": {
+      "type": "string",
+      "enum": ["evaluator", "validator", "specialist"],
+      "description": "Origin of the finding — used by the schema-level Cat-1 immutability guard."
+    }
+  },
+  "allOf": [
+    {
+      "description": "Cat-1 immutability: if category=1, the evaluator MUST NOT set verdict to PASS or FAIL. Either omit set_by (validator-origin) or route to DEFER_TO_VALIDATOR / SPECIALIST_REQUIRED.",
+      "if": {
+        "properties": {
+          "category": {"const": 1},
+          "set_by": {"const": "evaluator"}
+        },
+        "required": ["category", "set_by"]
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "enum": ["DECISION_REQUIRED", "SPECIALIST_REQUIRED", "INSUFFICIENT_EVIDENCE"]
+          }
+        }
+      }
+    }
+  ]
+}

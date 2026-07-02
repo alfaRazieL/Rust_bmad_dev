@@ -1,0 +1,28 @@
+{
+  "rdx_schema_version": "v1",
+  "story_id": "STORY-EXAMPLE-003",
+  "head_sha": "0123456789abcdef0123456789abcdef01234567",
+  "base_sha": "fedcba9876543210fedcba9876543210fedcba98",
+  "diff_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mode": "MODE_1",
+  "rules": {
+    "CORE-011": {
+      "category": 1,
+      "verdict": "PASS",
+      "severity": "INFO",
+      "author": "LLM",
+      "message": "Trust me bro — it compiles."
+    }
+  },
+  "exceptions": [],
+  "approvals": [],
+  "aggregate": {
+    "verdict": "PASS",
+    "exit_code": 0
+  },
+  "validator": {
+    "name": "rdx-validator",
+    "version": "0.1.0",
+    "source": "PR_HEAD"
+  }
+}

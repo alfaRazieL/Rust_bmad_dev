@@ -1,0 +1,9 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 1111111..2222222 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -5,3 +5,4 @@ edition = "2021"
+
+ [dependencies]
+ serde = "1.0"
++regex = "1.10"

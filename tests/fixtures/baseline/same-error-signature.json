@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L1-BASE-001 — base red, head red, same signature → BASELINE_FAILURE_OBSERVED",
+  "base": {"passed": false, "error_signature": "E0308: type mismatch in src/lib.rs:42"},
+  "head": {"passed": false, "error_signature": "E0308: type mismatch in src/lib.rs:42"}
+}

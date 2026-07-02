@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L3-CRATE-004 dual-run input — base green, head red",
+  "base": {"passed": true},
+  "head": {"passed": false, "error_signature": "E0277"}
+}

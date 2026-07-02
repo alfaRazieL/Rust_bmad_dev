@@ -1,0 +1,6 @@
+{
+  "schema_validates": false,
+  "intent": "Evidence document missing the required diff_digest pin point. Schema must reject — stale-evidence detection depends on this field.",
+  "expected_error_keyword": "diff_digest",
+  "test_ids": ["T-L0-SCHEMA-003"]
+}

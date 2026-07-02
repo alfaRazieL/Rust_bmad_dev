@@ -1,0 +1,7 @@
+{
+  "_doc": "Aggregator fixture for T-L1-AGG-001 — one rule FAIL forces BLOCKED",
+  "rules": [
+    {"rule_id": "CORE-007", "category": 1, "verdict": "PASS", "severity": "INFO"},
+    {"rule_id": "CORE-011", "category": 1, "verdict": "FAIL", "severity": "BLOCKING", "reason": "cargo check failed"}
+  ]
+}

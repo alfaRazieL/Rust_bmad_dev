@@ -1,0 +1,16 @@
+# T-L4-MENU-001 fixture — RDX custom override that replaces the DS menu
+# entry with the rdx-dev-story wrapper while leaving all other codes alone.
+
+[agent]
+persistent_facts = [
+  "file:{project-root}/_bmad/rust-kb/section-4-core.md",
+  "file:{project-root}/_bmad/rust-kb/section-5-router.md",
+]
+principles = [
+  "Consult the Risk Router before writing code for any story.",
+]
+
+[[agent.menu]]
+code = "DS"
+skill = "rdx-dev-story"
+title = "Dev Story (RDX-wrapped)"

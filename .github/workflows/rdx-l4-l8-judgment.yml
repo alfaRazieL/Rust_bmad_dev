@@ -1,0 +1,88 @@
+name: RDX L4/L5/L8 Judgment
+
+# Phase 7 — RDX Rule Auditor + Code Review wrapper.
+# Locks the structural contract for:
+#   - rdx-judgment SKILL.md (Cat-3 evaluator)
+#   - rdx-code-review SKILL.md (R2 wrapper) + CR menu override
+#   - rdx-judgment-finding v1 JSON Schema (Cat-1 immutability guard)
+#   - L5 eval case files (cat3-scope, cat3-cat1-immutable, doc-not-rust)
+#   - L8 fixtures (clear-violation, scoped-to-unsafe, governance-doc-vs-ordinary)
+#   - rdx_validator.judgment helpers (variance, scope filter, doc classifier)
+# Statistical L5 pass-rate enforcement is out of CI (scheduled bmad-eval-runner
+# only, per RDX_TEST_STRATEGY.md §4 — "L5 = scheduled, not per-PR blocker").
+
+on:
+  pull_request:
+    paths:
+      - 'tests/bmad/code-review/**'
+      - 'tests/evals/cat3-scope/**'
+      - 'tests/evals/cat3-cat1-immutable/**'
+      - 'tests/evals/doc-not-rust/**'
+      - 'tests/evals/test_l5_phase7_cat3_cases.py'
+      - 'tests/evals/test_l8_judgment.py'
+      - 'tests/fixtures/cat3-cases/**'
+      - 'tests/acceptance/test_v6_acceptance.py'
+      - 'tests/acceptance/v5-regression-pack/**'
+      - 'tests/acceptance/cat3-flow/**'
+      - 'tests/acceptance/cr-r2-integration/**'
+      - 'tests/contracts/schemas/rdx-judgment-finding.v1.schema.json'
+      - 'rdx-validator/rdx_validator/judgment.py'
+      - '.claude/skills/rdx-judgment/**'
+      - '.claude/skills/rdx-code-review/**'
+      - '.claude/skills/rdx-setup/assets/agent-overrides/bmad-agent-dev.toml'
+      - '.claude/skills/rdx-setup/assets/workflow-overrides/**'
+      - '.github/workflows/rdx-l4-l8-judgment.yml'
+  push:
+    branches:
+      - main
+      - rdx-improvements
+    paths:
+      - 'tests/bmad/code-review/**'
+      - 'tests/evals/**'
+      - 'tests/fixtures/cat3-cases/**'
+      - 'tests/acceptance/**'
+      - 'tests/contracts/schemas/**'
+      - 'rdx-validator/rdx_validator/judgment.py'
+      - '.claude/skills/rdx-judgment/**'
+      - '.claude/skills/rdx-code-review/**'
+      - '.claude/skills/rdx-setup/assets/**'
+
+permissions:
+  contents: read
+
+jobs:
+  l4-l5-l8-judgment:
+    name: L4 CR wrappers + L5 cat3 case shape + L8 judgment helpers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema pytest pyyaml
+
+      - name: L0 regression (contracts — must remain green)
+        run: python -m pytest tests/contracts -v --tb=short
+
+      - name: L4 — R2 wrapper + R1 control structural contract
+        run: python -m pytest tests/bmad/code-review -v --tb=short
+
+      - name: L5 — Cat-3 eval case shape (T-L5-CAT3-SCOPE/NO-CAT1/DOC)
+        run: python -m pytest tests/evals/test_l5_phase7_cat3_cases.py -v --tb=short
+
+      - name: L8 — rdx-judgment helpers + SKILL prose contract
+        run: python -m pytest tests/evals/test_l8_judgment.py -v --tb=short
+
+      - name: V6 acceptance — V5 regression + Cat-3 routing + R2 wrapper
+        run: python -m pytest tests/acceptance/test_v6_acceptance.py -v --tb=short

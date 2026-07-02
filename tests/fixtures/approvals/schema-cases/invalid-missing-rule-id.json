@@ -1,0 +1,10 @@
+{
+  "approval_schema_version": "v1",
+  "approver_identity": "alice@example.com",
+  "approver_role": "unsafe-reviewers",
+  "head_sha": "0123456789abcdef0123456789abcdef01234567",
+  "diff_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp": "2026-06-30T12:00:00Z",
+  "scope": {"paths": ["src/unsafe/foo.rs"]},
+  "decision": "approved"
+}

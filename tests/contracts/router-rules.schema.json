@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alfaRazieL/Rust_bmad_dev/schemas/router-rules.schema.json",
+  "title": "RDX Router rules",
+  "type": "object",
+  "required": ["rdx_router_version", "packs"],
+  "additionalProperties": false,
+  "properties": {
+    "rdx_router_version": { "type": "string", "const": "v1" },
+    "kb_source": {
+      "type": "string",
+      "description": "Path to the KB section that this mapping mirrors. Drift checker normalises both ends."
+    },
+    "packs": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "label",
+          "kb_section",
+          "positive_signals",
+          "negative_signals",
+          "path_signals",
+          "confidence_class",
+          "activation_policy",
+          "related_rule_ids",
+          "validation_family"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "kb_section": { "type": "string", "pattern": "^6\\.[0-9]+$" },
+          "positive_signals": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "negative_signals": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "path_signals": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "story_tags": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "confidence_class": {
+            "type": "string",
+            "enum": ["STRONG", "MEDIUM", "WEAK"]
+          },
+          "activation_policy": {
+            "type": "string",
+            "enum": ["AUTO_ACTIVATE", "AUTO_SUGGEST", "STORY_TAG_REQUIRED", "REVIEW_REQUIRED"]
+          },
+          "escalation_triggers": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "related_rule_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^(RP-[A-Z]+-[0-9]{3}|CORE-[0-9]{3})$"
+            }
+          },
+          "validation_family": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

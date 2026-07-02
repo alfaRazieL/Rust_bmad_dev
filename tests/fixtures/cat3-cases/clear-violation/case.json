@@ -1,0 +1,17 @@
+{
+  "fixture_id": "clear-violation",
+  "test_id": "T-L8-EVAL-CONSISTENT-001",
+  "description": "A diff that contains an unambiguous Cat-3 violation. rdx-judgment should reach the same FAIL verdict across N=20 runs (variance <= 1).",
+  "active_packs": ["unsafe"],
+  "review_required_rules": ["RP-UNSAFE-002"],
+  "diff": "diff --git a/src/atomic_state.rs b/src/atomic_state.rs\n@@ -10,4 +10,12 @@\n pub struct State { inner: *mut Inner }\n+unsafe impl Send for State {}\n+unsafe impl Sync for State {}\n+// no synchronization story; inner has no atomics, no locks\n",
+  "expected_verdict": "FAIL",
+  "expected_rule_id": "RP-UNSAFE-002",
+  "expected_reasoning_substrings": [
+    "Send",
+    "Sync",
+    "invariants"
+  ],
+  "variance_threshold": 1,
+  "n_runs": 20
+}

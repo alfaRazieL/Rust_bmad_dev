@@ -17,3 +17,23 @@ principles = [
   "Conditional pack rules take precedence over generic defaults where they conflict. Never self-approve escalation triggers — escalate to Winston or the project owner when the router signals a specialist review.",
   "Never skip the router check, even for small or 'obvious' changes. The router is proportionate — if no trigger matches, record 'no conditional pack activated' and continue.",
 ]
+
+# RDX wrapper for the DS (Dev Story) menu code. The agent.menu array merges
+# by `code` per BMad resolver semantics — this entry REPLACES the base
+# `bmad-dev-story` mapping with the RDX wrapper, which orchestrates
+# router pre-pass → bmad-dev-story → evidence → rdx-validator → report.
+[[agent.menu]]
+code = "DS"
+skill = "rdx-dev-story"
+title = "Dev Story (RDX-wrapped)"
+
+# RDX wrapper for the CR (Code Review) menu code. Same merge-by-code
+# semantics — REPLACES the base `bmad-code-review` mapping with the
+# R2 wrapper, which invokes bmad-code-review as a child and then runs
+# the rdx-judgment Rule Auditor before emitting the unified report.
+# See RDX_TEST_STRATEGY.md §8 for the R1 vs R2 decision (R2 primary;
+# R1 is the workflow-overrides/bmad-code-review.toml control test).
+[[agent.menu]]
+code = "CR"
+skill = "rdx-code-review"
+title = "Code Review (RDX-wrapped)"

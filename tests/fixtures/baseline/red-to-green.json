@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L1-BASE-004 — base FAIL, head PASS → REGRESSION_FIXED",
+  "base": {"passed": false, "error_signature": "E0277"},
+  "head": {"passed": true}
+}

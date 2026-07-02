@@ -1,0 +1,8 @@
+diff --git a/docs/timing.md b/docs/timing.md
+index 1111111..2222222 100644
+--- a/docs/timing.md
++++ b/docs/timing.md
+@@ -1,3 +1,4 @@
+ # Timing
+
++Instant::now and Duration::from_secs are mentioned only as examples in this document.

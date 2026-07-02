@@ -1,0 +1,22 @@
+{
+  "fixture_id": "governance-doc-vs-ordinary",
+  "test_id": "T-L8-DOC-CLASS-001",
+  "description": "Diff modifies docs/architecture.md (governance doc) AND README.md (ordinary doc). rdx-judgment should review the architecture doc (system-design rule applicable) but NOT flag the README. Doc-classification scope per RDX_IMPLEMENTATION_PLAN_TESTED.md §7.5.",
+  "active_packs": [],
+  "review_required_rules": [],
+  "diff": "diff --git a/docs/architecture.md b/docs/architecture.md\n@@ -10,4 +10,8 @@\n ## Persistence layer\n+\n+The store uses a single global mutex for all writes. There is no per-shard\n+lock; cross-shard transactions hold the global lock for their entire\n+duration. Recovery on crash replays the WAL from offset 0.\ndiff --git a/README.md b/README.md\n@@ -3,3 +3,5 @@\n A small CLI utility.\n+\n+Run `./tool --help` to see options.\n",
+  "governance_doc_paths": ["docs/architecture.md"],
+  "ordinary_doc_paths": ["README.md"],
+  "expected_findings_about_governance": true,
+  "expected_findings_about_ordinary": false,
+  "expected_governance_topic_substrings": [
+    "global mutex",
+    "concurrency",
+    "recovery"
+  ],
+  "forbidden_findings": [
+    "README.md style",
+    "README.md formatting",
+    "ordinary doc finding"
+  ]
+}

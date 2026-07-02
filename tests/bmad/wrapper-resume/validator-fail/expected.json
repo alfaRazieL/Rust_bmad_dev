@@ -1,0 +1,12 @@
+{
+  "test_id": "T-L4-WR-003",
+  "description": "Wrapper must HALT when validator exits non-zero. Sentinel WRAPPER_HALTED_DUE_TO_VALIDATOR_FAIL recorded. This is a soft gate (LLM-cooperative), not hard enforcement — hard enforcement lives in git hooks (Phase 5) and CI.",
+  "expected_status": "FAIL",
+  "expected_exit_code": 1,
+  "skill_must_declare": [
+    "validator invocation",
+    "non-zero exit code detection",
+    "WRAPPER_HALTED_DUE_TO_VALIDATOR_FAIL sentinel",
+    "no false hard-enforcement claim"
+  ]
+}

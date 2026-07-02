@@ -1,0 +1,22 @@
+{
+  "fixture_id": "scoped-to-unsafe",
+  "test_id": "T-L8-ACTIVE-RULES-001",
+  "description": "Story activates only the [unsafe] pack. rdx-judgment receives the full KB on disk but its output must reference ONLY RP-UNSAFE-* rule IDs (and CORE-* always-on rules). No RP-ASYNC, RP-FFI, RP-MACRO, RP-DB, RP-DATA, RP-API, RP-CARGO, RP-PERF, RP-OPS, RP-TIME, RP-IO, RP-TEST.",
+  "active_packs": ["unsafe"],
+  "available_packs_on_disk": [
+    "async", "unsafe", "ffi", "macro", "api", "cargo",
+    "testing", "data-security-io", "db", "time-config-client",
+    "ops", "perf"
+  ],
+  "review_required_rules": [
+    "RP-UNSAFE-002",
+    "RP-UNSAFE-003"
+  ],
+  "diff": "diff --git a/src/buffers/cast.rs b/src/buffers/cast.rs\n@@ -1,3 +1,9 @@\n+pub unsafe fn cast_buf(p: *mut u8, len: usize) -> &'static mut [u8] {\n+    // caller asserts p is valid for `len` bytes\n+    core::slice::from_raw_parts_mut(p, len)\n+}\n",
+  "allowed_rule_id_prefixes": ["RP-UNSAFE-", "CORE-"],
+  "forbidden_rule_id_prefixes": [
+    "RP-ASYNC-", "RP-FFI-", "RP-MACRO-", "RP-DB-",
+    "RP-DATA-", "RP-API-", "RP-CARGO-", "RP-PERF-",
+    "RP-OPS-", "RP-TIME-", "RP-IO-", "RP-TEST-"
+  ]
+}

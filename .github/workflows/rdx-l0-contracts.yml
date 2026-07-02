@@ -1,0 +1,52 @@
+name: RDX L0 Contracts
+
+on:
+  pull_request:
+    paths:
+      - '.claude/skills/rdx-setup/assets/kb-sections/**'
+      - 'tests/contracts/**'
+      - 'tests/fixtures/evidence/**'
+      - 'tests/conftest.py'
+      - '.github/workflows/rdx-l0-contracts.yml'
+  push:
+    branches:
+      - main
+      - rdx-improvements
+    paths:
+      - '.claude/skills/rdx-setup/assets/kb-sections/**'
+      - 'tests/contracts/**'
+      - 'tests/fixtures/evidence/**'
+
+permissions:
+  contents: read
+
+jobs:
+  l0-contracts:
+    name: L0 contract & drift checks
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema pytest pyyaml
+
+      - name: Run drift checks
+        run: |
+          python tests/contracts/drift-check.py --mode all
+          python tests/contracts/duplicate-id-check.py
+
+      - name: Run L0 contract tests
+        run: |
+          python -m pytest tests/contracts -v --tb=short

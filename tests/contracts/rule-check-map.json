@@ -1,0 +1,226 @@
+{
+  "rdx_rule_check_map_version": "v1",
+  "source_of_truth": "RDX_TEST_TRACEABILITY_MATRIX.md + RDX_TEST_STRATEGY.md §5",
+  "description": "Canonical mapping from KB rule ID to check semantics. Each entry records applicability detection, evidence requirements, authority (which actor sets the verdict), blocking semantics, and exception policy. Phase 1 deliverable; consumed by validator in Phase 2 and by drift checker for ID validity.",
+  "rules": {
+    "CORE-001": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "story-contract presence; reviewer evaluates contract-before-code adherence",
+      "evidence": "story document references",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED → blocking in MODE_4 only",
+      "exception_policy": "story tag may waive with rationale"
+    },
+    "CORE-002": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "repo-model reasoning trace",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-003": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "ownership/lifecycle reasoning",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-004": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "root-cause analysis",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-005": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "type-encoded invariants",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-006": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "abstraction-choice rationale",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-007": {
+      "category": 1,
+      "applicability": "diff touches protected boundary paths or unrelated files",
+      "detection": "validator scans diff vs protected-file allowlist",
+      "evidence": "protected_files list + scope decision record",
+      "authority": "Validator",
+      "blocking_semantics": "FAIL → BLOCKING",
+      "exception_policy": "specialist approval for explicit boundary expansion"
+    },
+    "CORE-008": {
+      "category": 2,
+      "applicability": "panic-discipline story tag OR diff contains .unwrap/.expect/panic!",
+      "detection": "validator regex on diff; severity escalates to BLOCKING when story tag present",
+      "evidence": "test results, story tag",
+      "authority": "Validator",
+      "blocking_semantics": "WARNING if story tag absent; FAIL if story tag present",
+      "exception_policy": "author-justified #[allow] with comment"
+    },
+    "CORE-009": {
+      "category": 3,
+      "applicability": "diff touches cleanup/cancellation/task-ownership paths",
+      "detection": "reviewer judgment seeded by validator signal",
+      "evidence": "cleanup semantics reasoning",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-010": {
+      "category": 3,
+      "applicability": "diff crosses external boundary",
+      "detection": "reviewer judgment seeded by validator signal",
+      "evidence": "boundary-validation trace",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-011": {
+      "category": 1,
+      "applicability": "any Rust diff",
+      "detection": "validator runs cargo check / cargo clippy / cargo test on head",
+      "evidence": "command + exit_code + output_digest per RDX_TEST_STRATEGY.md §5.1",
+      "authority": "Validator",
+      "blocking_semantics": "FAIL → BLOCKING",
+      "exception_policy": "NOT_RUN allowed only with structured reason"
+    },
+    "CORE-012": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "semantic-vs-compile reasoning",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-013": {
+      "category": 3,
+      "applicability": "story includes spec",
+      "detection": "reviewer judgment",
+      "evidence": "test-oracle derivation note",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-014": {
+      "category": 1,
+      "applicability": "diff touches tests, lint suppressors, or feature gates",
+      "detection": "validator AST scan for #[ignore], #[cfg(not(test))], --features bypass, expect overrides",
+      "evidence": "suppression delta",
+      "authority": "Validator",
+      "blocking_semantics": "FAIL → BLOCKING",
+      "exception_policy": "documented #[allow] with story-tagged reason"
+    },
+    "CORE-015": {
+      "category": 1,
+      "applicability": "always (router parity)",
+      "detection": "validator re-runs router on head; compares to story-recorded packs",
+      "evidence": "router-rules.json + activation trace",
+      "authority": "Validator",
+      "blocking_semantics": "FAIL → BLOCKING when packs diverge",
+      "exception_policy": "story owner may resolve divergence"
+    },
+    "CORE-016": {
+      "category": 3,
+      "applicability": "always",
+      "detection": "reviewer judgment",
+      "evidence": "uncertainty trace",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "CORE-017": {
+      "category": 2,
+      "applicability": "diff makes a performance claim or modifies measured path",
+      "detection": "validator checks for benchmark artefact when perf story tag present",
+      "evidence": "baseline + after benchmark",
+      "authority": "Validator",
+      "blocking_semantics": "EVIDENCE_REQUIRED when claim present without artefact",
+      "exception_policy": "none"
+    },
+    "CORE-018": {
+      "category": 3,
+      "applicability": "diff touches output surfaces or sensitive data paths",
+      "detection": "reviewer judgment seeded by validator signal on log/print/format paths",
+      "evidence": "redaction trace",
+      "authority": "Evaluator",
+      "blocking_semantics": "REVIEW_REQUIRED",
+      "exception_policy": "none"
+    },
+    "RP-ASYNC-001": {
+      "category": 3, "applicability": "async pack active", "detection": "reviewer judgment", "evidence": "future contract trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-UNSAFE-001": {
+      "category": 4, "applicability": "unsafe pack active and diff introduces/changes unsafe", "detection": "validator detects new unsafe block; specialist required", "evidence": "SAFETY comment + specialist approval", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "none"
+    },
+    "RP-FFI-001": {
+      "category": 4, "applicability": "ffi pack active", "detection": "validator detects extern boundaries", "evidence": "ABI ownership doc + specialist approval", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "none"
+    },
+    "RP-MACRO-001": {
+      "category": 3, "applicability": "macro pack active", "detection": "reviewer judgment", "evidence": "macro hygiene trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-API-001": {
+      "category": 3, "applicability": "api pack active (publish=true story tag)", "detection": "reviewer judgment seeded by public-surface diff", "evidence": "SemVer reasoning", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-CARGO-001": {
+      "category": 2, "applicability": "cargo pack active", "detection": "validator parses manifest delta", "evidence": "cargo metadata + resolved graph", "authority": "Validator", "blocking_semantics": "EVIDENCE_REQUIRED when policy delta lacks rationale", "exception_policy": "story-tagged manifest change"
+    },
+    "RP-TEST-001": {
+      "category": 3, "applicability": "testing pack active via story tag", "detection": "reviewer judgment", "evidence": "advanced-validation plan", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-DATA-001": {
+      "category": 3, "applicability": "data-security-io pack active", "detection": "reviewer judgment", "evidence": "DTO compatibility trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-SEC-001": {
+      "category": 4, "applicability": "data-security-io pack active and security signals present", "detection": "specialist required", "evidence": "security review record", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "none"
+    },
+    "RP-IO-001": {
+      "category": 3, "applicability": "data-security-io pack active", "detection": "reviewer judgment", "evidence": "boundary-resource lifecycle trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-DB-001": {
+      "category": 3, "applicability": "db pack active", "detection": "reviewer judgment", "evidence": "transaction-scope trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-TIME-001": {
+      "category": 3, "applicability": "time-config-client pack active", "detection": "reviewer judgment", "evidence": "deadline/monotonic trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-OPS-001": {
+      "category": 3, "applicability": "ops pack active via story tag", "detection": "reviewer judgment", "evidence": "production-observability trace", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "RP-PERF-001": {
+      "category": 2, "applicability": "perf pack active via story tag", "detection": "validator confirms baseline artefact", "evidence": "benchmark numbers", "authority": "Validator", "blocking_semantics": "EVIDENCE_REQUIRED", "exception_policy": "none"
+    },
+    "GOV-001": {
+      "category": 4, "applicability": "diff crosses unapproved high-impact boundary or touches instruction artefacts", "detection": "validator detects protected-artefact change; specialist required", "evidence": "approval trail + artefact diff", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "task-authorised override recorded"
+    },
+    "GOV-002": {
+      "category": 3, "applicability": "agent governance change", "detection": "reviewer judgment", "evidence": "behaviour-eval coverage", "authority": "Evaluator", "blocking_semantics": "REVIEW_REQUIRED", "exception_policy": "none"
+    },
+    "GOV-003": {
+      "category": 4, "applicability": "approval category invoked", "detection": "validator checks CODEOWNERS mapping", "evidence": "approval signature", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "fallback escalation explicitly recorded"
+    },
+    "GOV-004": {
+      "category": 4, "applicability": "protected non-product artefact change", "detection": "validator detects path under protected list", "evidence": "ownership metadata + approval", "authority": "Specialist", "blocking_semantics": "APPROVAL_REQUIRED", "exception_policy": "prompt-only fallback when stronger control unavailable"
+    },
+    "GOV-005": {
+      "category": 1, "applicability": "story or router assigned risk tags or checks", "detection": "validator compares story-recorded checks against final verdicts", "evidence": "tag/check preservation trace", "authority": "Validator", "blocking_semantics": "FAIL → BLOCKING on silent self-waiver", "exception_policy": "authorised owner waiver recorded"
+    }
+  }
+}

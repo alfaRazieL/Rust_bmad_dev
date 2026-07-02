@@ -1,0 +1,92 @@
+name: RDX L8 Cat-4 Approvals
+
+# Phase 8 — Cat-4 specialist approval gating.
+# Locks the structural contract for:
+#   - _bmad/rdx/approvers.schema.json (A3 hybrid canonical)
+#   - _bmad/rdx/approval.v1.schema.json (B1 in-repo JSON storage)
+#   - rdx_validator.approvers module (path-pattern → role → identity resolution)
+#   - rdx-setup sync-codeowners utility (CODEOWNERS generation from approvers.yaml)
+#   - L8 driver tests (T-L8-CAT4-001/002/003/004/005, T-L7-APPROVAL-REUSE-001,
+#     T-L8-GOV-001)
+#   - V6 acceptance (T-V6-ACC-04 — full Cat-4 block → approve → re-block cycle)
+#
+# Enforcement model: hard CI gate. Soft-gate cooperation lives in the wrapper
+# skills + git hook (see RDX_TEST_STRATEGY.md §5.3, §8). HMAC signature on the
+# approval JSON is intentionally deferred to Phase 9 HA — see
+# RDX_VALIDATOR_ARCHITECTURE_VERIFICATION.md.
+
+on:
+  pull_request:
+    paths:
+      - '_bmad/rdx/**'
+      - 'tests/contracts/test_l0_phase8_schemas.py'
+      - 'tests/fixtures/approvers/**'
+      - 'tests/fixtures/approvals/**'
+      - 'tests/fixtures/diffs/cat4-unsafe/**'
+      - 'tests/fixtures/diffs/cat4-governance/**'
+      - 'tests/integration/cat4/**'
+      - 'tests/unit/validator/test_l8_sync_codeowners.py'
+      - 'tests/acceptance/cat4-flow/**'
+      - 'rdx-validator/rdx_validator/approvers.py'
+      - 'rdx-validator/rdx_validator/cli.py'
+      - '.claude/skills/rdx-setup/scripts/sync_codeowners.py'
+      - '.claude/skills/rdx-setup/scripts/install.py'
+      - '.github/workflows/rdx-l8-cat4.yml'
+  push:
+    branches:
+      - main
+      - rdx-improvements
+    paths:
+      - '_bmad/rdx/**'
+      - 'tests/contracts/test_l0_phase8_schemas.py'
+      - 'tests/fixtures/approvers/**'
+      - 'tests/fixtures/approvals/**'
+      - 'tests/integration/cat4/**'
+      - 'tests/unit/validator/test_l8_sync_codeowners.py'
+      - 'tests/acceptance/cat4-flow/**'
+      - 'rdx-validator/rdx_validator/approvers.py'
+      - 'rdx-validator/rdx_validator/cli.py'
+      - '.claude/skills/rdx-setup/scripts/sync_codeowners.py'
+
+permissions:
+  contents: read
+
+jobs:
+  l8-cat4:
+    name: L8 Cat-4 specialist approval gates
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jsonschema pytest pyyaml
+
+      - name: L0 regression (contracts — must remain green)
+        run: python -m pytest tests/contracts -v --tb=short
+
+      - name: L0 — Phase 8 schemas
+        run: python -m pytest tests/contracts/test_l0_phase8_schemas.py -v --tb=short
+
+      - name: L8 — Cat-4 driver tests
+        run: python -m pytest tests/integration/cat4 -v --tb=short
+
+      - name: L8 — sync-codeowners golden + idempotency (T-L8-CAT4-004)
+        run: python -m pytest tests/unit/validator/test_l8_sync_codeowners.py -v --tb=short
+
+      - name: V6 acceptance — full Cat-4 cycle (T-V6-ACC-04)
+        run: python -m pytest tests/acceptance/cat4-flow -v --tb=short
+
+      - name: Setup install seeds Cat-4 artifacts
+        run: python -m pytest tests/bmad/setup-uninstall/test_setup_uninstall.py::test_t_l8_cat4_install_seeds_artifacts -v --tb=short

@@ -5,6 +5,23 @@ module_version: 1.0.0
 default_selected: false
 agents: []
 variables: []
+enforcement_level:
+  prompt: >
+    Pick the RDX enforcement level for this project. The selected level
+    is recorded in _bmad/config.yaml and consulted by the wrapper, the
+    pre-push hook, and CI. See assets/modes.md for full details.
+  default: MODE_1
+  single-select:
+    - value: MODE_0
+      label: "MODE_0 — Advisory (record verdicts, never block; exit 0)"
+    - value: MODE_1
+      label: "MODE_1 — Local Validated (default; wrapper soft-gate inside the agent)"
+    - value: MODE_2
+      label: "MODE_2 — Local Gated (pre-push hook; bypassable with --no-verify)"
+    - value: MODE_3
+      label: "MODE_3 — CI Enforced (required check on PR; tamper-resistant)"
+    - value: MODE_4
+      label: "MODE_4 — Specialist Approval (Cat-4 sign-off pinned to diff_digest; Phase 8)"
 module_greeting: >
   Rust Dev eXpert (RDX) module installed successfully.
 

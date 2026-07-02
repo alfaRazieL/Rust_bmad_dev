@@ -1,0 +1,11 @@
+{
+  "_doc": "T-L2-CORE011-001 — Rust diff present but no CORE-011 evidence block recorded",
+  "rdx_schema_version": "v1",
+  "story_id": "STORY-MISSING-COMPILE",
+  "head_sha": "fedcba9876543210fedcba9876543210fedcba98",
+  "base_sha": "0123456789abcdef0123456789abcdef01234567",
+  "diff_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mode": "MODE_2",
+  "rules": {},
+  "aggregate": {"verdict": "PASS", "exit_code": 0}
+}

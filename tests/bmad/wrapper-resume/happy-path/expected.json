@@ -1,0 +1,14 @@
+{
+  "test_id": "T-L4-WR-001",
+  "description": "Canonical happy-path trace ordering for rdx-dev-story wrapper.",
+  "expected_trace_order": ["BEFORE", "CHILD", "AFTER"],
+  "expected_status": "PASS",
+  "expected_exit_code": 0,
+  "skill_must_declare": [
+    "BEFORE marker step",
+    "child invocation step (bmad-dev-story)",
+    "AFTER marker step (post-child)",
+    "validator invocation step",
+    "final report step"
+  ]
+}

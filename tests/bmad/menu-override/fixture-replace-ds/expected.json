@@ -1,0 +1,10 @@
+{
+  "description": "Canonical expected resolved agent.menu for T-L4-MENU-001 — DS reassigned to rdx-dev-story, QD/CR/RF preserved in base order.",
+  "test_id": "T-L4-MENU-001",
+  "expected_menu": [
+    {"code": "DS", "skill": "rdx-dev-story", "title": "Dev Story (RDX-wrapped)"},
+    {"code": "QD", "skill": "bmad-quick-dev", "title": "Quick Dev"},
+    {"code": "CR", "skill": "bmad-code-review", "title": "Code Review"},
+    {"code": "RF", "skill": "bmad-refactor", "title": "Refactor"}
+  ]
+}

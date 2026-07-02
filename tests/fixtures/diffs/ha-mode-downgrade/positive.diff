@@ -1,0 +1,10 @@
+diff --git a/_bmad/rdx/config.toml b/_bmad/rdx/config.toml
+index aaaaaaa..bbbbbbb 100644
+--- a/_bmad/rdx/config.toml
++++ b/_bmad/rdx/config.toml
+@@ -1,4 +1,4 @@
+ # RDX project configuration
+ schema_version = "v1"
+-mode = "MODE_4"
++mode = "MODE_3"
+ install_hook = true

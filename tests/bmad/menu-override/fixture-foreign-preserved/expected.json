@@ -1,0 +1,12 @@
+{
+  "description": "Canonical expected resolved agent.menu for T-L4-MENU-002 — base + foreign user override + RDX override all coexist. Order: base entries first (DS replaced), then foreign XX appended.",
+  "test_id": "T-L4-MENU-002",
+  "expected_menu": [
+    {"code": "DS", "skill": "rdx-dev-story", "title": "Dev Story (RDX-wrapped)"},
+    {"code": "QD", "skill": "bmad-quick-dev", "title": "Quick Dev"},
+    {"code": "CR", "skill": "bmad-code-review", "title": "Code Review"},
+    {"code": "RF", "skill": "bmad-refactor", "title": "Refactor"},
+    {"code": "XX", "skill": "user-custom-skill", "title": "User Custom"}
+  ],
+  "expected_principles_contain_substring": "User-added principle preserved"
+}

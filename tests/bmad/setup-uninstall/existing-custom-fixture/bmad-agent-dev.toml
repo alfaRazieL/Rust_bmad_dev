@@ -1,0 +1,13 @@
+# Foreign user customization (sandbox project state PRE rdx-setup).
+# rdx-setup must merge on top of this without destroying the XX entry
+# or the user's principle.
+
+[agent]
+principles = [
+  "User-added principle preserved across RDX install.",
+]
+
+[[agent.menu]]
+code = "XX"
+skill = "user-custom-skill"
+title = "User Custom"

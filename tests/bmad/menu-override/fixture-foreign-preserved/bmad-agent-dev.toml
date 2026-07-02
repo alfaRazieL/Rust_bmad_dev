@@ -1,0 +1,13 @@
+# T-L4-MENU-002 fixture — represents a user's pre-existing custom override
+# that adds a foreign menu code "XX". RDX setup must merge on top of this
+# without destroying the XX entry.
+
+[agent]
+principles = [
+  "User-added principle preserved across RDX install.",
+]
+
+[[agent.menu]]
+code = "XX"
+skill = "user-custom-skill"
+title = "User Custom"

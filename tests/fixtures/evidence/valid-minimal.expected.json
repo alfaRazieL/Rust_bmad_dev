@@ -1,0 +1,5 @@
+{
+  "schema_validates": true,
+  "intent": "Minimal valid evidence document — Cat-1 PASS with command evidence, Cat-1 NOT_APPLICABLE without evidence, aggregate PASS, exit 0.",
+  "test_ids": ["T-L0-SCHEMA-002"]
+}

@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L2-CORE015-001 — agent claims [async] but the diff contains an unsafe block; validator must flag missing 'unsafe' pack",
+  "agent_activated_packs": ["async"],
+  "router_suppressions": []
+}

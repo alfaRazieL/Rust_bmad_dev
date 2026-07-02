@@ -1,0 +1,5 @@
+{
+  "_doc": "T-L1-BASE-002 — base red, head red, different signature → REGRESSION_FAILURE",
+  "base": {"passed": false, "error_signature": "E0308: type mismatch in src/lib.rs:42"},
+  "head": {"passed": false, "error_signature": "E0277: trait bound not satisfied in src/handler.rs:8"}
+}

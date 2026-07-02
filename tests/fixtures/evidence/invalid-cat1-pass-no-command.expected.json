@@ -1,0 +1,6 @@
+{
+  "schema_validates": false,
+  "intent": "LLM-authored Cat-1 PASS with no command/exit_code/output_digest evidence. Schema MUST reject — Cat-1 PASS is reserved for validator/CI with structured tool output.",
+  "test_ids": ["T-L0-SCHEMA-004"],
+  "reason_class": "NO_SELF_ATTESTED_CAT1_PASS"
+}

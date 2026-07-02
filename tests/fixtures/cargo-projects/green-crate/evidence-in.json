@@ -1,0 +1,27 @@
+{
+  "rdx_schema_version": "v1",
+  "story_id": "STORY-L3-GREEN-001",
+  "head_sha": "fedcba9876543210fedcba9876543210fedcba98",
+  "base_sha": "0123456789abcdef0123456789abcdef01234567",
+  "diff_digest": "8243ff758c7c0d4a619a91e7a68b9ee3ae388e70f077c4b694bdb4db6865a48f",
+  "mode": "MODE_2",
+  "rules": {
+    "CORE-011": {
+      "category": 1,
+      "verdict": "PASS",
+      "severity": "INFO",
+      "author": "VALIDATOR",
+      "message": "cargo check exit 0 on doc-only diff",
+      "evidence": [
+        {
+          "command": "cargo check --workspace --all-targets",
+          "exit_code": 0,
+          "output_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+        }
+      ]
+    }
+  },
+  "exceptions": [],
+  "approvals": [],
+  "aggregate": {"verdict": "PASS", "exit_code": 0}
+}

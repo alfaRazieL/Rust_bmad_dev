@@ -1,0 +1,5 @@
+# Sandbox seed config for T-L4-SETUP-001..003 — a clean BMad project
+# that has bmad-agent-* installed but no RDX module.
+modules:
+  bmad_core:
+    version: "1.0.0"

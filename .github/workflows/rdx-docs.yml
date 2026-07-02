@@ -1,0 +1,76 @@
+name: RDX Phase 10 docs
+
+# Phase 10 — Documentation gates.
+# Runs the deterministic structural tests in tests/docs/ on every PR that
+# touches README.md, docs/**.md, or any .claude/skills/rdx-*/**.md file.
+# Also re-runs the T-V5-ACC-06 acceptance gate (narrow scope: skill docs)
+# alongside the extended docs/ scope.
+#
+# Enforcement model: structural / soft. Real release-blocking enforcement
+# remains the responsibility of the rdx-gate.yml required check (Mode 3)
+# and the rdx-full-regression.yml suite. These tests close the Phase 10
+# entry / exit gates declared in RDX_IMPLEMENTATION_PLAN_TESTED.md.
+
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'docs/**'
+      - '.claude/skills/rdx-*/**.md'
+      - 'tests/docs/**'
+      - 'tests/acceptance/test_doc_honesty.py'
+      - 'tests/compatibility/matrix.md'
+      - '.github/workflows/rdx-docs.yml'
+  push:
+    branches:
+      - main
+      - rdx-improvements
+    paths:
+      - 'README.md'
+      - 'docs/**'
+      - '.claude/skills/rdx-*/**.md'
+      - 'tests/docs/**'
+      - 'tests/acceptance/test_doc_honesty.py'
+
+permissions:
+  contents: read
+
+jobs:
+  phase-10-docs:
+    name: Phase 10 docs (structural + T-V5-ACC-06)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml jsonschema
+
+      - name: Doc-review checklist (entry gate, T-DOC-CHECKLIST-001)
+        run: python -m pytest tests/docs/test_l4_doc_review_checklist.py -v --tb=short
+
+      - name: README architecture coverage (T-DOC-README-ARCHITECTURE-001)
+        run: python -m pytest tests/docs/test_l4_readme_architecture.py -v --tb=short
+
+      - name: README CI-cost subsections (T-DOC-README-CI-COST-001)
+        run: python -m pytest tests/docs/test_l4_readme_ci_cost.py -v --tb=short
+
+      - name: README Mode 2 positioning (T-DOC-README-MODE2-001)
+        run: python -m pytest tests/docs/test_l4_readme_mode2_positioning.py -v --tb=short
+
+      - name: Doc-honesty narrow scope (T-V5-ACC-06)
+        run: python -m pytest tests/acceptance/test_doc_honesty.py -v --tb=short
+
+      - name: Doc-honesty extended scope (T-DOC-HONESTY-EXTENDED-001)
+        run: python -m pytest tests/docs/test_l4_doc_honesty_extended.py -v --tb=short

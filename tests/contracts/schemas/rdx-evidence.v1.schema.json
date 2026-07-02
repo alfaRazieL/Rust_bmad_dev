@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/alfaRazieL/Rust_bmad_dev/schemas/rdx-evidence.v1.schema.json",
+  "title": "RDX Evidence v1",
+  "description": "Canonical evidence document produced by rdx-validator. Carries verdicts per rule plus authority-tagged metadata so downstream actors (validator, evaluator, specialist, CI) cannot impersonate one another.",
+  "type": "object",
+  "required": [
+    "rdx_schema_version",
+    "story_id",
+    "head_sha",
+    "base_sha",
+    "diff_digest",
+    "mode",
+    "rules",
+    "aggregate"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "rdx_schema_version": {
+      "type": "string",
+      "const": "v1"
+    },
+    "story_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "head_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "base_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,64}$"
+    },
+    "diff_digest": {
+      "type": "string",
+      "description": "SHA-256 (or stronger) digest of the canonical diff. Pin point for stale-evidence detection and approval binding.",
+      "pattern": "^[0-9a-f]{32,128}$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["MODE_0", "MODE_1", "MODE_2", "MODE_3", "MODE_4"]
+    },
+    "router_activations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pack", "activation_policy", "active"],
+        "additionalProperties": false,
+        "properties": {
+          "pack": { "type": "string" },
+          "activation_policy": {
+            "type": "string",
+            "enum": ["AUTO_ACTIVATE", "AUTO_SUGGEST", "STORY_TAG_REQUIRED", "REVIEW_REQUIRED"]
+          },
+          "active": { "type": "boolean" },
+          "signals": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "story_tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "minProperties": 0,
+      "patternProperties": {
+        "^(CORE-[0-9]{3}|RP-[A-Z]+-[0-9]{3}|GOV-[0-9]{3})$": {
+          "$ref": "#/$defs/ruleFinding"
+        }
+      },
+      "additionalProperties": false
+    },
+    "exceptions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/exception" }
+    },
+    "approvals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/approval" }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["verdict", "exit_code"],
+      "additionalProperties": false,
+      "properties": {
+        "verdict": { "$ref": "#/$defs/verdict" },
+        "exit_code": {
+          "type": "integer",
+          "enum": [0, 1, 2, 3, 4]
+        },
+        "blocking_count": { "type": "integer", "minimum": 0 },
+        "warning_count": { "type": "integer", "minimum": 0 },
+        "info_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "validator": {
+      "type": "object",
+      "required": ["name", "version", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "const": "rdx-validator" },
+        "version": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "string",
+          "description": "Where this validator was loaded from. CI runs MUST set this to the base/release source — see RDX_TEST_STRATEGY.md §7.",
+          "enum": ["PR_HEAD", "TARGET_BRANCH", "PINNED_RELEASE", "REUSABLE_WORKFLOW"]
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_APPLICABLE",
+        "NOT_RUN",
+        "EVIDENCE_REQUIRED",
+        "REVIEW_REQUIRED",
+        "APPROVAL_REQUIRED",
+        "BASELINE_FAILURE_OBSERVED",
+        "BASELINE_BLOCKS_VALIDATION",
+        "REGRESSION_FAILURE",
+        "REGRESSION_FIXED",
+        "ENVIRONMENT_UNAVAILABLE",
+        "TOOL_UNAVAILABLE",
+        "BLOCKED"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["INFO", "WARNING", "BLOCKING"]
+    },
+    "category": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4]
+    },
+    "authorSource": {
+      "type": "string",
+      "description": "Who wrote this verdict. Schema constraints below forbid LLM-self-attested Cat-1 PASS.",
+      "enum": ["LLM", "VALIDATOR", "EVALUATOR", "SPECIALIST", "CI"]
+    },
+    "commandEvidence": {
+      "type": "object",
+      "required": ["command", "exit_code", "output_digest"],
+      "additionalProperties": false,
+      "properties": {
+        "command": { "type": "string", "minLength": 1 },
+        "exit_code": { "type": "integer" },
+        "output_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32,128}$"
+        },
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "tool": { "type": "string" },
+        "tool_version": { "type": "string" }
+      }
+    },
+    "ruleFinding": {
+      "type": "object",
+      "required": ["category", "verdict", "severity", "author"],
+      "additionalProperties": false,
+      "properties": {
+        "category": { "$ref": "#/$defs/category" },
+        "verdict": { "$ref": "#/$defs/verdict" },
+        "severity": { "$ref": "#/$defs/severity" },
+        "author": { "$ref": "#/$defs/authorSource" },
+        "message": { "type": "string" },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/commandEvidence" }
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string" },
+              "line": { "type": "integer", "minimum": 1 },
+              "end_line": { "type": "integer", "minimum": 1 },
+              "diff_hunk": { "type": "string" }
+            }
+          }
+        },
+        "exception_ref": { "type": "string" },
+        "review_ref": { "type": "string" },
+        "approval_ref": { "type": "string" },
+        "baseline": {
+          "type": "object",
+          "required": ["mode"],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["NOT_RUN", "BASE_ONLY", "HEAD_ONLY", "DUAL_RUN"]
+            },
+            "base_verdict": { "$ref": "#/$defs/verdict" },
+            "head_verdict": { "$ref": "#/$defs/verdict" },
+            "signature": { "type": "string" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "description": "Cat-1 PASS must carry command evidence; LLM cannot self-attest.",
+          "if": {
+            "properties": {
+              "category": { "const": 1 },
+              "verdict": { "const": "PASS" }
+            },
+            "required": ["category", "verdict"]
+          },
+          "then": {
+            "required": ["evidence"],
+            "properties": {
+              "author": { "enum": ["VALIDATOR", "CI"] },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/$defs/commandEvidence" }
+              }
+            }
+          }
+        },
+        {
+          "description": "Cat-2 PASS must reference at least one piece of evidence.",
+          "if": {
+            "properties": {
+              "category": { "const": 2 },
+              "verdict": { "const": "PASS" }
+            },
+            "required": ["category", "verdict"]
+          },
+          "then": {
+            "required": ["evidence"],
+            "properties": {
+              "evidence": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "description": "Cat-3 verdict authorship is reserved for the evaluator.",
+          "if": {
+            "properties": {
+              "category": { "const": 3 },
+              "verdict": { "enum": ["PASS", "FAIL"] }
+            },
+            "required": ["category", "verdict"]
+          },
+          "then": {
+            "properties": {
+              "author": { "enum": ["EVALUATOR", "CI"] }
+            }
+          }
+        },
+        {
+          "description": "Cat-4 PASS requires specialist authorship and approval reference.",
+          "if": {
+            "properties": {
+              "category": { "const": 4 },
+              "verdict": { "const": "PASS" }
+            },
+            "required": ["category", "verdict"]
+          },
+          "then": {
+            "required": ["approval_ref"],
+            "properties": {
+              "author": { "enum": ["SPECIALIST", "CI"] }
+            }
+          }
+        },
+        {
+          "description": "NOT_RUN must record a structured reason.",
+          "if": {
+            "properties": {
+              "verdict": { "const": "NOT_RUN" }
+            },
+            "required": ["verdict"]
+          },
+          "then": {
+            "required": ["message"]
+          }
+        }
+      ]
+    },
+    "exception": {
+      "type": "object",
+      "required": ["rule_id", "scope", "expires_at", "authorized_by"],
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": { "type": "string" },
+        "scope": { "type": "string" },
+        "reason": { "type": "string" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "authorized_by": { "type": "string" },
+        "story_ref": { "type": "string" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": ["rule_id", "reviewer", "head_sha", "diff_digest", "decision", "timestamp"],
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": { "type": "string" },
+        "reviewer": { "type": "string" },
+        "role": { "type": "string" },
+        "head_sha": { "type": "string", "pattern": "^[0-9a-f]{7,64}$" },
+        "diff_digest": { "type": "string", "pattern": "^[0-9a-f]{32,128}$" },
+        "decision": {
+          "type": "string",
+          "enum": ["APPROVED", "REJECTED", "CONDITIONAL"]
+        },
+        "conditions": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "scope": { "type": "string" }
+      }
+    }
+  }
+}
