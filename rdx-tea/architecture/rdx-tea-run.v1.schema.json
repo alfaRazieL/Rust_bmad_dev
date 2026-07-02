@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/architecture/rdx-tea-run.v1.schema.json",
+  "title": "RDX-TEA sidecar (rdx-tea-run.v1)",
+  "description": "Deterministic sidecar produced by the RDX-TEA binder after a TEA workflow completes. Enables an external RDX validator to derive an rdx-evidence.v1 verdict without trusting the LLM to self-declare it.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "workflow",
+    "execution_mode",
+    "active_packs",
+    "artifact_path",
+    "artifact_sha256",
+    "prepare_manifest_sha256",
+    "completed"
+  ],
+  "properties": {
+    "schema_version": { "const": "rdx-tea-run.v1" },
+    "workflow": {
+      "type": "string",
+      "enum": [
+        "test-design", "framework", "ci", "atdd",
+        "automate", "test-review", "nfr", "trace"
+      ]
+    },
+    "execution_mode": {
+      "type": "string",
+      "enum": ["sequential"],
+      "description": "D3 v1 only supports sequential. Other modes are UNSUPPORTED_BY_DESIGN."
+    },
+    "base_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "head_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "diff_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "rdx_source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "tea_source_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "projection_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "active_packs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["pack_id", "rule_ids"],
+        "properties": {
+          "pack_id": {
+            "type": "string",
+            "enum": [
+              "async", "unsafe", "ffi", "macro", "api", "cargo",
+              "testing", "data-security-io", "db", "time-config-client",
+              "ops", "perf"
+            ]
+          },
+          "rule_ids": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^(CORE|RP-[A-Z]+|GOV)-\\d{3}$" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifact_path": { "type": "string" },
+    "artifact_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "prepare_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "prepared_at": { "type": "string" },
+    "bound_at": { "type": "string" },
+    "completed": { "type": "boolean" },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

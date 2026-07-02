@@ -1,0 +1,56 @@
+workflow,rule_id_or_pack,included_fields,excluded_fields,reason,source_anchor,test_id
+test-design,CORE-*,rule;required_reasoning;validation;exceptions;trigger;risk,layer;importance;sources,Core rules apply universally to test design responsibilities.,section-4-core.md,L1-PARSER-01
+test-design,RP-ASYNC-*,rule;required_reasoning;validation;exceptions;trigger;risk,,Test design covers async cancellation and shutdown tests (RP-ASYNC-005/006).,router-rules.json + section-6-packs.md §6.1,L2-D01
+test-design,RP-UNSAFE-*,rule;required_reasoning;validation;exceptions,trigger;risk,Test design owns safety-contract reasoning around unsafe blocks.,§6.2,L2-D11
+test-design,RP-FFI-*,rule;validation;exceptions,,FFI boundary tests belong in test design.,§6.3,L2-D01
+test-design,RP-MACRO-*,rule;validation,,Compile-time assertion selection.,§6.4,L2-D01
+test-design,RP-API-*,rule;required_reasoning;validation,,SemVer and public-surface test surface.,§6.5,L2-D01
+test-design,RP-TEST-*,rule;required_reasoning;validation;exceptions,,Test strategy fits directly.,§6.7,L2-D01
+test-design,RP-DATA-*,rule;required_reasoning;validation,,Serde and DTO schemas.,§6.8,L2-D01
+test-design,RP-DB-*,rule;required_reasoning;validation,,DB transaction/idempotency in scenario planning.,§6.9,L2-D01
+test-design,RP-TIME-*,rule;required_reasoning;validation,,Time/retry test scenarios.,§6.10,L2-D01
+test-design,RP-CARGO-*,,rule;required_reasoning;validation;exceptions;trigger;risk;layer;importance;sources,Cargo workspace concerns belong to framework/CI workflows.,BUILDER_TEA_RECONCILIATION §3.3,L2-D09
+test-design,RP-OPS-*,,rule;required_reasoning;validation;exceptions,Operations/tracing sits in nfr.,BUILDER_TEA_RECONCILIATION §3.3,L2-D09
+test-design,GOV-*,,rule;required_reasoning;validation;exceptions,Governance is RDX-owned; not pushed to TEA.,BUILDER_TEA_RECONCILIATION §3.3,L2-D09
+atdd,CORE-*,rule;required_reasoning,layer;importance;sources,ATDD needs contract-before-code and root-cause discipline.,section-4-core.md,L4-E01
+atdd,RP-ASYNC-*,rule;validation,,ATDD writes async cancellation and timeout tests.,§6.1,L4-E01
+atdd,RP-API-*,rule;validation,,Public-API test scaffolds.,§6.5,L2-D01
+atdd,RP-TEST-*,rule;required_reasoning;validation,,Red-phase test-oracle discipline.,§6.7,L2-D01
+atdd,RP-UNSAFE-*,,rule;validation,ATDD does not lint unsafe code — that is code-review's job.,TEA §7,L7-F04
+atdd,RP-FFI-*,,rule;validation,Same reason as unsafe.,TEA §7,L7-F04
+atdd,RP-MACRO-*,,rule;validation,Same reason.,TEA §7,L7-F04
+automate,RP-TEST-*,rule;required_reasoning;validation,,Automate builds and expands tests.,§6.7,L2-D01
+automate,RP-ASYNC-*,rule;validation,,Async harness setup.,§6.1,L2-D01
+automate,RP-API-*,rule;validation,,API test scaffolds.,§6.5,L2-D01
+automate,RP-OPS-*,,rule;validation,Automate is not a runtime ops workflow.,TEA §7,L7-F04
+automate,RP-CARGO-*,,rule;validation,Automate is not a build workflow.,TEA §7,L7-F04
+test-review,RP-TEST-*,rule;required_reasoning;validation;exceptions,,Test-review evaluates test quality.,§6.7,L2-D01
+test-review,RP-API-*,rule;validation,,Public-surface test review.,§6.5,L2-D01
+test-review,RP-CARGO-*,,rule;validation,Workspace concerns not test-review's job.,TEA §7,L7-F04
+test-review,RP-OPS-*,,rule;validation,Ops observability not test-review's job.,TEA §7,L7-F04
+test-review,RP-DB-*,,rule;validation,DB migration reasoning not test-review's job.,TEA §7,L7-F04
+nfr,RP-UNSAFE-*,rule;validation;exceptions,,NFR covers Miri/loom/memory safety.,§6.2,L2-D01
+nfr,RP-DATA-*,rule;validation,,Security/data untrusted-input NFR.,§6.8,L2-D01
+nfr,RP-PERF-*,rule;required_reasoning;validation,,Perf/no_std/WASM NFR.,§6.12,L2-D01
+nfr,RP-DB-*,rule;validation,,Distributed state NFR.,§6.9,L2-D01
+nfr,RP-TIME-*,rule;validation,,Time/retry/client NFR.,§6.10,L2-D01
+nfr,RP-OPS-*,rule;validation,,Ops/tracing NFR.,§6.11,L2-D01
+nfr,RP-CARGO-*,,rule;validation,Cargo build concerns handled elsewhere.,TEA §7,L7-F04
+nfr,RP-TEST-*,,rule;validation,NFR is not a test-strategy workflow.,TEA §7,L7-F04
+trace,RP-TEST-*,rule;required_reasoning;validation,,Trace maps AC → tests.,§6.7,L2-D01
+trace,RP-ASYNC-*,,rule;validation,Trace is a mapping workflow, not an implementation reasoner.,TEA §7,L7-F04
+trace,RP-UNSAFE-*,,rule;validation,Same.,TEA §7,L2-D09
+trace,RP-*,,others,All RP-* except RP-TEST-* excluded by design.,TEA §7,L7-F04
+framework,RP-CARGO-*,rule;required_reasoning;validation,,Cargo layout / test scaffold selection.,§6.6,L2-D01
+framework,RP-TEST-*,rule;validation,,Framework selects nextest/proptest/miri/loom shape.,§6.7,L2-D01
+framework,RP-ASYNC-*,,rule;validation,Framework scaffolds directories, not runtime code.,TEA §7,L7-F04
+framework,RP-DB-*,,rule;validation,Framework does not write DB test code.,TEA §7,L7-F04
+framework,RP-API-*,,rule;validation,Framework does not enforce API SemVer.,TEA §7,L7-F04
+framework,RP-PERF-*,,rule;validation,Perf tuning belongs in nfr.,TEA §7,L7-F04
+framework,RP-TIME-*,,rule;validation,Same.,TEA §7,L7-F04
+ci,RP-TEST-*,rule;required_reasoning;validation,,CI orchestrates test execution.,§6.7,L2-D01
+ci,RP-CARGO-*,rule;validation,,cargo-deny/audit/geiger runners.,§6.6,L2-D01
+ci,RP-UNSAFE-*,,rule;validation,CI writes pipelines not source lints.,TEA §7,L7-F04
+ci,RP-FFI-*,,rule;validation,Same.,TEA §7,L7-F04
+ci,RP-MACRO-*,,rule;validation,Same.,TEA §7,L7-F04
+ci,RP-DATA-*,,rule;validation,Same.,TEA §7,L7-F04
