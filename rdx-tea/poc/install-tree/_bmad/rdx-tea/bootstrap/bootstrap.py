@@ -108,13 +108,13 @@ def verify_only(target_dir: Path, sources_lock_path: Path | None = None) -> dict
     missing = [str(p) for p in (bmad_dst, tea_dst) if not p.exists()]
     if missing:
         raise RuntimeError(f"upstream worktrees missing: {missing}")
-    bmad_sha = _run(["git", "rev-parse", "HEAD"], cwd=bmad_dst)
+    bmad_sha = _run(["git", "rev-parse", "HEAD"], cwd=bmad_dst).strip()
     if bmad_sha != lock["bmad_source_sha"]:
         raise RuntimeError(
             f"BMAD-METHOD HEAD {bmad_sha} != expected {lock['bmad_source_sha']}"
         )
     _assert_clean_worktree(bmad_dst)
-    tea_sha = _run(["git", "rev-parse", "HEAD"], cwd=tea_dst)
+    tea_sha = _run(["git", "rev-parse", "HEAD"], cwd=tea_dst).strip()
     if tea_sha != lock["tea_source_sha"]:
         raise RuntimeError(
             f"TEA HEAD {tea_sha} != expected {lock['tea_source_sha']}"
