@@ -34,8 +34,21 @@ def _run(cmd, cwd=None):
     return r.stdout.strip()
 
 
+def _arm_skills(arm: str, workflow: str) -> list[str]:
+    """D3.3.3 §7. Arm-specific project skill allowlist. Baseline gets the
+    child only; candidate gets the wrapper + child. Never both wrapper
+    workflows, never an unrelated RDX skill."""
+    child = f"bmad-testarch-{workflow}"
+    wrapper = f"rdx-tea-{workflow}"
+    if arm == "baseline":
+        return [child]
+    if arm == "candidate":
+        return [wrapper, child]
+    raise RuntimeError(f"unknown arm {arm!r}")
+
+
 def prepare(dest: Path, fixture: Path, scenario: str, workflow: str,
-            run_id: str | None = None) -> dict:
+            run_id: str | None = None, arm: str = "candidate") -> dict:
     if dest.exists():
         raise RuntimeError(f"refusing to overwrite existing {dest}")
     if not fixture.exists():
@@ -53,16 +66,24 @@ def prepare(dest: Path, fixture: Path, scenario: str, workflow: str,
         f"project_name: {scenario}\n",
         encoding="utf-8",
     )
-    # Install RDX-TEA wrapper skills.
-    if (INSTALL_TREE / ".claude").exists():
-        shutil.copytree(INSTALL_TREE / ".claude", dest / ".claude")
-    # Install real BMAD TEA skill (workflow-specific).
-    skill_slug = f"bmad-testarch-{workflow}"
-    skill_src = UPSTREAM_TEA / "src" / "workflows" / "testarch" / skill_slug
-    if skill_src.exists():
-        skill_dst = dest / ".claude" / "skills" / skill_slug
-        if not skill_dst.exists():
-            shutil.copytree(skill_src, skill_dst)
+    # D3.3.3 §7 — arm-specific PHYSICAL skill install. We do NOT copy the
+    # whole install-tree .claude (which carries both wrapper workflows);
+    # we install exactly the arm's skills, each exactly once.
+    wanted = _arm_skills(arm, workflow)
+    skills_dst = dest / ".claude" / "skills"
+    skills_dst.mkdir(parents=True, exist_ok=True)
+    wrapper_slug = f"rdx-tea-{workflow}"
+    child_slug = f"bmad-testarch-{workflow}"
+    for slug in wanted:
+        if slug == wrapper_slug:
+            src = INSTALL_TREE / ".claude" / "skills" / wrapper_slug
+        elif slug == child_slug:
+            src = UPSTREAM_TEA / "src" / "workflows" / "testarch" / child_slug
+        else:
+            continue
+        dst = skills_dst / slug
+        if src.exists() and not dst.exists():
+            shutil.copytree(src, dst)
     # 1) Copy metadata files.
     # story.md → _bmad-run/story.md (wrapper reads it there).
     # Cargo.toml and rust-toolchain[.toml] → project root.
@@ -114,6 +135,8 @@ def prepare(dest: Path, fixture: Path, scenario: str, workflow: str,
         "workflow": workflow,
         "scenario": scenario,
         "run_id": run_id,
+        "arm": arm,
+        "installed_skills": sorted(_arm_skills(arm, workflow)),
         "head_sha": head,
         "base_sha": base_sha,
     }
@@ -128,10 +151,12 @@ def main() -> int:
                     choices=("test-design", "atdd", "framework", "ci",
                               "automate", "test-review", "nfr", "trace"))
     ap.add_argument("--run-id", default=None)
+    ap.add_argument("--arm", default="candidate",
+                    choices=("baseline", "candidate"))
     args = ap.parse_args()
     try:
         r = prepare(args.dest, args.fixture, args.scenario, args.workflow,
-                    run_id=args.run_id)
+                    run_id=args.run_id, arm=args.arm)
     except RuntimeError as err:
         print(f"prepare_workspace failed: {err}", file=sys.stderr)
         return 1

@@ -27,6 +27,11 @@ from pathlib import Path
 
 DEFAULT_MODEL = "haiku"
 FORBIDDEN_MODELS = ("opus", "claude-opus-4-7")
+# D3.3.3 §8: model aliases are refused. A live pilot run must pin the
+# exact schedule model ID (e.g. claude-haiku-4-5-20251001).
+MODEL_ALIASES = ("haiku", "sonnet", "opus")
+import re as _re
+_EXACT_MODEL_RE = _re.compile(r"^claude-[a-z]+-\d+-\d+-\d{8}$")
 
 
 def _stream_transcript(workspace: Path, workflow: str, run_id: str) -> Path:
@@ -49,6 +54,22 @@ def build_prompt(workflow: str) -> str:
     )
 
 
+def _assert_exact_model(model: str, *, require_exact: bool) -> None:
+    if model.lower() in FORBIDDEN_MODELS:
+        raise RuntimeError(f"model {model!r} is forbidden by cost policy")
+    if require_exact:
+        if model in MODEL_ALIASES:
+            raise RuntimeError(
+                f"model alias {model!r} refused — D3.3.3 §8 requires the "
+                f"exact pinned schedule model ID (e.g. claude-haiku-4-5-20251001)"
+            )
+        if not _EXACT_MODEL_RE.match(model):
+            raise RuntimeError(
+                f"model {model!r} is not an exact dated model ID "
+                f"(expected pattern claude-<name>-<n>-<n>-YYYYMMDD)"
+            )
+
+
 def invoke(*,
            workspace: Path,
            workflow: str,
@@ -56,9 +77,22 @@ def invoke(*,
            model: str = DEFAULT_MODEL,
            max_budget_usd: float = 5.00,
            timeout_seconds: int = 900,
-           prompt_override: str | None = None) -> dict:
-    if model.lower() in FORBIDDEN_MODELS:
-        raise RuntimeError(f"model {model!r} is forbidden by cost policy")
+           prompt_override: str | None = None,
+           settings_path: Path | None = None,
+           mcp_config_path: Path | None = None,
+           setting_sources: str | None = None,
+           disallowed_tools: list[str] | None = None,
+           permission_mode: str = "bypassPermissions",
+           require_exact_model: bool = False) -> dict:
+    """Invoke the real Claude Code CLI headlessly.
+
+    D3.3.3 §1/§6: this function NEVER sets CLAUDE_CONFIG_DIR. It relies
+    on the caller's inherited auth environment (existing CLI OAuth) and
+    isolates only the PROJECT surface via --setting-sources /
+    --strict-mcp-config / --mcp-config / --disallowedTools. No API key,
+    no token helper, no --bare.
+    """
+    _assert_exact_model(model, require_exact=require_exact_model)
     cli = "claude"
     prompt = prompt_override if prompt_override is not None else build_prompt(workflow)
     transcript_path = _stream_transcript(workspace, workflow, run_id)
@@ -68,11 +102,21 @@ def invoke(*,
         "--output-format", "stream-json",
         "--verbose",
         "--max-budget-usd", str(max_budget_usd),
-        "--permission-mode", "bypassPermissions",
+        "--permission-mode", permission_mode,
         "--add-dir", str(workspace),
-        "--include-hook-events",
         "--no-session-persistence",
     ]
+    # D3.3.3 §6.4 project-only settings.
+    if setting_sources:
+        cmd += ["--setting-sources", setting_sources]
+    if settings_path is not None:
+        cmd += ["--settings", str(settings_path)]
+    # D3.3.3 §6.3 strict empty MCP.
+    if mcp_config_path is not None:
+        cmd += ["--strict-mcp-config", "--mcp-config", str(mcp_config_path)]
+    # D3.3.3 §9.2 deny subagent dispatch tools.
+    if disallowed_tools:
+        cmd += ["--disallowedTools", *disallowed_tools]
     start = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     try:
         result = subprocess.run(
@@ -80,7 +124,9 @@ def invoke(*,
             capture_output=True, text=True, check=False,
             timeout=timeout_seconds,
         )
-    except subprocess.TimeoutExpired as err:
+    except subprocess.TimeoutExpired:
+        # D3.3.3 §11: a timeout produces failure evidence — the
+        # transcript (partial) is still written where available.
         return {
             "started_at": start,
             "finished_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -88,6 +134,7 @@ def invoke(*,
             "reason": "timeout",
             "transcript_path": str(transcript_path),
             "command": cmd,
+            "model": model,
         }
     transcript_path.write_text(result.stdout, encoding="utf-8")
     return {

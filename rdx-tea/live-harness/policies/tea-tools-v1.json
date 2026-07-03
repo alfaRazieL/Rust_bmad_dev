@@ -1,0 +1,41 @@
+{
+  "schema_version": "rdx-tea-tools.v1",
+  "generated": "2026-07-03T00:00:00Z",
+  "description": "D3.3.3 §9. Minimal required built-in tool set for the RDX-TEA wrapper and child workflows, derived from the wrapper SKILL.md files, the wrapper script, and the upstream child workflow step files (NOT guessed). Task/TaskOutput/TaskStop are FORBIDDEN because the sequential pilot forbids subagent dispatch; the child ATDD workflow's steps-c/step-04a/step-04b/step-04c reference the Task subagent tool, which the wrapper's sequential guard AND this allowlist together deny.",
+  "workflows": {
+    "atdd": {
+      "required_tools": ["Skill", "Bash", "Read", "Write", "Edit", "Grep", "Glob"],
+      "forbidden_tools": ["Task", "TaskOutput", "TaskStop"],
+      "source_files": [
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-atdd/SKILL.md",
+        "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_wrapper.py",
+        "upstream/bmad-method-test-architecture-enterprise/src/workflows/testarch/bmad-testarch-atdd/instructions.md",
+        "upstream/bmad-method-test-architecture-enterprise/src/workflows/testarch/bmad-testarch-atdd/steps-c/*.md"
+      ]
+    },
+    "test-design": {
+      "required_tools": ["Skill", "Bash", "Read", "Write", "Edit", "Grep", "Glob"],
+      "forbidden_tools": ["Task", "TaskOutput", "TaskStop"],
+      "source_files": [
+        "rdx-tea/poc/install-tree/.claude/skills/rdx-tea-test-design/SKILL.md",
+        "rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_wrapper.py",
+        "upstream/bmad-method-test-architecture-enterprise/src/workflows/testarch/bmad-testarch-test-design/instructions.md"
+      ]
+    }
+  },
+  "rationale": {
+    "Skill": "invoke the wrapper skill and the child bmad-testarch-* skill",
+    "Bash": "run rdx_tea_wrapper.py prepare-run/finalize-run and git identity resolution",
+    "Read": "read story.md, tags.txt, invocation.json, active-context bundle, persistent_facts",
+    "Write": "write TEA artifacts and checklists under _bmad-output",
+    "Edit": "revise existing outputs in edit-mode steps",
+    "Grep": "context gathering in preflight steps",
+    "Glob": "expand file: persistent_facts globs in lexical path order"
+  },
+  "source_hashes": {
+    "wrapper_atdd_skill": "7f1cb17d8608e212a5601458244ca2f590cdd5cd57e7bc34ce86ce9ea6fe50d5",
+    "wrapper_test_design_skill": "013aae634df2202648cf2243c972430d43ec92ef76d8b476fadb480b4e1d2d2a",
+    "wrapper_script": "1f5d9de702fe99eb697d2559d15e3181e66292e75aaf647f0916d6dca067a817"
+  },
+  "non_invokable_builtins_note": "Claude Code 2.1.191 always surfaces a set of built-in tools (CronCreate, DesignSync, Monitor, PushNotification, RemoteTrigger, ScheduleWakeup, SendMessage, ToolSearch, EnterWorktree, ExitWorktree, NotebookEdit, TaskCreate, TaskGet, TaskList, TaskUpdate, WebFetch, WebSearch) even when not requested. These are classified separately as `runtime_builtins` and are the SAME for baseline and candidate. The subagent-dispatch tool `Task` and its lifecycle tools `TaskOutput`/`TaskStop` are explicitly denied via --disallowedTools and their absence from the init `tools` list is asserted. TaskCreate/TaskGet/TaskList/TaskUpdate are the harness todo-list tools, NOT subagent dispatch; they cannot spawn a subagent and are recorded but not used by the workflow."
+}

@@ -57,9 +57,12 @@ import runtime_discovery
 
 SCHEMA_PATH = _HERE / "schemas" / "live-evidence.v1.schema.json"
 SCHEMA_V2_PATH = _HERE / "schemas" / "live-evidence.v2.schema.json"
+SCHEMA_V3_PATH = _HERE / "schemas" / "live-evidence.v3.schema.json"
 SCHEMA_VERSION = "rdx-tea-live-evidence.v1"
 SCHEMA_V2_VERSION = "rdx-tea-live-evidence.v2"
+SCHEMA_V3_VERSION = "rdx-tea-live-evidence.v3"
 INVOCATION_SCHEMA_VERSION = "rdx-tea-invocation.v1"
+AUTH_PREFLIGHT_ID_DEFAULT = "D3_3_3_AUTH_PREFLIGHT"
 
 RDX_TEA_DIR = _HERE.parent
 EVIDENCE_ROOT_DEFAULT = RDX_TEA_DIR / "evidence" / "live"
@@ -73,7 +76,9 @@ WORKFLOWS = {
 
 FIXTURE_DIR = _HERE / "fixtures"
 
-DEFAULT_MODEL = "haiku"
+# D3.3.3 §8: default to the exact pinned schedule model ID, never an
+# alias. run-smoke/run-one enforce require_exact_model=True downstream.
+DEFAULT_MODEL = "claude-haiku-4-5-20251001"
 DEFAULT_TIMEOUT_SECONDS = 900
 DEFAULT_MAX_BUDGET_USD = 2.00
 
@@ -213,19 +218,45 @@ def arm_prompt(arm: str, workflow: str, run_id: str) -> str:
     raise OrchestratorError(f"unknown arm {arm!r}")
 
 
-@dataclass
-class ClaudeIsolation:
-    """Isolated per-run Claude Code config directory.
+# Official bundled/built-in slash-commands that Claude Code 2.1.x always
+# surfaces even under project-only settings. They are the SAME for both
+# arms and are classified as runtime_builtins, not contamination.
+OFFICIAL_BUNDLED_SLASH_COMMANDS = frozenset({
+    "clear", "compact", "config", "context", "heapdump", "init",
+    "reload-skills", "review", "security-review", "usage-credits",
+    "extra-usage", "usage", "insights", "goal", "team-onboarding",
+})
 
-    D3.3.2 §5.2 + §10: pilot integrity requires identical minimal
-    environments for baseline and candidate. A dirty runtime (user
-    MCP servers, user memory, unrelated skills) contaminates
-    comparability. We construct a temporary CLAUDE_CONFIG_DIR under
-    the run's evidence directory, seed it with only the arm-permitted
-    skills, and disable MCP.
+# The subagent-dispatch tool and its lifecycle tools that MUST be denied
+# for a sequential pilot (D3.3.3 §9.2).
+FORBIDDEN_RUNTIME_TOOLS = ("Task", "TaskOutput", "TaskStop")
+
+# Project settings we request (D3.3.3 §6.2). Names verified against the
+# installed CLI; unknown keys are ignored by the CLI rather than fatal.
+PROJECT_SETTINGS = {
+    "disableBundledSkills": True,
+    "disableClaudeAiConnectors": True,
+    "autoMemoryEnabled": False,
+}
+
+
+@dataclass
+class ProjectRuntimeIsolation:
+    """Auth-preserving project runtime isolation (D3.3.3 §6).
+
+    Unlike the D3.3.2 `ClaudeIsolation`, this abstraction NEVER sets
+    `CLAUDE_CONFIG_DIR`. It isolates only the PROJECT surface — MCP,
+    memory, bundled skills, tools — via project-local files and CLI
+    flags, and inherits the user's existing CLI OAuth environment. The
+    D3.3.2 approach broke OAuth by pointing CLAUDE_CONFIG_DIR at a temp
+    dir; see rdx-tea/research/D3_3_3_PRECONDITION_AUDIT.md §4.
+
+    Physical skill isolation is the responsibility of
+    prepare_workspace (arm-specific install into workspace/.claude/
+    skills); this class does NOT copy skills anywhere.
     """
 
-    config_dir: Path
+    workspace: Path
     arm: str
     workflow: str
     permission_mode: str = "bypassPermissions"
@@ -234,68 +265,99 @@ class ClaudeIsolation:
     def project_skills(self) -> list[str]:
         return arm_installed_skills(self.arm, self.workflow)
 
-    def bootstrap(self, source_project: Path) -> None:
-        """Populate the config dir with a minimal, deterministic layout.
-        We do NOT touch the user's real ~/.claude directory.
-        """
-        self.config_dir.mkdir(parents=True, exist_ok=True)
-        # Empty MCP servers.
-        (self.config_dir / "mcp.json").write_text(
+    @property
+    def settings_path(self) -> Path:
+        return self.workspace / ".claude" / "settings.json"
+
+    @property
+    def mcp_config_path(self) -> Path:
+        return self.workspace / ".claude" / "empty-mcp.json"
+
+    def bootstrap(self) -> None:
+        """Write project-only settings + empty MCP config INTO the
+        workspace. Never touches ~/.claude or CLAUDE_CONFIG_DIR."""
+        claude_dir = self.workspace / ".claude"
+        claude_dir.mkdir(parents=True, exist_ok=True)
+        self.settings_path.write_text(
+            json.dumps(PROJECT_SETTINGS, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        self.mcp_config_path.write_text(
             json.dumps({"mcpServers": {}}, sort_keys=True), encoding="utf-8"
         )
-        # Empty user memory.
-        (self.config_dir / "CLAUDE.md").write_text("", encoding="utf-8")
-        skills_dir = self.config_dir / "skills"
-        skills_dir.mkdir(exist_ok=True)
-        src_skills = source_project / ".claude" / "skills"
-        if not src_skills.exists():
-            return
-        for skill_name in self.project_skills:
-            src = src_skills / skill_name
-            if not src.exists():
-                continue
-            dst = skills_dir / skill_name
-            if dst.exists():
-                continue
-            shutil.copytree(src, dst)
 
     def env(self) -> dict[str, str]:
+        """Inherit the existing auth environment UNCHANGED. The only
+        addition is an auto-memory fail-closed guard, which does not
+        affect authentication."""
         e = dict(os.environ)
-        e["CLAUDE_CONFIG_DIR"] = str(self.config_dir)
-        # Deliberately DO NOT set CLAUDE_MCP_CONFIG — we scope MCP via
-        # the isolated dir alone. Disable any inherited MCP by pointing
-        # at the empty file we just wrote.
-        e["CLAUDE_MCP_CONFIG"] = str(self.config_dir / "mcp.json")
+        # D3.3.3 §6.2 extra fail-closed guard. Never override
+        # CLAUDE_CONFIG_DIR / never inject an API key.
+        e["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
         return e
 
+    def setting_sources(self) -> str:
+        return "project"
+
+    def disallowed_tools(self) -> list[str]:
+        return list(FORBIDDEN_RUNTIME_TOOLS)
+
     def preflight(self) -> list[str]:
-        """D3.3.2 §10: return a list of policy errors, empty if OK."""
+        """D3.3.3 §6/§20: return a list of policy errors, empty if OK.
+
+        Fail-closed BEFORE any token is spent. Asserts:
+          - CLAUDE_CONFIG_DIR is NOT being overridden by us;
+          - no API key / token helper in our env;
+          - project settings + empty MCP exist;
+          - workspace .claude/skills matches the arm allowlist exactly
+            (physical skill isolation from prepare_workspace).
+        """
         errors: list[str] = []
-        if not self.config_dir.exists():
-            errors.append(f"config_dir missing: {self.config_dir}")
-        mcp = self.config_dir / "mcp.json"
-        if not mcp.exists():
-            errors.append(f"mcp.json missing: {mcp}")
+        env = self.env()
+        # We must not have injected any auth override.
+        if env.get("CLAUDE_CONFIG_DIR") != os.environ.get("CLAUDE_CONFIG_DIR"):
+            errors.append("CLAUDE_CONFIG_DIR was modified by isolation.env()")
+        if "ANTHROPIC_API_KEY" in env and env.get("ANTHROPIC_API_KEY"):
+            errors.append("ANTHROPIC_API_KEY present in isolation env")
+        if env.get("CLAUDE_CODE_OAUTH_TOKEN"):
+            errors.append("CLAUDE_CODE_OAUTH_TOKEN present in isolation env")
+        if not self.settings_path.exists():
+            errors.append(f"project settings missing: {self.settings_path}")
         else:
             try:
-                data = json.loads(mcp.read_text(encoding="utf-8"))
+                data = json.loads(self.settings_path.read_text(encoding="utf-8"))
             except json.JSONDecodeError as e:
-                errors.append(f"mcp.json invalid: {e}")
-                data = None
-            if data is not None and data.get("mcpServers"):
-                errors.append("mcp.json contains servers; expected empty")
-        memory = self.config_dir / "CLAUDE.md"
-        if memory.exists() and memory.read_text(encoding="utf-8").strip():
-            errors.append("CLAUDE.md contains user memory; expected empty")
-        skills_dir = self.config_dir / "skills"
+                errors.append(f"settings.json invalid: {e}")
+                data = {}
+            if data.get("autoMemoryEnabled") is not False:
+                errors.append("settings.autoMemoryEnabled must be false")
+        if not self.mcp_config_path.exists():
+            errors.append(f"empty MCP config missing: {self.mcp_config_path}")
+        else:
+            try:
+                mdata = json.loads(self.mcp_config_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as e:
+                errors.append(f"empty-mcp.json invalid: {e}")
+                mdata = {}
+            if mdata.get("mcpServers"):
+                errors.append("empty-mcp.json contains servers; expected empty")
+        skills_dir = self.workspace / ".claude" / "skills"
         if not skills_dir.exists():
-            errors.append(f"skills dir missing: {skills_dir}")
+            errors.append(f"workspace skills dir missing: {skills_dir}")
         else:
             present = sorted(p.name for p in skills_dir.iterdir() if p.is_dir())
             expected = sorted(self.project_skills)
             if present != expected:
-                errors.append(f"installed skills {present} != expected {expected}")
+                errors.append(
+                    f"workspace skills {present} != arm-expected {expected}"
+                )
         return errors
+
+
+# Backwards-compatible alias — the D3.3.2 name now maps to the
+# auth-preserving class so any lingering import does not silently
+# resurrect the CLAUDE_CONFIG_DIR override.
+ClaudeIsolation = ProjectRuntimeIsolation
 
 
 # ------------------------------------------------------- invocation contract
@@ -387,6 +449,12 @@ def _extract_runtime_init(transcript_path: Path) -> dict:
         "plugins": [],
         "memory_paths": [],
         "session_id": "",
+        # D3.3.3 §10.2 extra fields.
+        "api_key_source": "",
+        "agents": [],
+        "analytics_disabled": None,
+        "output_style": "",
+        "fast_mode_state": "",
         "init_event_seen": False,
         "raw": {},
     }
@@ -417,13 +485,23 @@ def _extract_runtime_init(transcript_path: Path) -> dict:
         surface["permission_mode"] = str(event.get("permission_mode")
                                           or event.get("permissionMode") or "")
         for key in ("tools", "skills", "slash_commands", "mcp_servers",
-                    "plugins", "memory_paths"):
+                    "plugins", "agents"):
             v = event.get(key)
             if isinstance(v, list):
                 surface[key] = [
                     (i.get("name") if isinstance(i, dict) and "name" in i else i)
                     for i in v
                 ]
+        # D3.3.3 §10.1 — memory_paths may be dict / list / str / null.
+        # Normalise to a sorted list of path strings WITHOUT collapsing
+        # a populated dict to a false empty list.
+        surface["memory_paths"] = _normalise_memory_paths(event.get("memory_paths"))
+        # D3.3.3 §10.2 extra fields.
+        surface["api_key_source"] = str(event.get("apiKeySource")
+                                         or event.get("api_key_source") or "")
+        surface["analytics_disabled"] = event.get("analytics_disabled")
+        surface["output_style"] = str(event.get("output_style") or "")
+        surface["fast_mode_state"] = str(event.get("fast_mode_state") or "")
         # Session id often on init event.
         sid = event.get("session_id") or event.get("sessionId")
         if sid:
@@ -431,6 +509,29 @@ def _extract_runtime_init(transcript_path: Path) -> dict:
         surface["raw"] = event
         break
     return surface
+
+
+def _normalise_memory_paths(v) -> list[str]:
+    """D3.3.3 §10.1. Accept dict / list / str / null; never collapse a
+    populated dict into a false empty list."""
+    if v is None:
+        return []
+    if isinstance(v, str):
+        return [v] if v else []
+    if isinstance(v, dict):
+        out: list[str] = []
+        for key, val in sorted(v.items()):
+            if isinstance(val, str) and val:
+                out.append(f"{key}:{val}")
+            elif val:
+                out.append(f"{key}:{val!r}")
+        return out
+    if isinstance(v, list):
+        return [
+            (i.get("path") if isinstance(i, dict) and "path" in i else str(i))
+            for i in v
+        ]
+    return [str(v)]
 
 
 def compare_runtime_surface(observed: dict, expected: dict) -> dict:
@@ -474,6 +575,159 @@ def contamination_reason(diff: dict) -> str | None:
     if diff.get("permission_mode_mismatch"):
         return "permission_mode_mismatch"
     return None
+
+
+# ---------------------------------------------------- runtime result + outcome
+
+# D3.3.3 §11.2 run outcome enum.
+RUN_OUTCOMES = (
+    "AUTH_FAILURE",
+    "RUNTIME_FAILURE",
+    "TIMEOUT",
+    "CONTAMINATION",
+    "RUN_ID_MISMATCH",
+    "WORKFLOW_FAILURE",
+    "VERIFIER_FAILURE",
+    "SCHEMA_FAILURE",
+    "SUCCESS",
+)
+
+
+def extract_runtime_result(transcript_path: Path) -> dict:
+    """Read the terminal `result` event and any authentication error.
+
+    D3.3.3 §10.3 / §11.1. Auth status is judged by the COMBINATION of
+    exit code, result.is_error, and error type — never by apiKeySource.
+    """
+    result = {
+        "result_event_seen": False,
+        "is_error": None,
+        "subtype": "",
+        "api_error_status": None,
+        "terminal_reason": "",
+        "result_text": "",
+        "authentication_failed": False,
+        "model_turn_seen": False,
+    }
+    if not transcript_path.exists():
+        return result
+    for line in transcript_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        etype = str(event.get("type", "")).lower()
+        if etype == "assistant":
+            result["model_turn_seen"] = True
+            if str(event.get("error", "")).lower() == "authentication_failed":
+                result["authentication_failed"] = True
+        if etype == "result":
+            result["result_event_seen"] = True
+            result["is_error"] = event.get("is_error")
+            result["subtype"] = str(event.get("subtype") or "")
+            result["api_error_status"] = event.get("api_error_status")
+            result["terminal_reason"] = str(event.get("terminal_reason") or "")
+            result["result_text"] = str(event.get("result") or "")
+            if "not logged in" in result["result_text"].lower():
+                result["authentication_failed"] = True
+    return result
+
+
+@dataclass
+class RunOutcome:
+    outcome: str
+    admissible: bool
+    reasons: list[str]
+
+
+def classify_run_outcome(*, invocation: dict, runtime_result: dict,
+                         surface_diff: dict, handshake: dict,
+                         observed_model: str, expected_model: str,
+                         obs: "TranscriptObservation",
+                         arm: str,
+                         candidate_checks: dict | None = None) -> RunOutcome:
+    """D3.3.3 §11 fail-closed classification. Returns the FIRST failure
+    outcome (order matters: auth before runtime before contamination),
+    or SUCCESS only if every check passes.
+    """
+    reasons: list[str] = []
+
+    # Auth failure.
+    if runtime_result.get("authentication_failed"):
+        return RunOutcome("AUTH_FAILURE", False, ["authentication_failed in transcript"])
+
+    # Timeout.
+    if invocation.get("reason") == "timeout" or invocation.get("exit_code") == -1:
+        return RunOutcome("TIMEOUT", False, ["runtime timed out"])
+
+    # Runtime failure: non-zero exit, is_error, no init/model turn.
+    if invocation.get("exit_code", 1) != 0:
+        reasons.append(f"exit_code={invocation.get('exit_code')}")
+    if runtime_result.get("is_error") is True:
+        reasons.append("result.is_error=true")
+    if not runtime_result.get("result_event_seen"):
+        reasons.append("no terminal result event")
+    if not runtime_result.get("model_turn_seen"):
+        reasons.append("no model turn")
+    if reasons:
+        return RunOutcome("RUNTIME_FAILURE", False, reasons)
+
+    # Model mismatch (treated as a runtime failure class per §8).
+    if expected_model and observed_model and observed_model != expected_model:
+        return RunOutcome("RUNTIME_FAILURE", False,
+                          [f"RUN_INVALID_MODEL_MISMATCH observed={observed_model} "
+                           f"expected={expected_model}"])
+
+    # Contamination.
+    if contamination_reason(surface_diff):
+        return RunOutcome("CONTAMINATION", False,
+                          [f"contamination={contamination_reason(surface_diff)}"])
+
+    # Run-id mismatch.
+    if handshake.get("mismatch"):
+        return RunOutcome("RUN_ID_MISMATCH", False, ["run_id handshake mismatch"])
+
+    # Task/subagent dispatch.
+    if obs.task_tool_use_count > 0:
+        return RunOutcome("WORKFLOW_FAILURE", False,
+                          [f"task_tool_use_count={obs.task_tool_use_count}"])
+
+    if arm == "candidate":
+        cc = candidate_checks or {}
+        if not obs.wrapper_skill_invoked:
+            reasons.append("wrapper_skill_invoked=false")
+        if not obs.child_skill_invoked:
+            reasons.append("child_skill_invoked=false")
+        if reasons:
+            return RunOutcome("WORKFLOW_FAILURE", False, reasons)
+        if obs.observed_mode != "OBSERVED_SEQUENTIAL":
+            return RunOutcome("WORKFLOW_FAILURE", False,
+                              [f"observed_mode={obs.observed_mode}"])
+        if not cc.get("bundle_present"):
+            return RunOutcome("WORKFLOW_FAILURE", False, ["rdx bundle absent"])
+        if not cc.get("artifacts_non_empty"):
+            return RunOutcome("WORKFLOW_FAILURE", False, ["no artifacts"])
+        if not cc.get("active_packs_ok"):
+            return RunOutcome("WORKFLOW_FAILURE", False,
+                              [f"active_packs={cc.get('active_packs')} "
+                               f"expected={cc.get('expected_packs')}"])
+        if not cc.get("verifier_all_pass"):
+            return RunOutcome("VERIFIER_FAILURE", False, ["verifier not all PASS"])
+        if not cc.get("one_sidecar_per_artifact"):
+            return RunOutcome("VERIFIER_FAILURE", False,
+                              ["sidecar/artifact count mismatch"])
+    else:  # baseline
+        if obs.wrapper_skill_invoked:
+            return RunOutcome("WORKFLOW_FAILURE", False,
+                              ["baseline invoked RDX wrapper"])
+        if not obs.child_skill_invoked:
+            return RunOutcome("WORKFLOW_FAILURE", False,
+                              ["baseline did not invoke child skill"])
+
+    return RunOutcome("SUCCESS", True, ["all checks passed"])
 
 
 # ------------------------------------------------------ transcript parsing
@@ -741,6 +995,7 @@ def _prepare(spec: RunSpec) -> dict:
         scenario=spec.scenario,
         workflow=spec.workflow,
         run_id=spec.run_id,
+        arm=spec.arm,
     )
     if prep.get("run_id") != spec.run_id:
         raise OrchestratorError(
@@ -750,15 +1005,18 @@ def _prepare(spec: RunSpec) -> dict:
     return prep
 
 
-def _invoke(spec: RunSpec, prep: dict, isolation: ClaudeIsolation) -> dict:
-    """D3.3.2 §5.1 arm-specific runtime invocation.
-
-    Baseline directly invokes the child skill; candidate invokes the
-    wrapper (which is responsible for calling the child).
+def _invoke(spec: RunSpec, prep: dict,
+            isolation: ProjectRuntimeIsolation) -> dict:
+    """D3.3.3 §5.1/§6 arm-specific runtime invocation with project-only
+    isolation. Baseline directly invokes the child skill; candidate
+    invokes the wrapper. Auth environment is inherited UNCHANGED — no
+    CLAUDE_CONFIG_DIR override, no API key.
     """
     prompt = arm_prompt(spec.arm, spec.workflow, spec.run_id)
     old_env = dict(os.environ)
     try:
+        # isolation.env() only adds CLAUDE_CODE_DISABLE_AUTO_MEMORY; it
+        # never overrides CLAUDE_CONFIG_DIR.
         os.environ.update(isolation.env())
         result = invoke_runtime.invoke(
             workspace=Path(prep["project"]),
@@ -768,6 +1026,12 @@ def _invoke(spec: RunSpec, prep: dict, isolation: ClaudeIsolation) -> dict:
             max_budget_usd=spec.max_budget_usd,
             timeout_seconds=spec.timeout_seconds,
             prompt_override=prompt,
+            settings_path=isolation.settings_path,
+            mcp_config_path=isolation.mcp_config_path,
+            setting_sources=isolation.setting_sources(),
+            disallowed_tools=isolation.disallowed_tools(),
+            permission_mode=isolation.permission_mode,
+            require_exact_model=True,
         )
     finally:
         os.environ.clear()
@@ -823,97 +1087,19 @@ def _check_run_id_handshake(*, workspace: Path, workflow: str,
     return handshake
 
 
-def _v2_bundle_common(*, spec: RunSpec, prep: dict, invocation: dict,
-                       runtime_probe: dict, isolation: ClaudeIsolation,
-                       obs: TranscriptObservation,
-                       observed_surface: dict, expected_surface: dict,
-                       cleanup_observed: dict,
-                       handshake: dict,
-                       new_artefacts: list[str],
-                       run_report_path: Path, transcript_path: Path,
-                       bundle_path: Path | None) -> dict:
-    """Return the arm-neutral portion of the v2 bundle."""
-    workspace = Path(prep["project"])
-    surface_diff = compare_runtime_surface(observed_surface, expected_surface)
-    contamination = contamination_reason(surface_diff)
-    cmd_hash = _sha256_text(
-        json.dumps(invocation.get("command", []), sort_keys=True)
-    )
-    return {
-        "schema_version": SCHEMA_V2_VERSION,
-        "arm": spec.arm,
-        "scenario": spec.scenario,
-        "workflow": spec.workflow,
-        "repetition": spec.repetition,
-        "run_id": spec.run_id,
-        "run_id_handshake": handshake,
-        "workspace": {
-            "path": str(workspace),
-            "config_dir": str(isolation.config_dir),
-            "config_dir_hash": _sha256_dir_tree(isolation.config_dir),
-            "fixture_hash": _sha256_dir_tree(spec.fixture_dir),
-        },
-        "identity": {
-            "base_sha": prep["base_sha"],
-            "head_sha": prep["head_sha"],
-        },
-        "runtime": {
-            "claude_code_path": runtime_probe.get("cli", "unknown"),
-            "expected_surface": expected_surface,
-            "observed_surface": {
-                k: observed_surface.get(k)
-                for k in (
-                    "claude_code_version", "model", "permission_mode",
-                    "tools", "skills", "slash_commands", "mcp_servers",
-                    "plugins", "memory_paths", "session_id",
-                    "init_event_seen",
-                )
-            },
-            "surface_diff": surface_diff,
-            "contamination": contamination or "",
-            "timeout_seconds": spec.timeout_seconds,
-            "max_budget_usd": spec.max_budget_usd,
-        },
-        "invocation": {
-            "command_hash": cmd_hash,
-            "prompt_hash": invocation.get("prompt_hash", ""),
-            "started_at": invocation.get("started_at", _utc_now()),
-            "finished_at": invocation.get("finished_at", _utc_now()),
-            "exit_code": invocation.get("exit_code", 0),
-            "reason": (
-                "timeout" if invocation.get("reason") == "timeout"
-                else "normal" if invocation.get("exit_code") == 0
-                else "runtime_error"
-            ),
-        },
-        "artifacts": {
-            "new_artefacts": new_artefacts,
-        },
-        "hashes": {
-            "run_report": _sha256_file(run_report_path) if run_report_path else "",
-            "transcript": _sha256_file(transcript_path),
-            "bundle": _sha256_file(bundle_path) if bundle_path else "",
-        },
-        "observation": {
-            "observed_mode": obs.observed_mode,
-            "observed_mode_basis": obs.observed_mode_basis,
-            "wrapper_skill_invoked": obs.wrapper_skill_invoked,
-            "child_skill_invoked": obs.child_skill_invoked,
-            "task_tool_use_count": obs.task_tool_use_count,
-            "transcript_sha256": obs.transcript_sha256 or "",
-            "session_id": obs.session_id or "",
-        },
-        "cleanup": {
-            "state": "FINALIZED",
-            "observed": cleanup_observed,
-        },
-    }
+def _finalize_evidence_v3(spec: RunSpec, prep: dict, invocation: dict,
+                          runtime_probe: dict,
+                          isolation: ProjectRuntimeIsolation,
+                          obs: TranscriptObservation,
+                          cleanup_observed: dict, cleanup_state: str,
+                          auth_preflight_id: str) -> tuple[Path, RunOutcome]:
+    """D3.3.3 §12. Assemble and write the admission-aware v3 bundle.
 
-
-def _finalize_evidence(spec: RunSpec, prep: dict, invocation: dict,
-                       runtime_probe: dict, isolation: ClaudeIsolation,
-                       obs: TranscriptObservation) -> Path:
-    """Assemble and write the arm-aware live-evidence v2 bundle."""
+    `cleanup_observed` is measured by the caller AFTER lock release
+    (§13). Returns (bundle_path, RunOutcome). Never raises on a failed
+    run — a failed run yields a non-admissible bundle. A SCHEMA_FAILURE
+    is the only outcome that reflects a bundle that would not validate.
+    """
     workspace = Path(prep["project"])
     workflow = spec.workflow
     run_id = spec.run_id
@@ -948,42 +1134,126 @@ def _finalize_evidence(spec: RunSpec, prep: dict, invocation: dict,
     bundle = evidence_dir / "active-context.md"
 
     observed_surface = _extract_runtime_init(transcript)
+    runtime_result = extract_runtime_result(transcript)
+    # Expected surface: exactly the arm skills, empty MCP/plugins.
     expected_surface = {
         "model": spec.model,
-        "permission_mode": isolation.permission_mode,
         "skills": sorted(isolation.project_skills),
         "mcp_servers": [],
         "plugins": [],
-        "tools": [],  # do not enforce tool allowlist here; policy-level
+        "tools": [],
+        # permission_mode intentionally not compared: it is symmetric
+        # across arms and the CLI reports its own normalised value.
+        "permission_mode": observed_surface.get("permission_mode", ""),
     }
-    cleanup_observed = observe_cleanup(
-        workspace=workspace, workflow=workflow, run_id=run_id,
-    )
+    surface_diff = compare_runtime_surface(observed_surface, expected_surface)
+    contamination = contamination_reason(surface_diff) or ""
     handshake = _check_run_id_handshake(
         workspace=workspace, workflow=workflow, run_id=run_id,
     )
+    cmd_hash = _sha256_text(json.dumps(invocation.get("command", []), sort_keys=True))
 
-    common = _v2_bundle_common(
-        spec=spec, prep=prep, invocation=invocation,
-        runtime_probe=runtime_probe, isolation=isolation,
-        obs=obs, observed_surface=observed_surface,
-        expected_surface=expected_surface,
-        cleanup_observed=cleanup_observed, handshake=handshake,
-        new_artefacts=new_artefacts,
-        run_report_path=run_report if run_report.exists() else None,
-        transcript_path=transcript,
-        bundle_path=bundle if bundle.exists() else None,
-    )
+    common = {
+        "schema_version": SCHEMA_V3_VERSION,
+        "arm": spec.arm,
+        "scenario": spec.scenario,
+        "workflow": spec.workflow,
+        "repetition": spec.repetition,
+        "run_id": spec.run_id,
+        "run_id_handshake": handshake,
+        "auth_preflight_id": auth_preflight_id,
+        "workspace": {
+            "path": str(workspace),
+            "config_dir_overridden": False,
+            "fixture_hash": _sha256_dir_tree(spec.fixture_dir),
+        },
+        "identity": {
+            "base_sha": prep["base_sha"],
+            "head_sha": prep["head_sha"],
+        },
+        "runtime": {
+            "claude_code_path": runtime_probe.get("cli", "unknown"),
+            "expected_surface": expected_surface,
+            "observed_surface": {
+                k: observed_surface.get(k)
+                for k in (
+                    "claude_code_version", "model", "permission_mode",
+                    "tools", "skills", "slash_commands", "mcp_servers",
+                    "plugins", "memory_paths", "session_id",
+                    "api_key_source", "agents", "analytics_disabled",
+                    "output_style", "fast_mode_state", "init_event_seen",
+                )
+            },
+            "surface_diff": surface_diff,
+            "contamination": contamination,
+            "model_expected": spec.model,
+            "model_observed": observed_surface.get("model", ""),
+            "timeout_seconds": spec.timeout_seconds,
+            "max_budget_usd": spec.max_budget_usd,
+        },
+        "invocation": {
+            "command_hash": cmd_hash,
+            "prompt_hash": invocation.get("prompt_hash", ""),
+            "started_at": invocation.get("started_at", _utc_now()),
+            "finished_at": invocation.get("finished_at", _utc_now()),
+            "exit_code": invocation.get("exit_code", 0),
+            "reason": (
+                "timeout" if invocation.get("reason") == "timeout"
+                else "normal" if invocation.get("exit_code") == 0
+                else "runtime_error"
+            ),
+        },
+        "runtime_result": {
+            "result_event_seen": runtime_result["result_event_seen"],
+            "is_error": runtime_result["is_error"],
+            "subtype": runtime_result["subtype"],
+            "authentication_failed": runtime_result["authentication_failed"],
+            "model_turn_seen": runtime_result["model_turn_seen"],
+            "terminal_reason": runtime_result["terminal_reason"],
+        },
+        "artifacts": {"new_artefacts": new_artefacts},
+        "hashes": {
+            "run_report": _sha256_file(run_report) if run_report.exists() else "",
+            "transcript": _sha256_file(transcript),
+            "bundle": _sha256_file(bundle) if bundle.exists() else "",
+        },
+        "observation": {
+            "observed_mode": obs.observed_mode,
+            "observed_mode_basis": obs.observed_mode_basis,
+            "wrapper_skill_invoked": obs.wrapper_skill_invoked,
+            "child_skill_invoked": obs.child_skill_invoked,
+            "task_tool_use_count": obs.task_tool_use_count,
+            "transcript_sha256": obs.transcript_sha256 or "",
+            "session_id": obs.session_id or "",
+        },
+        "cleanup": {
+            "state": cleanup_state,
+            "observed": cleanup_observed,
+        },
+    }
 
+    candidate_checks = None
     if spec.arm == "candidate":
+        active_packs = _collect_active_packs(run_report)
+        expected_packs = _expected_active_packs(spec.scenario)
         common["candidate"] = {
             "wrapper_skill_invoked": obs.wrapper_skill_invoked,
             "child_skill_invoked": obs.child_skill_invoked,
             "sidecars": sidecars,
-            "active_packs": _collect_active_packs(run_report),
+            "active_packs": active_packs,
             "expected_rp_ids": _collect_expected_rp_ids(spec.scenario),
             "verifier_all_pass": _verifier_all_pass(run_report),
             "bundle_present": bundle.exists(),
+        }
+        candidate_checks = {
+            "bundle_present": bundle.exists(),
+            "artifacts_non_empty": len(new_artefacts) > 0,
+            "active_packs": active_packs,
+            "expected_packs": expected_packs,
+            "active_packs_ok": sorted(active_packs) == sorted(expected_packs),
+            "verifier_all_pass": _verifier_all_pass(run_report),
+            "one_sidecar_per_artifact": len(sidecars) == len(new_artefacts)
+            and len(new_artefacts) > 0,
         }
     else:  # baseline
         common["baseline"] = {
@@ -997,17 +1267,45 @@ def _finalize_evidence(spec: RunSpec, prep: dict, invocation: dict,
             ).exists(),
         }
 
-    errors = _validate_bundle_v2(common)
-    bundle_out = evidence_dir / "live-evidence.v2.json"
-    _atomic_write_json(bundle_out, common)
+    # Classify outcome + admissibility BEFORE writing so they are in
+    # the bundle.
+    outcome = classify_run_outcome(
+        invocation=invocation, runtime_result=runtime_result,
+        surface_diff=surface_diff, handshake=handshake,
+        observed_model=observed_surface.get("model", ""),
+        expected_model=spec.model, obs=obs, arm=spec.arm,
+        candidate_checks=candidate_checks,
+    )
+    common["run_outcome"] = outcome.outcome
+    common["admissible"] = outcome.admissible
+    common["admission_reasons"] = outcome.reasons
+
+    errors = _validate_bundle_v3(common)
     if errors:
-        (evidence_dir / "live-evidence.v2.errors.txt").write_text(
+        # A bundle that would not validate is itself a SCHEMA_FAILURE;
+        # record it non-admissibly rather than raising and losing
+        # evidence.
+        common["run_outcome"] = "SCHEMA_FAILURE"
+        common["admissible"] = False
+        common["admission_reasons"] = ["schema validation failed: "
+                                        + "; ".join(errors[:5])]
+        (evidence_dir / "live-evidence.v3.errors.txt").write_text(
             "\n".join(errors) + "\n", encoding="utf-8",
         )
-        raise OrchestratorError(
-            f"emitted v2 bundle fails schema validation: {errors[:3]}"
-        )
-    return bundle_out
+        outcome = RunOutcome("SCHEMA_FAILURE", False, common["admission_reasons"])
+
+    bundle_out = evidence_dir / "live-evidence.v3.json"
+    _atomic_write_json(bundle_out, common)
+    return bundle_out, outcome
+
+
+def _expected_active_packs(scenario: str) -> list[str]:
+    return {
+        "test-design-async": ["async"],
+        "atdd-api-async": ["async"],
+        "atdd-api-async-corrected": ["api", "async"],
+        "docs-only-rust-repo": [],
+    }.get(scenario, [])
 
 
 def _collect_active_packs(run_report_path: Path) -> list[str]:
@@ -1066,6 +1364,125 @@ def _validate_bundle_v2(bundle: dict) -> list[str]:
     schema = json.loads(SCHEMA_V2_PATH.read_text(encoding="utf-8"))
     validator = jsonschema.Draft202012Validator(schema)
     return [e.message for e in validator.iter_errors(bundle)]
+
+
+def _validate_bundle_v3(bundle: dict) -> list[str]:
+    try:
+        import jsonschema
+    except ImportError:
+        return ["jsonschema library missing"]
+    if not SCHEMA_V3_PATH.exists():
+        return [f"v3 schema missing at {SCHEMA_V3_PATH}"]
+    schema = json.loads(SCHEMA_V3_PATH.read_text(encoding="utf-8"))
+    validator = jsonschema.Draft202012Validator(schema)
+    return [e.message for e in validator.iter_errors(bundle)]
+
+
+# ------------------------------------------------------ admission gate
+
+@dataclass
+class AdmissionResult:
+    admissible: bool
+    run_outcome: str
+    reasons: list[str]
+    arm: str
+    run_id: str
+
+
+def admit_bundle(bundle: dict) -> AdmissionResult:
+    """D3.3.3 §14. Reusable structured admission gate over a v3 bundle.
+
+    Recomputes admissibility from the bundle's own recorded fields —
+    it does NOT trust the bundle's `admissible` field blindly. A bundle
+    that claims admissible=true but violates any invariant is reported
+    as NOT admissible with the violated reasons.
+    """
+    reasons: list[str] = []
+    arm = bundle.get("arm", "")
+    run_id = bundle.get("run_id", "")
+
+    # Schema-level gate first.
+    schema_errors = _validate_bundle_v3(bundle)
+    if schema_errors:
+        return AdmissionResult(False, "SCHEMA_FAILURE",
+                               ["schema: " + e for e in schema_errors[:5]],
+                               arm, run_id)
+
+    if bundle.get("run_outcome") != "SUCCESS":
+        reasons.append(f"run_outcome={bundle.get('run_outcome')}")
+    inv = bundle.get("invocation", {})
+    if inv.get("exit_code") != 0:
+        reasons.append(f"exit_code={inv.get('exit_code')}")
+    rr = bundle.get("runtime_result", {})
+    if rr.get("is_error") is True:
+        reasons.append("result.is_error=true")
+    if rr.get("authentication_failed"):
+        reasons.append("authentication_failed")
+    if bundle.get("runtime", {}).get("contamination"):
+        reasons.append(f"contamination={bundle['runtime']['contamination']}")
+    if bundle.get("run_id_handshake", {}).get("mismatch"):
+        reasons.append("run_id mismatch")
+    model_exp = bundle.get("runtime", {}).get("model_expected", "")
+    model_obs = bundle.get("runtime", {}).get("model_observed", "")
+    if model_exp and model_obs and model_exp != model_obs:
+        reasons.append(f"model mismatch {model_obs}!={model_exp}")
+    obs = bundle.get("observation", {})
+    if obs.get("task_tool_use_count", 0) != 0:
+        reasons.append(f"task_tool_use_count={obs.get('task_tool_use_count')}")
+
+    if arm == "candidate":
+        cand = bundle.get("candidate", {})
+        if not obs.get("wrapper_skill_invoked"):
+            reasons.append("wrapper_skill_invoked=false")
+        if not obs.get("child_skill_invoked"):
+            reasons.append("child_skill_invoked=false")
+        if obs.get("observed_mode") != "OBSERVED_SEQUENTIAL":
+            reasons.append(f"observed_mode={obs.get('observed_mode')}")
+        if not cand.get("bundle_present"):
+            reasons.append("bundle absent")
+        if not bundle.get("artifacts", {}).get("new_artefacts"):
+            reasons.append("artifacts empty")
+        if not cand.get("verifier_all_pass"):
+            reasons.append("verifier not all PASS")
+        exp = sorted(cand.get("expected_rp_ids", []))
+        active = sorted(cand.get("active_packs", []))
+        expected_packs = sorted(_expected_active_packs(bundle.get("scenario", "")))
+        if active != expected_packs:
+            reasons.append(f"active_packs {active} != {expected_packs}")
+        sidecars = cand.get("sidecars", [])
+        arts = bundle.get("artifacts", {}).get("new_artefacts", [])
+        if arts and len(sidecars) != len(arts):
+            reasons.append(f"sidecars({len(sidecars)}) != artefacts({len(arts)})")
+    elif arm == "baseline":
+        base = bundle.get("baseline", {})
+        if obs.get("wrapper_skill_invoked"):
+            reasons.append("baseline invoked wrapper")
+        if not obs.get("child_skill_invoked"):
+            reasons.append("baseline did not invoke child")
+        if not base.get("rdx_bundle_absent"):
+            reasons.append("baseline has RDX bundle")
+        if not base.get("rdx_sidecars_absent"):
+            reasons.append("baseline has RDX sidecars")
+
+    # Cleanup gate.
+    cl = bundle.get("cleanup", {}).get("observed", {})
+    if cl.get("lock_state") != "absent":
+        reasons.append(f"lock_state={cl.get('lock_state')}")
+    if cl.get("overlay_state") not in ("absent", "foreign-preserved"):
+        reasons.append(f"overlay_state={cl.get('overlay_state')}")
+    if not cl.get("run_dir_retained"):
+        reasons.append("run_dir not retained")
+    if not cl.get("transcript_retained"):
+        reasons.append("transcript not retained")
+
+    admissible = not reasons
+    return AdmissionResult(
+        admissible,
+        bundle.get("run_outcome", "SUCCESS") if admissible else
+        bundle.get("run_outcome", "RUNTIME_FAILURE"),
+        reasons or ["all admission checks passed"],
+        arm, run_id,
+    )
 
 
 # ------------------------------------------------------------ abort_run op
@@ -1166,13 +1583,19 @@ def abort_run(*, workspace: Path, workflow: str, run_id: str,
 
 # ------------------------------------------------------------- run-smoke
 
-def run_smoke(spec: RunSpec) -> dict:
-    """Full lifecycle: discovery → prep → invocation-contract → invoke →
-    reconcile → v2 evidence → observed cleanup.
+def run_smoke(spec: RunSpec,
+              auth_preflight_id: str = AUTH_PREFLIGHT_ID_DEFAULT) -> dict:
+    """D3.3.3 full lifecycle, fail-closed.
 
-    On any failure the workspace is left intact so a reviewer can
-    inspect it, but locks/overlays are released and an abort marker is
-    written.
+    Success path (§13):
+      prep → contract → lock → bootstrap → preflight → invoke →
+      reconcile → RELEASE lock + restore overlay → observe cleanup →
+      emit v3 evidence + classify outcome.
+
+    A non-SUCCESS outcome yields a non-admissible bundle and a
+    non-zero-style result dict (`status: failed`, `admissible: false`).
+    An infra error before invocation (bad prep, preflight fail) aborts
+    and emits failure evidence, then re-raises a typed error.
     """
     if not spec.run_id:
         raise OrchestratorError("spec.run_id is required (schedule-owned)")
@@ -1183,10 +1606,8 @@ def run_smoke(spec: RunSpec) -> dict:
 
     prep: dict | None = None
     invocation: dict = {}
-    isolation = ClaudeIsolation(
-        config_dir=(spec.isolated_config_dir
-                    or (spec.evidence_root / spec.scenario / spec.arm
-                        / f"rep-{spec.repetition:02d}" / "isolated-config")),
+    isolation = ProjectRuntimeIsolation(
+        workspace=spec.workspace_dir,
         arm=spec.arm,
         workflow=spec.workflow,
     )
@@ -1195,8 +1616,6 @@ def run_smoke(spec: RunSpec) -> dict:
         prep = _prepare(spec)
         workspace = Path(prep["project"])
 
-        # D3.3.2 §6.2 — emit invocation contract BEFORE the wrapper
-        # runs, so the wrapper reads schedule-owned run_id verbatim.
         prompt = arm_prompt(spec.arm, spec.workflow, spec.run_id)
         emit_invocation_contract(
             workspace=workspace,
@@ -1211,12 +1630,9 @@ def run_smoke(spec: RunSpec) -> dict:
             prompt_hash=_sha256_text(prompt),
         )
 
-        # D3.3.2 §13 — write structured lock BEFORE runtime call.
         write_lock_json(workspace, run_id=spec.run_id, workflow=spec.workflow)
+        isolation.bootstrap()
 
-        isolation.bootstrap(workspace)
-
-        # D3.3.2 §10 — preflight must pass before we spend a token.
         preflight_errors = isolation.preflight()
         if preflight_errors:
             raise OrchestratorError(
@@ -1225,7 +1641,6 @@ def run_smoke(spec: RunSpec) -> dict:
 
         invocation = _invoke(spec, prep, isolation)
 
-        # Reconcile transcript now that the runtime has exited.
         run_dir = (workspace / "_bmad" / "rdx-tea" / "runtime"
                    / spec.workflow / spec.run_id)
         transcript_path = run_dir / "transcript.stream.jsonl"
@@ -1238,15 +1653,27 @@ def run_smoke(spec: RunSpec) -> dict:
             )
         obs = _classify_transcript(transcript_path, spec.workflow)
 
-        bundle_path = _finalize_evidence(
-            spec, prep, invocation, runtime_probe, isolation, obs,
+        # D3.3.3 §13 — release lock + restore overlay BEFORE observing
+        # cleanup, so lock_state reflects the released state.
+        _release_lock_and_overlay(workspace, spec.workflow, spec.run_id)
+        cleanup_observed = observe_cleanup(
+            workspace=workspace, workflow=spec.workflow, run_id=spec.run_id,
         )
-        # Release own lock at end of successful run.
-        lock_path = _lock_path(workspace)
-        if _lock_owned_by(workspace, spec.run_id, spec.workflow):
-            lock_path.unlink(missing_ok=True)
+
+        cleanup_state = ("FINALIZED"
+                         if outcome_is_success(invocation, transcript_path)
+                         else "FAILED")
+        bundle_path, outcome = _finalize_evidence_v3(
+            spec, prep, invocation, runtime_probe, isolation, obs,
+            cleanup_observed=cleanup_observed,
+            cleanup_state=cleanup_state,
+            auth_preflight_id=auth_preflight_id,
+        )
         return {
-            "status": "ok",
+            "status": "ok" if outcome.admissible else "failed",
+            "run_outcome": outcome.outcome,
+            "admissible": outcome.admissible,
+            "admission_reasons": outcome.reasons,
             "bundle": str(bundle_path),
             "run_id": spec.run_id,
         }
@@ -1256,12 +1683,52 @@ def run_smoke(spec: RunSpec) -> dict:
                       run_id=spec.run_id, state="ABORTED", reason=str(err),
                       failure_class=type(err).__name__)
         raise
+    except OrchestratorError:
+        if prep is not None:
+            abort_run(workspace=Path(prep["project"]), workflow=spec.workflow,
+                      run_id=spec.run_id, state="FAILED",
+                      reason="orchestrator error", failure_class="OrchestratorError")
+        raise
     except Exception as err:
         if prep is not None:
             abort_run(workspace=Path(prep["project"]), workflow=spec.workflow,
                       run_id=spec.run_id, state="FAILED", reason=str(err),
                       failure_class=type(err).__name__)
         raise
+
+
+def outcome_is_success(invocation: dict, transcript_path: Path) -> bool:
+    """Quick pre-check used only to pick the cleanup.state label. The
+    authoritative classification is done in _finalize_evidence_v3."""
+    if invocation.get("exit_code") != 0:
+        return False
+    rr = extract_runtime_result(transcript_path)
+    return (rr.get("is_error") is not True
+            and not rr.get("authentication_failed")
+            and rr.get("model_turn_seen") is True)
+
+
+def _release_lock_and_overlay(workspace: Path, workflow: str,
+                              run_id: str) -> None:
+    """Release our own lock and restore/remove our overlay (D3.3.3 §13).
+    Foreign locks/overlays are left untouched."""
+    lock_path = _lock_path(workspace)
+    if _lock_owned_by(workspace, run_id, workflow):
+        lock_path.unlink(missing_ok=True)
+    overlay = workspace / "_bmad" / "custom" / f"bmad-testarch-{workflow}.toml"
+    backup = (workspace / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id
+              / "overlay-backup.toml")
+    marker = "# rdx-tea-owned run-specific overlay"
+    if overlay.exists():
+        try:
+            text = overlay.read_text(encoding="utf-8")
+        except OSError:
+            text = ""
+        if text.startswith(marker):
+            if backup.exists():
+                overlay.write_bytes(backup.read_bytes())
+            else:
+                overlay.unlink(missing_ok=True)
 
 
 # -------------------------------------------------------------------- CLI
@@ -1315,7 +1782,7 @@ def main() -> int:
     _add_common(p_one, run_id_required=True)
 
     p_pre = sub.add_parser("runtime-preflight")
-    p_pre.add_argument("--config-dir", required=True, type=Path)
+    p_pre.add_argument("--workspace", required=True, type=Path)
     p_pre.add_argument("--arm", required=True, choices=("baseline", "candidate"))
     p_pre.add_argument("--workflow", required=True,
                        choices=("test-design", "atdd"))
@@ -1332,6 +1799,9 @@ def main() -> int:
     p_abort.add_argument("--state", choices=("ABORTED", "FAILED"), default="ABORTED")
     p_abort.add_argument("--reason", default="")
 
+    p_admit = sub.add_parser("admit")
+    p_admit.add_argument("--bundle", required=True, type=Path)
+
     args = ap.parse_args()
 
     try:
@@ -1339,7 +1809,7 @@ def main() -> int:
             spec = _mk_spec(args)
             r = run_smoke(spec)
             print(json.dumps(r, indent=2, sort_keys=True))
-            return 0
+            return 0 if r.get("admissible") else 4
         if args.cmd == "reconcile-transcript":
             r = reconcile_transcript(
                 run_report_path=args.run_report,
@@ -1354,22 +1824,35 @@ def main() -> int:
             print(json.dumps(r, indent=2, sort_keys=True))
             return 0
         if args.cmd == "runtime-preflight":
-            iso = ClaudeIsolation(
-                config_dir=args.config_dir,
+            iso = ProjectRuntimeIsolation(
+                workspace=args.workspace,
                 arm=args.arm,
                 workflow=args.workflow,
             )
+            iso.bootstrap()
             errors = iso.preflight()
             report = {
-                "config_dir": str(args.config_dir),
+                "workspace": str(args.workspace),
                 "arm": args.arm,
                 "workflow": args.workflow,
                 "expected_skills": sorted(iso.project_skills),
+                "config_dir_overridden": False,
                 "errors": errors,
                 "status": "PASS" if not errors else "FAIL",
             }
             print(json.dumps(report, indent=2, sort_keys=True))
             return 0 if not errors else 3
+        if args.cmd == "admit":
+            bundle = json.loads(args.bundle.read_text(encoding="utf-8"))
+            res = admit_bundle(bundle)
+            print(json.dumps({
+                "admissible": res.admissible,
+                "run_outcome": res.run_outcome,
+                "arm": res.arm,
+                "run_id": res.run_id,
+                "reasons": res.reasons,
+            }, indent=2, sort_keys=True))
+            return 0 if res.admissible else 4
     except OrchestratorError as err:
         print(f"run_live failed: {err}", file=sys.stderr)
         return 2

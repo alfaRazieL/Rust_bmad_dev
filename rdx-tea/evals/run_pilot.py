@@ -285,45 +285,107 @@ def dry_run(schedule_path: Path, out_root: Path) -> dict:
     return manifest
 
 
+# ---------------------------------------------------- admissibility helpers
+
+def _classify_run_state(evidence_dir: Path) -> str:
+    """D3.3.3 §15. Classify a scheduled run's state from its v3 bundle:
+
+      completed = an admissible SUCCESS bundle exists
+      failed    = a bundle exists but admissible == false
+      invalid   = a bundle exists but fails schema / admission recompute
+      pending   = no bundle attempt yet
+    """
+    # Prefer v3; fall back to any versioned-attempt bundle.
+    bundle_paths = sorted(evidence_dir.glob("live-evidence.v3*.json"))
+    if not bundle_paths:
+        return "pending"
+    # Use the newest attempt.
+    bundle_path = bundle_paths[-1]
+    try:
+        bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return "invalid"
+    res = run_live.admit_bundle(bundle)
+    if res.run_outcome == "SCHEMA_FAILURE":
+        return "invalid"
+    if res.admissible and bundle.get("run_outcome") == "SUCCESS":
+        return "completed"
+    return "failed"
+
+
+def _attempt_suffix(evidence_dir: Path) -> str:
+    """Return a versioned attempt suffix so a retry never overwrites a
+    failed bundle (D3.3.3 §15)."""
+    existing = sorted(evidence_dir.glob("live-evidence.v3.attempt-*.json"))
+    return f"attempt-{len(existing) + 2:02d}"
+
+
 # ---------------------------------------------------------------- resume
 
 def resume(schedule: dict, root: Path, *, dry_run: bool = False) -> list[dict]:
-    """Re-drive the schedule; skip runs whose evidence bundle exists."""
+    """Re-drive the schedule.
+
+    D3.3.3 §15: a run is skipped ONLY when it is `completed` (an
+    admissible SUCCESS bundle). A `failed`/`invalid` bundle is NOT
+    treated as completed and is NOT deleted; a retry is attempted only
+    if the precommitted retry policy permits it, and the retry writes a
+    versioned attempt suffix.
+    """
     plans = build_plan(schedule, root)
+    retry_policy = schedule.get("retry_policy", {})
+    max_retries = int(retry_policy.get("max_retries_per_run_id", 0))
     outcomes: list[dict] = []
     for p in plans:
-        bundle = p.evidence_dir / "live-evidence.v2.json"
-        if bundle.exists():
-            outcomes.append({"status": "already-done", "run_id": p.run_id})
+        state = _classify_run_state(p.evidence_dir)
+        if state == "completed":
+            outcomes.append({"status": "already-completed", "run_id": p.run_id})
             continue
+        if state in ("failed", "invalid"):
+            attempts = len(sorted(p.evidence_dir.glob("live-evidence.v3*.json")))
+            if attempts > max_retries:
+                outcomes.append({"status": "retry-exhausted",
+                                  "run_id": p.run_id, "prior_state": state,
+                                  "attempts": attempts})
+                continue
+            # Preserve the failed bundle under a versioned attempt suffix
+            # so the retry never overwrites failed evidence.
+            failed_bundle = p.evidence_dir / "live-evidence.v3.json"
+            if failed_bundle.exists():
+                suffix = _attempt_suffix(p.evidence_dir)
+                failed_bundle.rename(
+                    p.evidence_dir / f"live-evidence.v3.{suffix}.json"
+                )
         try:
             r = execute_one(schedule, p.run_id, root=root, dry_run=dry_run)
-            outcomes.append(r)
+            outcomes.append({**r, "prior_state": state})
         except Exception as err:  # noqa: BLE001
             outcomes.append({"status": "error", "run_id": p.run_id,
-                              "error": str(err)})
+                              "error": str(err), "prior_state": state})
     return outcomes
 
 
 # ---------------------------------------------------------------- status
 
 def status(schedule: dict, root: Path) -> dict:
+    """D3.3.3 §15 — completed/failed/pending/invalid by admissibility."""
     plans = build_plan(schedule, root)
-    done, pending, failed = [], [], []
+    done, pending, failed, invalid = [], [], [], []
     for p in plans:
-        bundle = p.evidence_dir / "live-evidence.v2.json"
-        errors = p.evidence_dir / "live-evidence.v2.errors.txt"
-        if bundle.exists():
+        state = _classify_run_state(p.evidence_dir)
+        if state == "completed":
             done.append(p.run_id)
-        elif errors.exists():
+        elif state == "failed":
             failed.append(p.run_id)
+        elif state == "invalid":
+            invalid.append(p.run_id)
         else:
             pending.append(p.run_id)
     return {
         "total": len(plans),
-        "done": done,
-        "pending": pending,
+        "completed": done,
         "failed": failed,
+        "invalid": invalid,
+        "pending": pending,
         "schedule_sha256": schedule.get("_sha256"),
     }
 

@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/live-harness/schemas/live-evidence.v3.schema.json",
+  "title": "rdx-tea live evidence bundle v3 (admission-aware)",
+  "description": "D3.3.3 §12. Extends the v2 arm-aware bundle with admission semantics: run_outcome, admissible, admission_reasons, auth_preflight_id, runtime_result, and cleanup observed after teardown. The schema forbids admissible=true whenever exit_code!=0, contamination is present, run_id mismatches, or (for candidate) wrapper/child/bundle/verifier are missing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "arm",
+    "scenario",
+    "workflow",
+    "repetition",
+    "run_id",
+    "run_id_handshake",
+    "auth_preflight_id",
+    "workspace",
+    "identity",
+    "runtime",
+    "invocation",
+    "runtime_result",
+    "artifacts",
+    "hashes",
+    "observation",
+    "run_outcome",
+    "admissible",
+    "admission_reasons",
+    "cleanup"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "rdx-tea-live-evidence.v3"},
+    "arm": {"type": "string", "enum": ["baseline", "candidate"]},
+    "scenario": {
+      "type": "string",
+      "enum": ["test-design-async", "atdd-api-async", "atdd-api-async-corrected", "docs-only-rust-repo"]
+    },
+    "workflow": {"type": "string", "enum": ["test-design", "atdd"]},
+    "repetition": {"type": "integer", "minimum": 1, "maximum": 20},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{4,80}$"},
+    "auth_preflight_id": {"type": "string", "minLength": 1},
+    "run_id_handshake": {
+      "type": "object",
+      "required": ["schedule", "mismatch"],
+      "properties": {
+        "schedule": {"type": "string"},
+        "invocation_json": {"type": ["string", "null"]},
+        "workspace_runtime_dir": {"type": ["string", "null"]},
+        "run_report": {"type": ["string", "null"]},
+        "mismatch": {"type": "boolean"}
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["path", "config_dir_overridden", "fixture_hash"],
+      "additionalProperties": true,
+      "properties": {
+        "path": {"type": "string"},
+        "config_dir_overridden": {"type": "boolean"},
+        "fixture_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identity": {
+      "type": "object",
+      "required": ["base_sha", "head_sha"],
+      "properties": {
+        "base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["expected_surface", "observed_surface", "surface_diff", "contamination", "model_expected", "model_observed"],
+      "additionalProperties": true,
+      "properties": {
+        "expected_surface": {"type": "object"},
+        "observed_surface": {"type": "object"},
+        "surface_diff": {"type": "object"},
+        "contamination": {"type": "string"},
+        "model_expected": {"type": "string"},
+        "model_observed": {"type": "string"}
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["command_hash", "prompt_hash", "exit_code", "reason"],
+      "additionalProperties": true,
+      "properties": {
+        "command_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "prompt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "exit_code": {"type": "integer"},
+        "reason": {"type": "string"}
+      }
+    },
+    "runtime_result": {
+      "type": "object",
+      "required": ["result_event_seen", "is_error", "authentication_failed", "model_turn_seen"],
+      "additionalProperties": true,
+      "properties": {
+        "result_event_seen": {"type": "boolean"},
+        "is_error": {"type": ["boolean", "null"]},
+        "subtype": {"type": "string"},
+        "authentication_failed": {"type": "boolean"},
+        "model_turn_seen": {"type": "boolean"}
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "required": ["new_artefacts"],
+      "properties": {
+        "new_artefacts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "required": ["run_report", "transcript", "bundle"],
+      "properties": {
+        "run_report": {"type": "string"},
+        "transcript": {"type": "string"},
+        "bundle": {"type": "string"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": ["observed_mode", "wrapper_skill_invoked", "child_skill_invoked", "task_tool_use_count", "transcript_sha256", "session_id"],
+      "additionalProperties": true,
+      "properties": {
+        "observed_mode": {"type": "string", "enum": ["OBSERVED_SEQUENTIAL", "OBSERVED_SUBAGENT", "TRANSCRIPT_MISSING", "TRANSCRIPT_INVALID", "INFERRED_ABSENT"]},
+        "wrapper_skill_invoked": {"type": "boolean"},
+        "child_skill_invoked": {"type": "boolean"},
+        "task_tool_use_count": {"type": "integer", "minimum": 0},
+        "transcript_sha256": {"type": "string"},
+        "session_id": {"type": "string"}
+      }
+    },
+    "run_outcome": {
+      "type": "string",
+      "enum": ["AUTH_FAILURE", "RUNTIME_FAILURE", "TIMEOUT", "CONTAMINATION", "RUN_ID_MISMATCH", "WORKFLOW_FAILURE", "VERIFIER_FAILURE", "SCHEMA_FAILURE", "SUCCESS"]
+    },
+    "admissible": {"type": "boolean"},
+    "admission_reasons": {"type": "array", "items": {"type": "string"}},
+    "cleanup": {
+      "type": "object",
+      "required": ["state", "observed"],
+      "properties": {
+        "state": {"type": "string", "enum": ["FINALIZED", "ABORTED", "FAILED"]},
+        "observed": {
+          "type": "object",
+          "required": ["lock_state", "overlay_state", "run_dir_retained", "transcript_retained"],
+          "properties": {
+            "lock_state": {"type": "string", "enum": ["absent", "owned-still-present", "foreign-present"]},
+            "overlay_state": {"type": "string", "enum": ["absent", "rdx-owned-still-present", "foreign-preserved"]},
+            "run_dir_retained": {"type": "boolean"},
+            "transcript_retained": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "required": ["wrapper_skill_invoked", "direct_child_skill_invoked", "rdx_bundle_absent", "rdx_sidecars_absent", "rdx_overlay_absent"],
+      "properties": {
+        "wrapper_skill_invoked": {"const": false},
+        "direct_child_skill_invoked": {"type": "boolean"},
+        "rdx_bundle_absent": {"const": true},
+        "rdx_sidecars_absent": {"const": true},
+        "rdx_overlay_absent": {"const": true}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["wrapper_skill_invoked", "child_skill_invoked", "sidecars", "active_packs", "expected_rp_ids", "verifier_all_pass", "bundle_present"],
+      "properties": {
+        "wrapper_skill_invoked": {"type": "boolean"},
+        "child_skill_invoked": {"type": "boolean"},
+        "sidecars": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "active_packs": {"type": "array", "items": {"type": "string"}},
+        "expected_rp_ids": {"type": "array", "items": {"type": "string"}},
+        "verifier_all_pass": {"type": "boolean"},
+        "bundle_present": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "comment": "Arm-block exclusivity.",
+      "if": {"properties": {"arm": {"const": "baseline"}}, "required": ["arm"]},
+      "then": {"required": ["baseline"], "not": {"required": ["candidate"]}}
+    },
+    {
+      "if": {"properties": {"arm": {"const": "candidate"}}, "required": ["arm"]},
+      "then": {"required": ["candidate"], "not": {"required": ["baseline"]}}
+    },
+    {
+      "comment": "admissible=true forbids non-zero exit.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {"properties": {"invocation": {"properties": {"exit_code": {"const": 0}}}}}
+    },
+    {
+      "comment": "admissible=true requires run_outcome SUCCESS.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {"properties": {"run_outcome": {"const": "SUCCESS"}}}
+    },
+    {
+      "comment": "admissible=true forbids contamination.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {"properties": {"runtime": {"properties": {"contamination": {"const": ""}}}}}
+    },
+    {
+      "comment": "admissible=true forbids run_id mismatch.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {"properties": {"run_id_handshake": {"properties": {"mismatch": {"const": false}}}}}
+    },
+    {
+      "comment": "admissible=true forbids result.is_error true.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {"properties": {"runtime_result": {"properties": {"is_error": {"const": false}, "authentication_failed": {"const": false}}}}}
+    },
+    {
+      "comment": "admissible candidate requires wrapper+child+bundle+verifier+sequential.",
+      "if": {
+        "allOf": [
+          {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+          {"properties": {"arm": {"const": "candidate"}}, "required": ["arm"]}
+        ]
+      },
+      "then": {
+        "properties": {
+          "observation": {"properties": {"observed_mode": {"const": "OBSERVED_SEQUENTIAL"}, "wrapper_skill_invoked": {"const": true}, "child_skill_invoked": {"const": true}, "task_tool_use_count": {"const": 0}}},
+          "candidate": {"properties": {"bundle_present": {"const": true}, "verifier_all_pass": {"const": true}}}
+        }
+      }
+    }
+  ]
+}
