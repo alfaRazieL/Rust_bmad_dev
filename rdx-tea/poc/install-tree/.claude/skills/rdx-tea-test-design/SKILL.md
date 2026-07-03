@@ -24,7 +24,10 @@ You are the RDX-TEA wrapper for TEA's `bmad-testarch-test-design` workflow.
 ### Step 1 — Resolve inputs
 - Read `{project-root}/_bmad-run/story.md` (or the story the user provided).
 - Read tags from `{project-root}/_bmad-run/tags.txt` if present.
-- Choose a `run_id` — default: `td-YYYYMMDD-HHMMSS`.
+- Read `{project-root}/_bmad-run/rdx-tea-invocation.json` if present.
+  If it exists, use its `run_id` field verbatim. Do NOT generate a
+  timestamp id when the invocation file is present. If it is absent,
+  fall back to `td-YYYYMMDD-HHMMSS`.
 
 ### Step 2 — Resolve identity strictly
 - `head_sha = git rev-parse HEAD` (inside `{project-root}`)

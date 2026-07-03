@@ -34,7 +34,8 @@ def _run(cmd, cwd=None):
     return r.stdout.strip()
 
 
-def prepare(dest: Path, fixture: Path, scenario: str, workflow: str) -> dict:
+def prepare(dest: Path, fixture: Path, scenario: str, workflow: str,
+            run_id: str | None = None) -> dict:
     if dest.exists():
         raise RuntimeError(f"refusing to overwrite existing {dest}")
     if not fixture.exists():
@@ -104,7 +105,10 @@ def prepare(dest: Path, fixture: Path, scenario: str, workflow: str) -> dict:
               "commit", "-q", "-m", f"{scenario} head"], cwd=dest)
     head = _run(["git", "rev-parse", "HEAD"], cwd=dest)
 
-    run_id = f"{scenario}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+    if run_id is None or not run_id:
+        run_id = (
+            f"{scenario}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+        )
     return {
         "project": str(dest),
         "workflow": workflow,
@@ -123,9 +127,11 @@ def main() -> int:
     ap.add_argument("--workflow", required=True,
                     choices=("test-design", "atdd", "framework", "ci",
                               "automate", "test-review", "nfr", "trace"))
+    ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
     try:
-        r = prepare(args.dest, args.fixture, args.scenario, args.workflow)
+        r = prepare(args.dest, args.fixture, args.scenario, args.workflow,
+                    run_id=args.run_id)
     except RuntimeError as err:
         print(f"prepare_workspace failed: {err}", file=sys.stderr)
         return 1

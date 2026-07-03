@@ -208,7 +208,10 @@ def test_abort_run_idempotent_no_state(tmp_path):
 
 
 def test_abort_run_releases_owned_lock(tmp_path):
-    ws = _mk_workspace(tmp_path, "atdd", "r-1", lock_text="atdd r-1 42\n")
+    ws = _mk_workspace(tmp_path, "atdd", "r-1", lock_text=json.dumps({
+        "run_id": "r-1", "workflow": "atdd", "pid": 42,
+        "created_at": "2026-07-03T00:00:00+00:00",
+    }))
     r = run_live.abort_run(workspace=ws, workflow="atdd", run_id="r-1")
     assert r["lock_released"] is True
     assert not (ws / "_bmad" / "rdx-tea" / "runtime" / "active-run.lock"
@@ -216,8 +219,23 @@ def test_abort_run_releases_owned_lock(tmp_path):
 
 
 def test_abort_run_preserves_foreign_lock(tmp_path):
+    ws = _mk_workspace(tmp_path, "atdd", "r-1", lock_text=json.dumps({
+        "run_id": "OTHER-RUN", "workflow": "atdd", "pid": 99,
+        "created_at": "2026-07-03T00:00:00+00:00",
+    }))
+    r = run_live.abort_run(workspace=ws, workflow="atdd", run_id="r-1")
+    assert r["lock_released"] is False
+    assert (ws / "_bmad" / "rdx-tea" / "runtime" / "active-run.lock"
+            ).exists()
+
+
+def test_abort_run_ignores_legacy_string_lock(tmp_path):
+    """Old-style substring locks (D3.3.1 and earlier) must NOT be
+    released; the structured classifier treats them as unowned so a
+    stale legacy lock is preserved for manual inspection rather than
+    silently deleted."""
     ws = _mk_workspace(tmp_path, "atdd", "r-1",
-                       lock_text="atdd OTHER-RUN 99\n")
+                       lock_text="atdd r-1 42\n")
     r = run_live.abort_run(workspace=ws, workflow="atdd", run_id="r-1")
     assert r["lock_released"] is False
     assert (ws / "_bmad" / "rdx-tea" / "runtime" / "active-run.lock"

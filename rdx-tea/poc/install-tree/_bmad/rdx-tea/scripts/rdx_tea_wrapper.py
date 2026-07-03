@@ -163,24 +163,58 @@ def _lock_path(project_root: Path) -> Path:
 
 
 def _acquire_active_run_lock(project_root: Path, workflow: str, run_id: str) -> None:
+    """D3.3.2 §13.1 — structured JSON lock, no substring semantics."""
     lock = _lock_path(project_root)
     if lock.exists():
         existing = lock.read_text(encoding="utf-8").strip()
+        # If the harness already wrote a matching structured lock we
+        # allow the wrapper to proceed; if it is foreign, refuse.
+        try:
+            data = json.loads(existing)
+        except json.JSONDecodeError:
+            data = None
+        if isinstance(data, dict) and data.get("run_id") == run_id \
+                and data.get("workflow") == workflow:
+            return
         raise WrapperError(
             f"another RDX-TEA run is active: {existing}. "
             f"Refuse to start a second concurrent run in the same workspace."
         )
     lock.parent.mkdir(parents=True, exist_ok=True)
-    lock.write_text(f"{workflow} {run_id} {os.getpid()}\n", encoding="utf-8")
+    payload = {
+        "run_id": run_id,
+        "workflow": workflow,
+        "pid": os.getpid(),
+        "created_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+    }
+    tmp = lock.with_suffix(lock.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    os.replace(tmp, lock)
 
 
 def _release_active_run_lock(project_root: Path, run_id: str) -> None:
     lock = _lock_path(project_root)
     if not lock.exists():
         return
-    content = lock.read_text(encoding="utf-8").strip()
-    if run_id in content:
+    try:
+        data = json.loads(lock.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return
+    if isinstance(data, dict) and data.get("run_id") == run_id:
         lock.unlink()
+
+
+def _read_invocation_contract(project_root: Path) -> dict | None:
+    """D3.3.2 §6.3 — the harness writes `_bmad-run/rdx-tea-invocation.json`
+    before invoking the wrapper. The wrapper MUST use its run_id verbatim
+    when present."""
+    p = project_root / "_bmad-run" / "rdx-tea-invocation.json"
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
 
 
 # ------------------------------------------------------------------ helpers
@@ -350,6 +384,25 @@ def prepare_run(
     head_sha: str | None,
     fixture_diff: Path | None = None,
 ) -> dict:
+    # D3.3.2 §6.3 — if the harness pinned a schedule-owned run_id, it
+    # must match the wrapper's --run-id argument exactly.
+    contract = _read_invocation_contract(project_root)
+    if contract is not None:
+        if contract.get("run_id") != run_id:
+            raise WrapperError(
+                f"invocation contract run_id={contract.get('run_id')!r} "
+                f"disagrees with --run-id {run_id!r}"
+            )
+        if contract.get("workflow") != workflow:
+            raise WrapperError(
+                f"invocation contract workflow={contract.get('workflow')!r} "
+                f"disagrees with --workflow {workflow!r}"
+            )
+        if contract.get("arm") != "candidate":
+            raise WrapperError(
+                f"invocation contract arm={contract.get('arm')!r} — wrapper "
+                f"is candidate-only; refuse to run"
+            )
     _acquire_active_run_lock(project_root, workflow, run_id)
     identity = _resolve_identity(project_root, base_sha, head_sha)
     config = _load_tea_config(project_root)

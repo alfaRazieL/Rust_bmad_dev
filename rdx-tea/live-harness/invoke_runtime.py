@@ -55,11 +55,12 @@ def invoke(*,
            run_id: str,
            model: str = DEFAULT_MODEL,
            max_budget_usd: float = 5.00,
-           timeout_seconds: int = 900) -> dict:
+           timeout_seconds: int = 900,
+           prompt_override: str | None = None) -> dict:
     if model.lower() in FORBIDDEN_MODELS:
         raise RuntimeError(f"model {model!r} is forbidden by cost policy")
     cli = "claude"
-    prompt = build_prompt(workflow)
+    prompt = prompt_override if prompt_override is not None else build_prompt(workflow)
     transcript_path = _stream_transcript(workspace, workflow, run_id)
     cmd = [
         cli, "-p", prompt,
