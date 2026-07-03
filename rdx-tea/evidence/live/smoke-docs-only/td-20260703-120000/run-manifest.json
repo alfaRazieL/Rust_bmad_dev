@@ -1,0 +1,52 @@
+{
+  "active_packs": [],
+  "bundle_bytes": 282,
+  "bundle_sha256": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+  "core_rules": [],
+  "diff_present": true,
+  "execution_mode": "sequential",
+  "identity": {
+    "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+    "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+    "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+  },
+  "prepared_at": "2026-07-03T01:28:42+00:00",
+  "rdx_canonical_snapshot_sha256": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8",
+  "rdx_kb_source_hashes": {
+    "canonical/kb-sections/section-4-core.md": "aa419c1a76551b8aa6248fad6a7f1cdafc8bcfeae7251e8f4fc4f3fa6a30c876",
+    "canonical/kb-sections/section-6-packs.md": "d4665fc9351164ce6744620a2c25c6e1c3ecb9fe0852307d164b4ddabaafa270",
+    "canonical/kb-sections/section-8-governance.md": "4d683f87054f940d9398bef4b86705063a721975adbe8a43caeb60c78981a07f"
+  },
+  "requested_mode": "sequential",
+  "run_id": "td-20260703-120000",
+  "rust_scope": false,
+  "schema_version": "rdx-tea-run.v1",
+  "story_present": false,
+  "story_tags": [],
+  "workflow": "test-design",
+  "workflow_obligation_matrix": {
+    "core_rules_policy": "all",
+    "fields": [
+      "exceptions",
+      "required_reasoning",
+      "risk",
+      "rule",
+      "sources",
+      "trigger",
+      "validation"
+    ],
+    "packs": [
+      "api",
+      "async",
+      "data-security-io",
+      "db",
+      "ffi",
+      "macro",
+      "testing",
+      "time-config-client",
+      "unsafe"
+    ]
+  }
+}

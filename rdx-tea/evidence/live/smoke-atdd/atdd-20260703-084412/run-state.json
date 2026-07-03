@@ -1,0 +1,16 @@
+{
+  "config_resolved_mode": "sequential",
+  "manifest_path": "/private/tmp/rdx-tea-live-B2/_bmad/rdx-tea/runtime/atdd/atdd-20260703-084412/run-manifest.json",
+  "output_dirs": [
+    "/private/tmp/rdx-tea-live-B2/_bmad-output/test-artifacts",
+    "/private/tmp/rdx-tea-live-B2/_bmad-output"
+  ],
+  "overlay_backup_path": "/private/tmp/rdx-tea-live-B2/_bmad/rdx-tea/runtime/atdd/atdd-20260703-084412/overlay-backup.toml",
+  "overlay_path": "/private/tmp/rdx-tea-live-B2/_bmad/custom/bmad-testarch-atdd.toml",
+  "phase": "finalized",
+  "pre_snapshot": {},
+  "prepared_at": "2026-07-03T01:44:17+00:00",
+  "run_id": "atdd-20260703-084412",
+  "skill_dir": "/private/tmp/rdx-tea-live-B2/.claude/skills/bmad-testarch-atdd",
+  "workflow": "atdd"
+}

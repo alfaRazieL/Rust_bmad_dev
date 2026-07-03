@@ -1,0 +1,1 @@
+harness-fixture-issue: fixture missing story.md — model correctly refused to proceed

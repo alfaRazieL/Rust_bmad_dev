@@ -1,0 +1,69 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "bundle_bytes": 16265,
+  "bundle_sha256": "36eebe05047daf3f797812cf791a6ae5f49801e04c7fb539c02ac6a90ed312f9",
+  "core_rules": [
+    "CORE-001",
+    "CORE-004",
+    "CORE-009"
+  ],
+  "diff_present": true,
+  "execution_mode": "sequential",
+  "identity": {
+    "base_sha": "8b97ad2821e26340381bbb4885a34309948d088e",
+    "diff_digest": "00f1bf4f1dd00a67f0343c3c797b0d522fece1cbb5fa0e6e61163f93685e3d36",
+    "head_sha": "8e798d53696ec5ba5619865a1253b20142f80669",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+  },
+  "prepared_at": "2026-07-03T01:44:17+00:00",
+  "rdx_canonical_snapshot_sha256": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8",
+  "rdx_kb_source_hashes": {
+    "canonical/kb-sections/section-4-core.md": "aa419c1a76551b8aa6248fad6a7f1cdafc8bcfeae7251e8f4fc4f3fa6a30c876",
+    "canonical/kb-sections/section-6-packs.md": "d4665fc9351164ce6744620a2c25c6e1c3ecb9fe0852307d164b4ddabaafa270",
+    "canonical/kb-sections/section-8-governance.md": "4d683f87054f940d9398bef4b86705063a721975adbe8a43caeb60c78981a07f"
+  },
+  "requested_mode": "sequential",
+  "run_id": "atdd-20260703-084412",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "story_present": true,
+  "story_tags": [
+    "api",
+    "async"
+  ],
+  "workflow": "atdd",
+  "workflow_obligation_matrix": {
+    "core_rules_policy": [
+      "CORE-001",
+      "CORE-004",
+      "CORE-009"
+    ],
+    "fields": [
+      "exceptions",
+      "required_reasoning",
+      "rule",
+      "validation"
+    ],
+    "packs": [
+      "api",
+      "async",
+      "testing"
+    ]
+  }
+}

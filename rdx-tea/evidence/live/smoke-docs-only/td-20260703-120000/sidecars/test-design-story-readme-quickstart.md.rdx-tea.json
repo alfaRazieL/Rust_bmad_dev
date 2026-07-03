@@ -1,0 +1,21 @@
+{
+  "active_packs": [],
+  "artifact_path": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md",
+  "artifact_sha256": "08c426478e7db4a0ef9b62c22664989ec601aba9b6dfabc248ad93972a385bca",
+  "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+  "bound_at": "2026-07-03T01:41:47+00:00",
+  "completed": true,
+  "core_rules": [],
+  "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+  "execution_mode": "sequential",
+  "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+  "prepare_manifest_sha256": "2f493c0495f90ae91f1b56c95d7c29baacd26c767ad2d24ccba3459205b53e44",
+  "prepared_at": "2026-07-03T01:28:42+00:00",
+  "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "td-20260703-120000",
+  "rust_scope": false,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "test-design"
+}

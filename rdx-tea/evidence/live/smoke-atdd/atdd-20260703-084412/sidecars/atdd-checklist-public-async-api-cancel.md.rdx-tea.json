@@ -1,0 +1,40 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "artifact_path": "/private/tmp/rdx-tea-live-B2/_bmad-output/test-artifacts/atdd-checklist-public-async-api-cancel.md",
+  "artifact_sha256": "e373280596d887301db244a68e969926f599a7ef91bcc631711eddf95bfd08a6",
+  "base_sha": "8b97ad2821e26340381bbb4885a34309948d088e",
+  "bound_at": "2026-07-03T01:48:32+00:00",
+  "completed": true,
+  "core_rules": [
+    "CORE-001",
+    "CORE-004",
+    "CORE-009"
+  ],
+  "diff_digest": "00f1bf4f1dd00a67f0343c3c797b0d522fece1cbb5fa0e6e61163f93685e3d36",
+  "execution_mode": "sequential",
+  "head_sha": "8e798d53696ec5ba5619865a1253b20142f80669",
+  "prepare_manifest_sha256": "6d0d9fe292330033ee6c25a46b67cf8812599b1dcae0ebd3ba32fd627b1e894f",
+  "prepared_at": "2026-07-03T01:44:17+00:00",
+  "projection_hash": "36eebe05047daf3f797812cf791a6ae5f49801e04c7fb539c02ac6a90ed312f9",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "atdd-20260703-084412",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "atdd"
+}

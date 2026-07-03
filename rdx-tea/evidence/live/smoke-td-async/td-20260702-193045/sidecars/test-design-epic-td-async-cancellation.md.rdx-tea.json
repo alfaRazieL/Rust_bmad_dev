@@ -1,0 +1,55 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "artifact_path": "/private/tmp/rdx-tea-live-A2/_bmad-output/test-artifacts/test-design-epic-td-async-cancellation.md",
+  "artifact_sha256": "651026b138543a435dc4506ce030a041561a74732a638f31db0e8a6683b3a51f",
+  "base_sha": "1cecf842667fa2fd2bb24145b87fdbcde8814aac",
+  "bound_at": "2026-07-02T19:34:03+00:00",
+  "completed": true,
+  "core_rules": [
+    "CORE-001",
+    "CORE-002",
+    "CORE-003",
+    "CORE-004",
+    "CORE-005",
+    "CORE-006",
+    "CORE-007",
+    "CORE-008",
+    "CORE-009",
+    "CORE-010",
+    "CORE-011",
+    "CORE-012",
+    "CORE-013",
+    "CORE-014",
+    "CORE-015",
+    "CORE-016",
+    "CORE-017",
+    "CORE-018"
+  ],
+  "diff_digest": "97ae542c5de5a62566ac8f73f0f2b1b945d30f289062d8e4efb9e8402623a6a3",
+  "execution_mode": "sequential",
+  "head_sha": "477f281091f06172e72112ab6ea014c65e18de07",
+  "prepare_manifest_sha256": "266f3585ae97a5bb3c516b8f5e328c1839274dd64dd0a3e5463334f9f9ae5057",
+  "prepared_at": "2026-07-02T19:31:33+00:00",
+  "projection_hash": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "td-20260702-193045",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "test-design"
+}

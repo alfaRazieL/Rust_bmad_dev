@@ -1,0 +1,54 @@
+diff --git a/_bmad-run/diff.patch b/_bmad-run/diff.patch
+new file mode 100644
+index 0000000..9a8fed5
+--- /dev/null
++++ b/_bmad-run/diff.patch
+@@ -0,0 +1,24 @@
++diff --git a/src/lib.rs b/src/lib.rs
++new file mode 100644
++index 0000000..1111111
++--- /dev/null
+++++ b/src/lib.rs
++@@ -0,0 +1,18 @@
+++use tokio::task::JoinHandle;
+++
+++pub struct Runner {
+++    handle: Option<JoinHandle<()>>,
+++}
+++
+++impl Runner {
+++    pub async fn run(&mut self) -> Result<(), String> {
+++        let h = tokio::spawn(async {
+++            // long-running background work
+++            for _ in 0..100 {
+++                tokio::task::yield_now().await;
+++            }
+++        });
+++        self.handle = Some(h);
+++        Ok(())
+++    }
+++}
+diff --git a/src/lib.rs b/src/lib.rs
+new file mode 100644
+index 0000000..1ef3557
+--- /dev/null
++++ b/src/lib.rs
+@@ -0,0 +1,18 @@
++use tokio::task::JoinHandle;
++
++pub struct Runner {
++    handle: Option<JoinHandle<()>>,
++}
++
++impl Runner {
++    pub async fn run(&mut self) -> Result<(), String> {
++        let h = tokio::spawn(async {
++            // long-running background work
++            for _ in 0..100 {
++                tokio::task::yield_now().await;
++            }
++        });
++        self.handle = Some(h);
++        Ok(())
++    }
++}

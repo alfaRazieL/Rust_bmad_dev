@@ -1,0 +1,24 @@
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..6886ecd
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,3 @@
++# Docs-only update
++
++This change modifies documentation only. Not a Rust code change.
+diff --git a/_bmad-run/diff.patch b/_bmad-run/diff.patch
+new file mode 100644
+index 0000000..1282d16
+--- /dev/null
++++ b/_bmad-run/diff.patch
+@@ -0,0 +1,9 @@
++diff --git a/README.md b/README.md
++new file mode 100644
++index 0000000..1111111
++--- /dev/null
+++++ b/README.md
++@@ -0,0 +1,3 @@
+++# Docs-only update
+++
+++This change modifies documentation only. Not a Rust code change.

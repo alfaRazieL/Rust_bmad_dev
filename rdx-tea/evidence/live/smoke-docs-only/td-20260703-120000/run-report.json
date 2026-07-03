@@ -1,0 +1,321 @@
+{
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-03T01:41:47+00:00",
+  "new_artefacts": [
+    "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md",
+    "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md",
+    "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md",
+    "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md"
+  ],
+  "observed_mode": "INFERRED_ABSENT",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "td-20260703-120000",
+  "schema_version": "rdx-tea-run.v1",
+  "sidecars": [
+    {
+      "active_packs": [],
+      "artifact_path": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md",
+      "artifact_sha256": "d4b4e8c273664b2dab6c09e0670a9776374fa7c64e264780c7ad20f6ff5aa4b9",
+      "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+      "bound_at": "2026-07-03T01:41:47+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+      "execution_mode": "sequential",
+      "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+      "prepare_manifest_sha256": "2f493c0495f90ae91f1b56c95d7c29baacd26c767ad2d24ccba3459205b53e44",
+      "prepared_at": "2026-07-03T01:28:42+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "td-20260703-120000",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    },
+    {
+      "active_packs": [],
+      "artifact_path": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md",
+      "artifact_sha256": "d4b4e8c273664b2dab6c09e0670a9776374fa7c64e264780c7ad20f6ff5aa4b9",
+      "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+      "bound_at": "2026-07-03T01:41:47+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+      "execution_mode": "sequential",
+      "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+      "prepare_manifest_sha256": "2f493c0495f90ae91f1b56c95d7c29baacd26c767ad2d24ccba3459205b53e44",
+      "prepared_at": "2026-07-03T01:28:42+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "td-20260703-120000",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    },
+    {
+      "active_packs": [],
+      "artifact_path": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md",
+      "artifact_sha256": "08c426478e7db4a0ef9b62c22664989ec601aba9b6dfabc248ad93972a385bca",
+      "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+      "bound_at": "2026-07-03T01:41:47+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+      "execution_mode": "sequential",
+      "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+      "prepare_manifest_sha256": "2f493c0495f90ae91f1b56c95d7c29baacd26c767ad2d24ccba3459205b53e44",
+      "prepared_at": "2026-07-03T01:28:42+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "td-20260703-120000",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    },
+    {
+      "active_packs": [],
+      "artifact_path": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md",
+      "artifact_sha256": "08c426478e7db4a0ef9b62c22664989ec601aba9b6dfabc248ad93972a385bca",
+      "base_sha": "a0cfba48460da1e47b20887d76c8c12cea2c9583",
+      "bound_at": "2026-07-03T01:41:47+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "0fcf76f8d9d8f3a6351fd8b691aff837900ad98dad47f9d484efab7decc7f45c",
+      "execution_mode": "sequential",
+      "head_sha": "d5ce781cd0cfe53dd725806b475742d59a741370",
+      "prepare_manifest_sha256": "2f493c0495f90ae91f1b56c95d7c29baacd26c767ad2d24ccba3459205b53e44",
+      "prepared_at": "2026-07-03T01:28:42+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "td-20260703-120000",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    }
+  ],
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=2f493c0495f9 sidecar=2f493c0495f9",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0fcf76f8d9d8 sidecar=0fcf76f8d9d8",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "td-20260703-120000",
+      "sidecar": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=2f493c0495f9 sidecar=2f493c0495f9",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0fcf76f8d9d8 sidecar=0fcf76f8d9d8",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "td-20260703-120000",
+      "sidecar": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-progress.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=2f493c0495f9 sidecar=2f493c0495f9",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0fcf76f8d9d8 sidecar=0fcf76f8d9d8",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "td-20260703-120000",
+      "sidecar": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=2f493c0495f9 sidecar=2f493c0495f9",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0fcf76f8d9d8 sidecar=0fcf76f8d9d8",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "td-20260703-120000",
+      "sidecar": "/private/tmp/rdx-tea-live-C/_bmad-output/test-artifacts/test-design-story-readme-quickstart.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "test-design"
+}
