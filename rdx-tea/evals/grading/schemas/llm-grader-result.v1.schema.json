@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/evals/grading/schemas/llm-grader-result.v1.schema.json",
+  "title": "rdx-tea blinded LLM grader result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "sample_id",
+    "grader_model",
+    "grader_prompt_sha256",
+    "metrics"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "rdx-tea-llm-grader.v1"},
+    "sample_id": {"type": "string", "pattern": "^sample-\\d{3}$"},
+    "grader_model": {"type": "string"},
+    "grader_prompt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["verdict", "confidence"],
+        "properties": {
+          "verdict": {"type": ["boolean", "string", "number"]},
+          "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+          "reason": {"type": "string"}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "arm": "baseline",
+  "arm_prompt": "Invoke the /bmad-testarch-atdd skill on the current project. Follow every activation step in its SKILL.md. Use run_id=pilot-010-atdd-api-async-corrected-baseline-rep03 in any output filenames or run identifiers where the skill accepts one. Read the story at _bmad-run/story.md and tags at _bmad-run/tags.txt if present.",
+  "baseline_command": [
+    "/bmad-testarch-atdd"
+  ],
+  "candidate_command": [
+    "/rdx-tea-atdd"
+  ],
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/evidence/atdd-api-async-corrected/baseline/rep-03/pilot-010-atdd-api-async-corrected-baseline-rep03",
+  "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+  "isolated_config_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/configs/pilot-010-atdd-api-async-corrected-baseline-rep03",
+  "model": "claude-haiku-4-5-20251001",
+  "order_index": 10,
+  "prompt_hash": "b391e73de79d9df4299d07e26e8a36184ca7d4f33b2cba08602b64d55cf16ed1",
+  "repetition": 3,
+  "run_id": "pilot-010-atdd-api-async-corrected-baseline-rep03",
+  "scenario": "atdd-api-async-corrected",
+  "workflow": "atdd",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/workspaces/pilot-010-atdd-api-async-corrected-baseline-rep03"
+}

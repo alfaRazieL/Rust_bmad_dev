@@ -1,0 +1,21 @@
+{
+  "arm": "baseline",
+  "arm_prompt": "Invoke the /bmad-testarch-test-design skill on the current project. Follow every activation step in its SKILL.md. Use run_id=pilot-005-test-design-async-baseline-rep03 in any output filenames or run identifiers where the skill accepts one. Read the story at _bmad-run/story.md and tags at _bmad-run/tags.txt if present.",
+  "baseline_command": [
+    "/bmad-testarch-test-design"
+  ],
+  "candidate_command": [
+    "/rdx-tea-test-design"
+  ],
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/evidence/test-design-async/baseline/rep-03/pilot-005-test-design-async-baseline-rep03",
+  "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+  "isolated_config_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/configs/pilot-005-test-design-async-baseline-rep03",
+  "model": "claude-haiku-4-5-20251001",
+  "order_index": 5,
+  "prompt_hash": "312318f0223a15567507ba19baa19848f0f9ca8b6cd995391098e59c319e8a96",
+  "repetition": 3,
+  "run_id": "pilot-005-test-design-async-baseline-rep03",
+  "scenario": "test-design-async",
+  "workflow": "test-design",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/workspaces/pilot-005-test-design-async-baseline-rep03"
+}

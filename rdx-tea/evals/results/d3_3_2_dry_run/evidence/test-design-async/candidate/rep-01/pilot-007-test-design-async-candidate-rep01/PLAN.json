@@ -1,0 +1,21 @@
+{
+  "arm": "candidate",
+  "arm_prompt": "Invoke the /rdx-tea-test-design skill on the current project. Follow every activation step in the wrapper's SKILL.md. Do NOT skip the prepare-run or finalize-run subcommands. Use the actual bmad-testarch-test-design child skill \u2014 do not substitute output. The invocation contract file at _bmad-run/rdx-tea-invocation.json pins run_id=pilot-007-test-design-async-candidate-rep01. Read that file first; use its run_id verbatim in every wrapper command. Halt on any non-zero exit. When done, summarise the run-report.json path.",
+  "baseline_command": [
+    "/bmad-testarch-test-design"
+  ],
+  "candidate_command": [
+    "/rdx-tea-test-design"
+  ],
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/evidence/test-design-async/candidate/rep-01/pilot-007-test-design-async-candidate-rep01",
+  "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+  "isolated_config_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/configs/pilot-007-test-design-async-candidate-rep01",
+  "model": "claude-haiku-4-5-20251001",
+  "order_index": 7,
+  "prompt_hash": "11ee000391ac7c29d4748909e76b7be29d3807b8933bcf4edf7debcb591c9375",
+  "repetition": 1,
+  "run_id": "pilot-007-test-design-async-candidate-rep01",
+  "scenario": "test-design-async",
+  "workflow": "test-design",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/workspaces/pilot-007-test-design-async-candidate-rep01"
+}

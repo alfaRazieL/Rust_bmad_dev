@@ -1,0 +1,21 @@
+{
+  "arm": "candidate",
+  "arm_prompt": "Invoke the /rdx-tea-atdd skill on the current project. Follow every activation step in the wrapper's SKILL.md. Do NOT skip the prepare-run or finalize-run subcommands. Use the actual bmad-testarch-atdd child skill \u2014 do not substitute output. The invocation contract file at _bmad-run/rdx-tea-invocation.json pins run_id=pilot-014-atdd-api-async-corrected-candidate-rep03. Read that file first; use its run_id verbatim in every wrapper command. Halt on any non-zero exit. When done, summarise the run-report.json path.",
+  "baseline_command": [
+    "/bmad-testarch-atdd"
+  ],
+  "candidate_command": [
+    "/rdx-tea-atdd"
+  ],
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/evidence/atdd-api-async-corrected/candidate/rep-03/pilot-014-atdd-api-async-corrected-candidate-rep03",
+  "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+  "isolated_config_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/configs/pilot-014-atdd-api-async-corrected-candidate-rep03",
+  "model": "claude-haiku-4-5-20251001",
+  "order_index": 14,
+  "prompt_hash": "c2fb7ee8dd6b72ef11aec8cd3d2e501447f6573010614cf9ff51fe8665d16f02",
+  "repetition": 3,
+  "run_id": "pilot-014-atdd-api-async-corrected-candidate-rep03",
+  "scenario": "atdd-api-async-corrected",
+  "workflow": "atdd",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_3_2_dry_run/workspaces/pilot-014-atdd-api-async-corrected-candidate-rep03"
+}
