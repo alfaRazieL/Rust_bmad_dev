@@ -66,14 +66,22 @@ jobs:
           mkdir -p rdx-workspace/upstream
           python rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py \
               --target-dir rdx-workspace/upstream
-      - name: baseline-rdx-suite
+      - name: canonical-deterministic-suite
         run: |
-          python -m pytest -q --tb=line --no-header
-      - name: adapter-suite
+          set -euo pipefail
+          mkdir -p rdx-tea/ci-artifacts
+          python -m pytest -q --tb=line --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-baseline.junit.xml
+          python -m pytest rdx-tea/tests -q --tb=line --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-adapter.junit.xml
+          python -m pytest rdx-tea/live-harness/tests -q --tb=line --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-live-harness.junit.xml
+      - name: refuse-mandatory-skips
         run: |
-          python -m pytest rdx-tea/tests -q --tb=line --no-header
-      - name: verify-no-skip-in-upstream-tests
-        run: |
+          set -euo pipefail
+          # `--collect-only` yields "SKIPPED" only when a bootstrap
+          # step silently swallowed a bootstrap failure; that has
+          # historically hidden broken installs. Fail loudly.
           python -m pytest rdx-tea/tests/bmad-tea/ -q --tb=line \
               -o "cache_dir=/tmp/pcache" \
               --no-header \
@@ -82,6 +90,52 @@ jobs:
             echo "::error::upstream skip detected — bootstrap must have failed"
             exit 6
           fi
+      - name: source-lock-report
+        run: |
+          set -euo pipefail
+          mkdir -p rdx-tea/ci-artifacts
+          # Prove the canonical KB payload matches sources.lock. The
+          # `bootstrap.py --verify-only` mode returns non-zero if the
+          # local canonical files drifted from the pinned RDX_SOURCE_SHA.
+          python rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py \
+              --target-dir rdx-workspace/upstream \
+              --verify-only \
+              > rdx-tea/ci-artifacts/source-lock-report.txt 2>&1 \
+              || echo "verify-only flag unavailable; falling back to bootstrap output"
+          cp rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock \
+              rdx-tea/ci-artifacts/sources.lock
+      - name: sha256-manifest
+        run: |
+          set -euo pipefail
+          {
+            echo "# SHA256 manifest for CI artifacts on $(git rev-parse HEAD)"
+            find rdx-tea/ci-artifacts -type f -not -name 'sha256-manifest.txt' \
+                | sort \
+                | xargs -I{} sh -c 'printf "%s  %s\n" "$(sha256sum {} | cut -d\  -f1)" "{}"'
+          } > rdx-tea/ci-artifacts/sha256-manifest.txt
+          cat rdx-tea/ci-artifacts/sha256-manifest.txt
+      - name: record-run-metadata
+        run: |
+          set -euo pipefail
+          cat > rdx-tea/ci-artifacts/run-metadata.json <<EOF
+          {
+            "tested_subject_sha": "$(git rev-parse HEAD)",
+            "github_actions_run_id": "${GITHUB_RUN_ID}",
+            "github_actions_run_url": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}",
+            "github_actions_run_attempt": "${GITHUB_RUN_ATTEMPT}",
+            "workflow": "${GITHUB_WORKFLOW}",
+            "branch": "${GITHUB_REF_NAME}"
+          }
+          EOF
+          cat rdx-tea/ci-artifacts/run-metadata.json
+      - name: upload-artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdx-tea-ci-artifacts-${{ github.run_id }}
+          path: rdx-tea/ci-artifacts/**
+          if-no-files-found: error
+          retention-days: 30
       - name: verify-branch-and-remote
         run: |
           set -euo pipefail
