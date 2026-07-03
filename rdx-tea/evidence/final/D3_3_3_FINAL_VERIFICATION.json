@@ -5,12 +5,20 @@
   "branch": "rdx-tea-integration",
   "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
   "start_head_sha": "c7829138a3d2e330c6745d886f77a8bf90947c2b",
-  "tested_subject_sha": "PENDING_D3_3_3_CODE_COMMIT",
-  "evidence_commit_sha": "PENDING_D3_3_3_EVIDENCE_COMMIT",
-  "github_actions_run_id": "PENDING_D3_3_3_CI_RUN",
-  "github_actions_run_url": "PENDING_D3_3_3_CI_RUN",
-  "github_actions_conclusion": "PENDING",
-  "test_counts_pytest": "PENDING_D3_3_3_CI_RUN",
+  "tested_subject_sha": "55451a6e015e3e955e545d1b09c1bfe35d3bfa40",
+  "evidence_commit_sha": "PENDING_THIS_COMMIT_SHA",
+  "github_actions_run_id": "28673519915",
+  "github_actions_run_url": "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28673519915",
+  "github_actions_conclusion": "success",
+  "ci_artifact_id": "rdx-tea-ci-artifacts-28673519915",
+  "ci_sha256_manifest_hash": "46a529c07b93785295132c2912b8f75bba1fe524a1f15f294d1026cc3da9b2a8",
+  "test_counts_pytest": {
+    "unique_collected": 529,
+    "unique_passed": 529,
+    "unique_failed": 0,
+    "unique_skipped": 0,
+    "reexecutions": 87
+  },
   "claude_code": {
     "path": "/opt/homebrew/bin/claude",
     "version": "2.1.191",
@@ -58,7 +66,7 @@
     "task_forbidden": {"status": "PASS", "evidence": "--disallowedTools Task TaskOutput TaskStop; smoke Task not in tools, task_tool_use_count=0"},
     "runtime_tool_policy": {"status": "PASS", "evidence": "tea-tools-v1.json"},
     "corrected_atdd_live_smoke": {"status": "PASS", "evidence": "rdx-tea/evidence/live/smoke-atdd-api-corrected-v3/live-evidence.v3.json run_outcome=SUCCESS admissible=true"},
-    "ci_status": {"status": "PENDING"}
+    "ci_status": {"status": "PASS", "evidence": "GitHub Actions run 28673519915 conclusion=success on tested_subject_sha 55451a6e; 529 unique passed, 0 skipped, 0 failed; source-lock PASS; artifacts uploaded."}
   },
   "corrected_atdd_live_smoke": {
     "run_id": "smoke-atdd-corrected-d3-3-3",
