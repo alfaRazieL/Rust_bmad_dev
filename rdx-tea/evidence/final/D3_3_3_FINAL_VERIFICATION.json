@@ -6,7 +6,7 @@
   "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
   "start_head_sha": "c7829138a3d2e330c6745d886f77a8bf90947c2b",
   "tested_subject_sha": "55451a6e015e3e955e545d1b09c1bfe35d3bfa40",
-  "evidence_commit_sha": "PENDING_THIS_COMMIT_SHA",
+  "evidence_commit_sha": "33869ac9972c41d45402aecfb7d622cb3734d2b7",
   "github_actions_run_id": "28673519915",
   "github_actions_run_url": "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28673519915",
   "github_actions_conclusion": "success",
