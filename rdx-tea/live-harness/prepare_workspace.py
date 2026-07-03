@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -22,9 +23,21 @@ from pathlib import Path
 
 RDX_TEA_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = RDX_TEA_DIR.parent
-WORKSPACE = REPO_ROOT.parent
 INSTALL_TREE = RDX_TEA_DIR / "poc" / "install-tree"
-UPSTREAM_TEA = WORKSPACE / "upstream" / "bmad-method-test-architecture-enterprise"
+
+
+def _upstream_root() -> Path:
+    """D3.3.2 §11.1 — single canonical upstream root shared by bootstrap,
+    tests, and harness. Honours RDX_TEA_UPSTREAM_ROOT (set by CI) before
+    falling back to the contributor `../upstream` layout."""
+    env = os.environ.get("RDX_TEA_UPSTREAM_ROOT")
+    if env:
+        return Path(env)
+    return REPO_ROOT.parent / "upstream"
+
+
+WORKSPACE = _upstream_root().parent
+UPSTREAM_TEA = _upstream_root() / "bmad-method-test-architecture-enterprise"
 
 
 def _run(cmd, cwd=None):
