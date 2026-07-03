@@ -61,49 +61,60 @@ jobs:
           python -m pip install pytest jsonschema pyyaml
       - name: bootstrap-upstream
         env:
+          # D3.3.2 §11.1 — single canonical upstream root shared by
+          # bootstrap, tests, and the live harness.
+          RDX_TEA_UPSTREAM_ROOT: ${{ github.workspace }}/upstream
           RDX_TEA_BOOTSTRAP_SKIP_WORKTREE_CHECK: "0"
         run: |
-          mkdir -p rdx-workspace/upstream
+          set -euo pipefail
+          mkdir -p "$RDX_TEA_UPSTREAM_ROOT"
           python rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py \
-              --target-dir rdx-workspace/upstream
-      - name: canonical-deterministic-suite
+              --target-dir "$RDX_TEA_UPSTREAM_ROOT"
+      - name: source-lock-verify
+        env:
+          RDX_TEA_UPSTREAM_ROOT: ${{ github.workspace }}/upstream
         run: |
           set -euo pipefail
+          # D3.3.2 §12 — real bootstrap --verify-only. No `|| echo`
+          # masking; a failure here fails the job.
           mkdir -p rdx-tea/ci-artifacts
-          python -m pytest -q --tb=line --no-header \
-              --junitxml=rdx-tea/ci-artifacts/pytest-baseline.junit.xml
-          python -m pytest rdx-tea/tests -q --tb=line --no-header \
-              --junitxml=rdx-tea/ci-artifacts/pytest-adapter.junit.xml
-          python -m pytest rdx-tea/live-harness/tests -q --tb=line --no-header \
-              --junitxml=rdx-tea/ci-artifacts/pytest-live-harness.junit.xml
-      - name: refuse-mandatory-skips
-        run: |
-          set -euo pipefail
-          # `--collect-only` yields "SKIPPED" only when a bootstrap
-          # step silently swallowed a bootstrap failure; that has
-          # historically hidden broken installs. Fail loudly.
-          python -m pytest rdx-tea/tests/bmad-tea/ -q --tb=line \
-              -o "cache_dir=/tmp/pcache" \
-              --no-header \
-              --collect-only 2>&1 | tee /tmp/collect.log
-          if grep -q SKIPPED /tmp/collect.log; then
-            echo "::error::upstream skip detected — bootstrap must have failed"
-            exit 6
-          fi
-      - name: source-lock-report
-        run: |
-          set -euo pipefail
-          mkdir -p rdx-tea/ci-artifacts
-          # Prove the canonical KB payload matches sources.lock. The
-          # `bootstrap.py --verify-only` mode returns non-zero if the
-          # local canonical files drifted from the pinned RDX_SOURCE_SHA.
           python rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/bootstrap.py \
-              --target-dir rdx-workspace/upstream \
+              --target-dir "$RDX_TEA_UPSTREAM_ROOT" \
               --verify-only \
-              > rdx-tea/ci-artifacts/source-lock-report.txt 2>&1 \
-              || echo "verify-only flag unavailable; falling back to bootstrap output"
+              | tee rdx-tea/ci-artifacts/source-lock-report.json
           cp rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock \
               rdx-tea/ci-artifacts/sources.lock
+      - name: canonical-deterministic-suite
+        env:
+          RDX_TEA_UPSTREAM_ROOT: ${{ github.workspace }}/upstream
+        run: |
+          set -euo pipefail
+          mkdir -p rdx-tea/ci-artifacts
+          # D3.3.2 §11.3 — a single canonical collection from the repo
+          # root, no re-execution of the same nodes from sub-roots. The
+          # live-harness suite is a disjoint node set (different rootdir)
+          # so it runs separately.
+          python -m pytest -q --tb=line --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-canonical.junit.xml
+          python -m pytest rdx-tea/live-harness/tests rdx-tea/evals/tests \
+              -q --tb=line --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-live-harness.junit.xml
+      - name: refuse-mandatory-skips
+        env:
+          RDX_TEA_UPSTREAM_ROOT: ${{ github.workspace }}/upstream
+        run: |
+          set -euo pipefail
+          # D3.3.2 §11.2 — parse the JUnit XML for real skips, not the
+          # collect-only surrogate that misses fixture-body pytest.skip().
+          python rdx-tea/live-harness/ci_check.py refuse-skips \
+              rdx-tea/ci-artifacts/pytest-canonical.junit.xml
+      - name: unique-test-count
+        run: |
+          set -euo pipefail
+          python rdx-tea/live-harness/ci_check.py unique-count \
+              rdx-tea/ci-artifacts/pytest-canonical.junit.xml \
+              rdx-tea/ci-artifacts/pytest-live-harness.junit.xml \
+              | tee rdx-tea/ci-artifacts/unique-count.json
       - name: sha256-manifest
         run: |
           set -euo pipefail

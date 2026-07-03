@@ -1,0 +1,11 @@
+# D3.3.2 §11.2 admissible skip allowlist.
+#
+# One entry per line. Use a trailing `*` for a classname prefix,
+# otherwise the exact `classname::name` must match. Comments start
+# with `#`.
+#
+# By design, this file is EMPTY at D3.3.2. Every skip that survives
+# the current CI run is either a bootstrap failure that we want to
+# see (§5 of the D3.3.2 audit) or a bug in the test — never a
+# fixture-time silent skip. Add entries here only when a truly
+# design-level opt-out is agreed and reviewed.

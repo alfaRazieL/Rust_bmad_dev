@@ -93,6 +93,48 @@ def _assert_expected_hashes(bmad_dst: Path, tea_dst: Path, expected: dict) -> No
             )
 
 
+def verify_only(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
+    """D3.3.2 §12. Non-clonig, non-mutating source-lock check.
+
+    Verifies that both upstream worktrees exist under `target_dir`,
+    that HEAD matches `sources.lock`, that the worktree is clean, and
+    that the expected-file-hash allowlist still matches on disk. Any
+    drift raises RuntimeError so the CI step exits non-zero.
+    """
+    lock_path = sources_lock_path or (_HERE / "sources.lock")
+    lock = yaml.safe_load(lock_path.read_text(encoding="utf-8"))
+    bmad_dst = target_dir / "BMAD-METHOD"
+    tea_dst = target_dir / "bmad-method-test-architecture-enterprise"
+    missing = [str(p) for p in (bmad_dst, tea_dst) if not p.exists()]
+    if missing:
+        raise RuntimeError(f"upstream worktrees missing: {missing}")
+    bmad_sha = _run(["git", "rev-parse", "HEAD"], cwd=bmad_dst)
+    if bmad_sha != lock["bmad_source_sha"]:
+        raise RuntimeError(
+            f"BMAD-METHOD HEAD {bmad_sha} != expected {lock['bmad_source_sha']}"
+        )
+    _assert_clean_worktree(bmad_dst)
+    tea_sha = _run(["git", "rev-parse", "HEAD"], cwd=tea_dst)
+    if tea_sha != lock["tea_source_sha"]:
+        raise RuntimeError(
+            f"TEA HEAD {tea_sha} != expected {lock['tea_source_sha']}"
+        )
+    _assert_clean_worktree(tea_dst)
+    _assert_expected_hashes(bmad_dst, tea_dst, lock.get("expected_file_hashes") or {})
+    resolver = bmad_dst / "src" / "scripts" / "resolve_customization.py"
+    if not resolver.exists():
+        raise RuntimeError(f"upstream resolver missing at {resolver}")
+    return {
+        "status": "PASS",
+        "bmad_source_sha": bmad_sha,
+        "tea_source_sha": tea_sha,
+        "resolver_path": str(resolver),
+        "resolver_sha256": _sha256(resolver),
+        "hashes_verified": True,
+        "worktrees_clean": True,
+    }
+
+
 def bootstrap(target_dir: Path, sources_lock_path: Path | None = None) -> dict:
     lock_path = sources_lock_path or (_HERE / "sources.lock")
     lock = yaml.safe_load(lock_path.read_text(encoding="utf-8"))
@@ -136,13 +178,20 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--target-dir", required=True, type=Path)
     ap.add_argument("--sources-lock", type=Path, default=None)
+    ap.add_argument("--verify-only", action="store_true",
+                    help=("D3.3.2 §12: check the two upstream worktrees "
+                          "match sources.lock without cloning. Exits "
+                          "non-zero on any drift."))
     args = ap.parse_args()
-    try:
-        r = bootstrap(args.target_dir, args.sources_lock)
-    except Exception as err:  # noqa: BLE001
-        print(f"bootstrap failed: {err}", file=sys.stderr)
-        return 1
     import json as _j
+    try:
+        if args.verify_only:
+            r = verify_only(args.target_dir, args.sources_lock)
+        else:
+            r = bootstrap(args.target_dir, args.sources_lock)
+    except Exception as err:  # noqa: BLE001
+        print(_j.dumps({"status": "FAIL", "error": str(err)}, indent=2))
+        return 1
     print(_j.dumps(r, indent=2))
     return 0
 
