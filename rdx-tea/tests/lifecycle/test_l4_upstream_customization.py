@@ -14,6 +14,7 @@ resolver, not a mock.
 
 from __future__ import annotations
 
+import os
 import sys
 import json
 import shutil
@@ -24,9 +25,10 @@ import pytest
 
 RDX_TEA_DIR = Path(__file__).resolve().parent.parent.parent
 REPO_ROOT = RDX_TEA_DIR.parent
-WORKSPACE = REPO_ROOT.parent      # rdx-workspace/
-UPSTREAM_BMAD = WORKSPACE / "upstream" / "BMAD-METHOD"
-UPSTREAM_TEA = WORKSPACE / "upstream" / "bmad-method-test-architecture-enterprise"
+UPSTREAM_ROOT = Path(os.environ.get("RDX_TEA_UPSTREAM_ROOT", str(REPO_ROOT.parent / "upstream")))
+WORKSPACE = UPSTREAM_ROOT.parent
+UPSTREAM_TEA = UPSTREAM_ROOT / "bmad-method-test-architecture-enterprise"
+UPSTREAM_BMAD = UPSTREAM_ROOT / "BMAD-METHOD"
 VENV_PY = Path(sys.executable)
 
 # The upstream resolve_customization.py at BMAD v6.8.0 tag.

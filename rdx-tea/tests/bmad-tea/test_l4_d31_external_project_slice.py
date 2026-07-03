@@ -25,26 +25,11 @@ import pytest
 
 RDX_TEA_DIR = Path(__file__).resolve().parent.parent.parent
 REPO_ROOT = RDX_TEA_DIR.parent
-
-
-def _upstream_root() -> Path:
-    """D3.3.2 §11.1 — single source of truth for the upstream root.
-
-    Reads `RDX_TEA_UPSTREAM_ROOT` when set (CI does this so bootstrap,
-    tests, and harness all agree). Otherwise falls back to the layout
-    used by contributor workstations (`../upstream` sibling of the
-    repo checkout, which is where the D3.1 dev tree keeps upstream).
-    """
-    env = os.environ.get("RDX_TEA_UPSTREAM_ROOT")
-    if env:
-        return Path(env)
-    return REPO_ROOT.parent / "upstream"
-
-
-import os  # noqa: E402  — after path constants
-WORKSPACE = _upstream_root().parent
-UPSTREAM_TEA = _upstream_root() / "bmad-method-test-architecture-enterprise"
-UPSTREAM_BMAD = _upstream_root() / "BMAD-METHOD"
+UPSTREAM_ROOT = Path(os.environ.get("RDX_TEA_UPSTREAM_ROOT",
+                                       str(REPO_ROOT.parent / "upstream")))
+WORKSPACE = UPSTREAM_ROOT.parent
+UPSTREAM_TEA = UPSTREAM_ROOT / "bmad-method-test-architecture-enterprise"
+UPSTREAM_BMAD = UPSTREAM_ROOT / "BMAD-METHOD"
 VENV_PY = Path(sys.executable)
 INSTALL_TREE = RDX_TEA_DIR / "poc" / "install-tree"
 
