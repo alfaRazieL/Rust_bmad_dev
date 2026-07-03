@@ -1,0 +1,203 @@
+{
+  "arm": "candidate",
+  "artifacts": {
+    "new_artefacts": []
+  },
+  "candidate": {
+    "active_packs": [],
+    "bundle_present": false,
+    "child_skill_invoked": false,
+    "expected_rp_ids": [
+      "RP-ASYNC-005",
+      "RP-API-001"
+    ],
+    "sidecars": [],
+    "verifier_all_pass": false,
+    "wrapper_skill_invoked": false
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "owned-still-present",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FINALIZED"
+  },
+  "hashes": {
+    "bundle": "",
+    "run_report": "",
+    "transcript": "ddd72098eeecddc97f43c24b989d9d13ce3cdc08c6ea53db4dbbb9af4437e19c"
+  },
+  "identity": {
+    "base_sha": "31b8e7cbff9087d5d4ce295a74efeb3cdfcc98d1",
+    "head_sha": "8c4bbf26a9e3472b6757c5c9088185b0de12d26f"
+  },
+  "invocation": {
+    "command_hash": "b48dba7733bfaf166308edc8b7c9675539da83ca2acb2759415fabe94524503e",
+    "exit_code": 1,
+    "finished_at": "2026-07-03T11:38:56+00:00",
+    "prompt_hash": "454eec12528aaf968cfb7cffd1fdf6ce40cca9c37d126437617fbb8766fa65b3",
+    "reason": "runtime_error",
+    "started_at": "2026-07-03T11:38:55+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": false,
+    "observed_mode": "INFERRED_ABSENT",
+    "observed_mode_basis": "no-subagent-events-surrogate",
+    "session_id": "7e69bc1d-c783-4053-bce1-f370e7a23b79",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "ddd72098eeecddc97f43c24b989d9d13ce3cdc08c6ea53db4dbbb9af4437e19c",
+    "wrapper_skill_invoked": false
+  },
+  "repetition": 1,
+  "run_id": "smoke-atdd-corrected-d3-3-2",
+  "run_id_handshake": {
+    "invocation_json": "smoke-atdd-corrected-d3-3-2",
+    "mismatch": false,
+    "run_report": null,
+    "schedule": "smoke-atdd-corrected-d3-3-2",
+    "workspace_runtime_dir": "smoke-atdd-corrected-d3-3-2"
+  },
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "unexpected_skills",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "haiku",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 2.0,
+    "observed_surface": {
+      "claude_code_version": "2.1.126",
+      "init_event_seen": true,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "session_id": "7e69bc1d-c783-4053-bce1-f370e7a23b79",
+      "skills": [
+        "update-config",
+        "debug",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "claude-api",
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd",
+        "bmad-testarch-atdd",
+        "rdx-tea-test-design",
+        "rdx-tea-atdd"
+      ],
+      "slash_commands": [
+        "update-config",
+        "debug",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "claude-api",
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd",
+        "rdx-tea-test-design",
+        "clear",
+        "compact",
+        "context",
+        "heapdump",
+        "init",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "team-onboarding"
+      ],
+      "tools": [
+        "Task",
+        "AskUserQuestion",
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "Edit",
+        "EnterPlanMode",
+        "EnterWorktree",
+        "ExitPlanMode",
+        "ExitWorktree",
+        "Glob",
+        "Grep",
+        "NotebookEdit",
+        "Read",
+        "ScheduleWakeup",
+        "Skill",
+        "TaskOutput",
+        "TaskStop",
+        "TodoWrite",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "surface_diff": {
+      "missing_expected_skills": [],
+      "model_mismatch": true,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [
+        "batch",
+        "claude-api",
+        "debug",
+        "fewer-permission-prompts",
+        "loop",
+        "rdx-tea-test-design",
+        "simplify",
+        "update-config"
+      ],
+      "unexpected_tools": [
+        "AskUserQuestion",
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "Edit",
+        "EnterPlanMode",
+        "EnterWorktree",
+        "ExitPlanMode",
+        "ExitWorktree",
+        "Glob",
+        "Grep",
+        "NotebookEdit",
+        "Read",
+        "ScheduleWakeup",
+        "Skill",
+        "Task",
+        "TaskOutput",
+        "TaskStop",
+        "TodoWrite",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "timeout_seconds": 600
+  },
+  "scenario": "atdd-api-async-corrected",
+  "schema_version": "rdx-tea-live-evidence.v2",
+  "workflow": "atdd",
+  "workspace": {
+    "config_dir": "/tmp/rdx-tea-live-atdd-corrected-evidence/atdd-api-async-corrected/candidate/rep-01/isolated-config",
+    "config_dir_hash": "28b15760d0e41ff0a3a578ea27ff211561d2543e61ca3c58f1d5333859924c7a",
+    "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+    "path": "/tmp/rdx-tea-live-atdd-corrected"
+  }
+}

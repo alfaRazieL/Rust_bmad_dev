@@ -57,6 +57,42 @@
   gate check that references a not-yet-PASS verdict is a chicken-
   and-egg problem; it will land alongside the D3.4 execution window.
 
+## §5 Isolated CLAUDE_CONFIG_DIR breaks OAuth token discovery
+
+- Status: OPEN — discovered by the D3.3.2 live smoke attempt on
+  FINAL_HEAD 3adcc78.
+- What happened: `run_live.py run-smoke --arm candidate
+  --scenario atdd-api-async-corrected --model haiku` was executed
+  against real Claude Code CLI 2.1.126. The init event in
+  `rdx-tea/evidence/live/smoke-atdd-api-corrected-v2/transcript.stream.jsonl`
+  reports `apiKeySource: "none"` and the session terminated after one
+  turn with `error: "authentication_failed"` and result text
+  `"Not logged in · Please run /login"`. Model never got to invoke a
+  Skill. `observed_mode = INFERRED_ABSENT`; `active_packs = []`.
+- Also observed: the init event still lists user-side skills
+  (`update-config, debug, simplify, batch, fewer-permission-prompts,
+  loop, claude-api`) alongside the arm-installed rdx-tea /
+  bmad-testarch pair. So `CLAUDE_CONFIG_DIR` did NOT scope the
+  full skill discovery — additional skills leaked in from another
+  source (`~/.claude/skills` and/or user-global plugin dir).
+- Root cause: setting `CLAUDE_CONFIG_DIR` to an empty temporary dir
+  makes Claude Code CLI stop discovering the OAuth token stored in
+  the user's real config, and reports `apiKeySource: "none"`. There
+  is no `ANTHROPIC_API_KEY` in scope, no `--settings`-provided
+  `apiKeyHelper`, and no `--login` interactive step available in
+  a headless subprocess.
+- Fix path: extend `ClaudeIsolation.bootstrap()` to (a) require
+  `ANTHROPIC_API_KEY` (or a settings file with `apiKeyHelper`) in the
+  environment, (b) call `claude --strict-mcp-config
+  --setting-sources project` so only the isolated dir's settings are
+  read, and (c) enumerate the actual skill-discovery paths and
+  restrict them explicitly. Until this fix lands, the corrected ATDD
+  live smoke cannot produce a fair test.
+- Consequence: D3.3.2 verdict is `D3_3_2_PARTIAL` and pilot readiness
+  is `D3_4_NOT_READY`. Evidence of the failed attempt is committed at
+  `rdx-tea/evidence/live/smoke-atdd-api-corrected-v2/` so a follow-up
+  can start from the real trace, not from a fabricated summary.
+
 ## Non-blockers (closed in this cycle)
 
 - Baseline/candidate execution divergence — closed via arm_prompt /

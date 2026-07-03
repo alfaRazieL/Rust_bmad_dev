@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-03T11:38:56+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "ddd72098eeecddc97f43c24b989d9d13ce3cdc08c6ea53db4dbbb9af4437e19c"
+  },
+  "run_id": "smoke-atdd-corrected-d3-3-2",
+  "scenario": "atdd-api-async-corrected/candidate/rep-01",
+  "workflow": "atdd",
+  "workspace": "/tmp/rdx-tea-live-atdd-corrected"
+}

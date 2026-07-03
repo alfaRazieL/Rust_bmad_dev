@@ -1,0 +1,28 @@
+{
+  "command": [
+    "claude",
+    "-p",
+    "Invoke the /rdx-tea-atdd skill on the current project. Follow every activation step in the wrapper's SKILL.md. Do NOT skip the prepare-run or finalize-run subcommands. Use the actual bmad-testarch-atdd child skill \u2014 do not substitute output. The invocation contract file at _bmad-run/rdx-tea-invocation.json pins run_id=smoke-atdd-corrected-d3-3-2. Read that file first; use its run_id verbatim in every wrapper command. Halt on any non-zero exit. When done, summarise the run-report.json path.",
+    "--model",
+    "haiku",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--max-budget-usd",
+    "2.0",
+    "--permission-mode",
+    "bypassPermissions",
+    "--add-dir",
+    "/tmp/rdx-tea-live-atdd-corrected",
+    "--include-hook-events",
+    "--no-session-persistence"
+  ],
+  "exit_code": 1,
+  "finished_at": "2026-07-03T11:38:56+00:00",
+  "model": "haiku",
+  "prompt": "Invoke the /rdx-tea-atdd skill on the current project. Follow every activation step in the wrapper's SKILL.md. Do NOT skip the prepare-run or finalize-run subcommands. Use the actual bmad-testarch-atdd child skill \u2014 do not substitute output. The invocation contract file at _bmad-run/rdx-tea-invocation.json pins run_id=smoke-atdd-corrected-d3-3-2. Read that file first; use its run_id verbatim in every wrapper command. Halt on any non-zero exit. When done, summarise the run-report.json path.",
+  "prompt_hash": "454eec12528aaf968cfb7cffd1fdf6ce40cca9c37d126437617fbb8766fa65b3",
+  "started_at": "2026-07-03T11:38:55+00:00",
+  "stderr_tail": "",
+  "transcript_path": "/tmp/rdx-tea-live-atdd-corrected/_bmad/rdx-tea/runtime/atdd/smoke-atdd-corrected-d3-3-2/transcript.stream.jsonl"
+}
