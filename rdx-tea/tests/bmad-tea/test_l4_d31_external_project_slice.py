@@ -28,7 +28,7 @@ REPO_ROOT = RDX_TEA_DIR.parent
 WORKSPACE = REPO_ROOT.parent
 UPSTREAM_TEA = WORKSPACE / "upstream" / "bmad-method-test-architecture-enterprise"
 UPSTREAM_BMAD = WORKSPACE / "upstream" / "BMAD-METHOD"
-VENV_PY = RDX_TEA_DIR / ".venv-baseline" / "bin" / "python"
+VENV_PY = Path(sys.executable)
 INSTALL_TREE = RDX_TEA_DIR / "poc" / "install-tree"
 
 ASYNC_DIFF = """diff --git a/src/lib.rs b/src/lib.rs

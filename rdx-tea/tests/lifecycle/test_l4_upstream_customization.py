@@ -14,6 +14,7 @@ resolver, not a mock.
 
 from __future__ import annotations
 
+import sys
 import json
 import shutil
 import subprocess
@@ -26,7 +27,7 @@ REPO_ROOT = RDX_TEA_DIR.parent
 WORKSPACE = REPO_ROOT.parent      # rdx-workspace/
 UPSTREAM_BMAD = WORKSPACE / "upstream" / "BMAD-METHOD"
 UPSTREAM_TEA = WORKSPACE / "upstream" / "bmad-method-test-architecture-enterprise"
-VENV_PY = RDX_TEA_DIR / ".venv-baseline" / "bin" / "python"
+VENV_PY = Path(sys.executable)
 
 # The upstream resolve_customization.py at BMAD v6.8.0 tag.
 RESOLVER = UPSTREAM_BMAD / "src" / "scripts" / "resolve_customization.py"

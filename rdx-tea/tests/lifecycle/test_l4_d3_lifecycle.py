@@ -13,6 +13,7 @@ version stages are deferred to production installer work
 
 from __future__ import annotations
 
+import sys
 import importlib.util
 import shutil
 import subprocess
@@ -26,7 +27,7 @@ WORKSPACE = REPO_ROOT.parent
 UPSTREAM_TEA = WORKSPACE / "upstream" / "bmad-method-test-architecture-enterprise"
 UPSTREAM_BMAD = WORKSPACE / "upstream" / "BMAD-METHOD"
 RESOLVER = UPSTREAM_BMAD / "src" / "scripts" / "resolve_customization.py"
-VENV_PY = RDX_TEA_DIR / ".venv-baseline" / "bin" / "python"
+VENV_PY = Path(sys.executable)
 PREPARE_PY = RDX_TEA_DIR / "poc" / "adapter" / "prepare.py"
 
 
