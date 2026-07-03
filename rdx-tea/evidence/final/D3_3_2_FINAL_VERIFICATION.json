@@ -6,7 +6,7 @@
   "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
   "start_head_sha": "ffb2801750beb75a5cbc418969ed7a67b994f14c",
   "tested_subject_sha": "687e54acef2cd948e981db8e4f4b23b2039e663a",
-  "evidence_commit_sha": "PENDING_THIS_COMMIT_SHA",
+  "evidence_commit_sha": "c269a9dcdd5c540ac7904128b8a6e333043891ad",
   "github_actions_run_id": "28657979486",
   "github_actions_run_url": "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28657979486",
   "github_actions_conclusion": "success",
@@ -64,7 +64,7 @@
     "corrected_atdd_live_smoke": {"status": "NOT_RUN", "evidence": "BLOCKERS §1"},
     "ci_status": {"status": "PASS", "evidence": "GitHub Actions run 28657979486 conclusion=success on tested_subject_sha 687e54ac. 496 unique tests passed, 0 skipped (zero mandatory skips), 0 failed."},
     "ci_artifacts_uploaded": {"status": "PASS", "evidence": "artifact rdx-tea-ci-artifacts-28657979486 contains pytest-canonical.junit.xml, pytest-live-harness.junit.xml, source-lock-report.json (real PASS JSON), sources.lock, unique-count.json, run-metadata.json, sha256-manifest.txt"},
-    "evidence_identity_two_commit": {"status": "PARTIAL", "evidence": "evidence_commit_sha is filled by the follow-up pointer-close commit"}
+    "evidence_identity_two_commit": {"status": "PASS", "evidence": "evidence_commit_sha=c269a9dc (the prior commit that first wrote the CI-closed fields); this commit is the pointer-closure that fills it in. No PENDING sentinels remain."}
   },
   "verdict": "D3_3_2_PARTIAL",
   "d3_4_readiness": "D3_4_NOT_READY",
