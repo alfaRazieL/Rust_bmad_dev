@@ -1,0 +1,107 @@
+# D3.3 pilot grading rubric — precommitted before any pilot run.
+# Consumed by a blinded evaluator with no visibility of arm (baseline vs
+# candidate). Every metric is either boolean, a small integer counter,
+# or a set-membership check — no free-form scores.
+
+schema_version: rdx-tea-pilot-rubric.v1
+task_scenario_binding:
+  test-design-async:
+    expected_active_pack_ids: [async]
+    expected_core_subset_min: [CORE-001, CORE-004, CORE-009]
+    expected_rp_ids_min: [RP-ASYNC-005]
+    forbidden_rp_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-, RP-CARGO-]
+  atdd-api-async:
+    expected_active_pack_ids: [async]     # api is STORY_TAG_REQUIRED
+    expected_core_subset_min: [CORE-001, CORE-004, CORE-009]
+    expected_rp_ids_min: [RP-ASYNC-005]
+    forbidden_rp_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-]
+  docs-only-rust-repo:
+    expected_active_pack_ids: []
+    expected_core_subset_min: []
+    expected_rp_ids_min: []
+    forbidden_rp_prefixes: [RP-]           # no Rust rules at all
+
+metrics:
+  correct_rdx_obligation_recall:
+    kind: fraction
+    formula: |
+      count(rule_id ∈ artefact.text AND rule_id ∈ expected_rp_ids_min)
+      / count(rule_id ∈ expected_rp_ids_min)
+  invented_rule_id_rate:
+    kind: fraction
+    formula: |
+      count(rule_id ∈ artefact.text AND rule_id ∉ KB.all_rule_ids)
+      / max(1, count(rule_id ∈ artefact.text))
+  irrelevant_rule_rate:
+    kind: fraction
+    formula: |
+      count(rule_id ∈ artefact.text starts-with any forbidden_rp_prefixes)
+      / max(1, count(rule_id ∈ artefact.text))
+  cancellation_coverage:
+    kind: boolean
+    detector: |
+      any of ["cancel", "cancellation"] in artefact.text
+  timeout_coverage:
+    kind: boolean
+    detector: |
+      any of ["timeout", "deadline"] in artefact.text
+  shutdown_coverage:
+    kind: boolean
+    detector: |
+      any of ["shutdown", "graceful shutdown"] in artefact.text
+  api_boundary_coverage:
+    kind: boolean
+    detector: |
+      any of ["public api", "public async fn", "boundary contract"] in artefact.text
+  negative_path_coverage:
+    kind: boolean
+    detector: |
+      any of ["error case", "failure mode", "negative test", "invalid input"] in artefact.text
+  self_attested_rdx_verdict_leakage:
+    kind: boolean
+    detector: |
+      any of ["verdict: pass", "cat1_verdict", "cat3_verdict"] in artefact.text
+      OR any of "PASS", "APPROVAL_REQUIRED" as YAML values in artefact frontmatter
+    polarity: negative  # true = bad
+  observed_execution_mode:
+    kind: enum
+    values: [OBSERVED_SEQUENTIAL, OBSERVED_SUBAGENT, INFERRED_ABSENT]
+    detector: |
+      count(tool_use with name in ["Task"]) in transcript
+  wall_clock_seconds:
+    kind: int
+  transcript_bytes:
+    kind: int
+  artifact_bytes:
+    kind: int
+
+decision_rule:
+  positive_signal_requires_all:
+    - correct_rdx_obligation_recall(candidate) >
+      correct_rdx_obligation_recall(baseline) on ≥ 2 of 3 scenarios
+    - invented_rule_id_rate(candidate) ≤ invented_rule_id_rate(baseline)
+    - irrelevant_rule_rate(candidate) ≤ irrelevant_rule_rate(baseline)
+    - self_attested_rdx_verdict_leakage(candidate) == false
+    - forbidden_rp_prefixes never appears in candidate for docs-only scenario
+
+  inconclusive_when:
+    - any scenario has fewer than 3 successful runs per arm
+    - candidate wins on some metrics and loses on others without dominant direction
+
+  negative_when:
+    - baseline strictly better on obligation recall
+    - candidate hallucinates more RP-* IDs than baseline
+
+  invalid_when:
+    - any arm produced no artefact
+    - transcripts show subagent dispatch under either arm
+
+evaluator_isolation:
+  blinding: mandatory
+  grader_process: |
+    Artefacts are renamed to `sample-XXX` with a separate mapping table
+    the grader never sees. Grader runs the deterministic detectors above,
+    emits JSON per sample, only then are labels merged.
+  evaluator_model_policy:
+    allowed: [claude-haiku-4-5-20251001, claude-sonnet-4-6]
+    forbidden: [opus, claude-opus-4-7]

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/architecture/final-verification.schema.json",
+  "rdx_tea_verification_version": "v2",
+  "generated": "2026-07-03T09:00:00Z",
+  "branch": "rdx-tea-integration",
+  "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "current_head_sha": "17263f9de88eaceb563f2248bee741c3ca295dfd",
+  "tested_subject_sha": "17263f9de88eaceb563f2248bee741c3ca295dfd",
+  "evidence_commit_sha": "PENDING (recorded in the final response of this run)",
+  "github_actions_run_id": "PENDING (populated on next push)",
+  "source_lock": "rdx-tea/research/SOURCE_LOCK.md + rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md + rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock",
+  "notes": "D3.3: 7 deterministic gap tests (12+7 new pytest nodes; 433 total) + 3/3 real live model-driven smoke runs (Claude Code CLI 2.1.126, haiku).",
+  "gates": {
+    "G0_rdx_baseline": {"status": "PASS"},
+    "G1_official_extension_surface": {"status": "PASS"},
+    "G2_semantic_canonical_projection": {"status": "PASS"},
+    "G3_router_parity_and_dynamic_active_bundle": {"status": "PASS"},
+    "G4_lifecycle": {"status": "PARTIAL_PASS"},
+    "G5_real_sequential_tea_workflow_integration": {
+      "status": "PASS",
+      "notes": "3/3 real model-driven smoke runs PASS. Wrapper skill AND child TEA skill invoked in every case. Real TEA artefacts produced. See D3_3_LIVE_HARNESS_REPORT.md."
+    },
+    "G6_v1_context_continuity_sequential": {
+      "status": "PASS",
+      "notes": "D3.3 §3.2 downgrade REVERSED. Direct evidence: 0 Task/subagent tool_use events across all 3 smoke transcripts (sha256 hashes recorded). Wrapper's `_infer_observed_mode` verified in isolation returns OBSERVED_SEQUENTIAL; a T1<T2 race causes report field to still say INFERRED_ABSENT until the orchestrator adds a post-hoc verify-only pass — behaviour, not correctness, note in D3_3_LIVE_HARNESS_REPORT §note."
+    },
+    "G6F_future_subagent_extension": {"status": "UNSUPPORTED_BY_DESIGN"},
+    "G7_measured_benefit": {"status": "NOT_RUN"},
+    "G8_deterministic_sidecar_and_rdx_validator": {"status": "PARTIAL_PASS"},
+    "G9_modes_and_enforcement": {"status": "BLOCKED"},
+    "G10_tamper_resistance": {"status": "PARTIAL_PASS"},
+    "G11_upgrade_compatibility": {"status": "PARTIAL_PASS"},
+    "G12_production_layout_closure": {"status": "PASS"},
+    "G13_live_invocation_closure_deterministic_side": {
+      "status": "PASS",
+      "notes": "D3.3 §3.1 downgrade REVERSED. Run-specific overlay proven via real upstream resolve_customization.py; workspace isolation via active-run lock + two-worktree; pre-bind boundary; rust_scope split; observed_mode surrogate; single-source obligation matrix + oracle."
+    },
+    "G14_live_invocation_closure_llm_side": {
+      "status": "PASS",
+      "notes": "3/3 live smoke PASS. Real Claude Code CLI dispatch of wrapper AND child TEA skill in every case. Real TEA artefacts. 0 subagent tool_use in all transcripts."
+    },
+    "G15_run_specific_overlay_proved": {"status": "PASS"},
+    "G16_workspace_isolation_proved": {"status": "PASS"},
+    "G17_pre_bind_boundary_proved": {"status": "PASS"},
+    "G18_rust_relevance_split_proved": {"status": "PASS"},
+    "G19_atdd_wrapper_self_contained": {"status": "PASS"},
+    "G20_obligation_oracle_and_csv_byte_equality": {"status": "PASS"},
+    "G21_ci_real_run": {
+      "status": "PARTIAL_PASS",
+      "notes": "Workflow with bootstrap + no-skip guard present; actual GH Actions run happens on next push."
+    },
+    "G22_headless_runtime_discovered": {"status": "PASS"},
+    "G23_live_smoke": {
+      "status": "PASS",
+      "notes": "3/3 PASS (test-design async, atdd api/async, docs-only negative control). Details in D3_3_LIVE_HARNESS_REPORT.md."
+    },
+    "G24_pilot_eval": {
+      "status": "NOT_RUN",
+      "notes": "Pilot plan committed at rdx-tea/implementation-plan/D3_4_MASS_EVAL_PLAN.md with rubric at rdx-tea/evals/D3_3_PILOT_RUBRIC.yaml. Execution deferred per D3.3 §9 constraint."
+    }
+  },
+  "verdict": "D3_PARTIALLY_PROVEN",
+  "d3_3_live_verdict": "D3_3_LIVE_PROVEN",
+  "pilot_verdict": "NOT_RUN",
+  "verdict_justification": "D3.3 closes the LIVE side of the invocation gate: 3/3 real Claude Code model-driven smoke runs PASSed with wrapper AND child TEA skill invocations, real TEA artefacts citing RP-ASYNC-005 by ID (positive) or an empty bundle with no Rust rules (negative). 0 subagent tool_use across all three transcripts. Deterministic side is fully green (433/0/0 pytest suite). Overall D3 verdict does NOT escalate to D3_PROVEN because G7 (measured behavioural benefit) still awaits a blinded pilot (rubric + plan precommitted). MASTER_IMPLEMENTATION_PLAN.md remains forbidden.",
+  "consequence": "Next: execute pilot per D3_4_MASS_EVAL_PLAN.md (18 runs, ~$7.20, ~1.5 h). Only after PILOT_SIGNAL_POSITIVE proceed to mass eval.",
+  "next_actions": [
+    "Execute D3.4 pilot from D3_4_MASS_EVAL_PLAN.md.",
+    "Add post-hoc finalize-run --verify-only step to close the observed_mode T1<T2 race.",
+    "Await first CI run and record github_actions_run_id + evidence_commit_sha here."
+  ]
+}
