@@ -4,10 +4,12 @@
   "generated": "2026-07-03T09:00:00Z",
   "branch": "rdx-tea-integration",
   "base_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
-  "current_head_sha": "17263f9de88eaceb563f2248bee741c3ca295dfd",
-  "tested_subject_sha": "17263f9de88eaceb563f2248bee741c3ca295dfd",
-  "evidence_commit_sha": "PENDING (recorded in the final response of this run)",
-  "github_actions_run_id": "PENDING (populated on next push)",
+  "current_head_sha": "06092b67fd53a187926bbbe913cb8205ec6385c5",
+  "tested_subject_sha": "06092b67fd53a187926bbbe913cb8205ec6385c5",
+  "evidence_commit_sha": "PENDING (this file's next commit)",
+  "github_actions_run_id": "28636630783",
+  "github_actions_run_url": "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28636630783",
+  "github_actions_conclusion": "success",
   "source_lock": "rdx-tea/research/SOURCE_LOCK.md + rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md + rdx-tea/poc/install-tree/_bmad/rdx-tea/bootstrap/sources.lock",
   "notes": "D3.3: 7 deterministic gap tests (12+7 new pytest nodes; 433 total) + 3/3 real live model-driven smoke runs (Claude Code CLI 2.1.126, haiku).",
   "gates": {
@@ -46,8 +48,11 @@
     "G19_atdd_wrapper_self_contained": {"status": "PASS"},
     "G20_obligation_oracle_and_csv_byte_equality": {"status": "PASS"},
     "G21_ci_real_run": {
-      "status": "PARTIAL_PASS",
-      "notes": "Workflow with bootstrap + no-skip guard present; actual GH Actions run happens on next push."
+      "status": "PASS",
+      "notes": "GitHub Actions run 28636630783 completed with conclusion=success on tested_subject_sha 06092b67. Two prior runs failed because six tests hard-coded `.venv-baseline/bin/python`; commit 06092b6 replaced them with `sys.executable` — next push turned CI green.",
+      "evidence": [
+        "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28636630783"
+      ]
     },
     "G22_headless_runtime_discovered": {"status": "PASS"},
     "G23_live_smoke": {
