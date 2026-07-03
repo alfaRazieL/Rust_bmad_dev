@@ -241,9 +241,8 @@ def _validate_sha(name: str, value: str) -> None:
         raise PrepareError(f"identity.{name} may not be all-zero (no fallback)")
 
 
-def _detect_rust_scope(project_root: Path) -> bool:
-    """A project is `rust_scope=True` when Cargo.toml or rust-toolchain
-    exist at the root OR at least one `.rs` file lives under it."""
+def _project_is_rust(project_root: Path) -> bool:
+    """Project-level Rust detection."""
     if (project_root / "Cargo.toml").exists():
         return True
     if (project_root / "rust-toolchain").exists() or (project_root / "rust-toolchain.toml").exists():
@@ -253,6 +252,42 @@ def _detect_rust_scope(project_root: Path) -> bool:
             continue
         return True
     return False
+
+
+_RUST_RELEVANT_EXT = re.compile(
+    r"^\+\+\+ b/(?:.*\.rs|Cargo\.toml|Cargo\.lock|build\.rs|rust-toolchain(?:\.toml)?)$",
+    re.MULTILINE,
+)
+
+
+def _change_is_rust_relevant(diff_text: str, tags: list[str]) -> bool:
+    """Diff-level Rust relevance. TRUE if the diff modifies any Rust
+    source, Cargo manifest/lockfile, build script, toolchain pin, or
+    if the story tags mention an explicit Rust scope. Docs-only diffs
+    inside a Rust repo return FALSE (D3.3 §4.4)."""
+    if _RUST_RELEVANT_EXT.search(diff_text or ""):
+        return True
+    for t in tags:
+        if t.lower() in ("rust", "cargo", "rust-scope"):
+            return True
+    return False
+
+
+def _detect_rust_scope(project_root: Path,
+                      diff_text: str = "", tags: list[str] | None = None) -> bool:
+    """`rust_scope = project_is_rust AND change_is_rust_relevant`.
+
+    D3.3 §4.4: a Cargo.toml alone is not enough — a docs-only change
+    inside a Rust project must yield an empty bundle. `--rust-scope
+    true/false` still overrides.
+    """
+    if not _project_is_rust(project_root):
+        return False
+    if not diff_text and not (tags or []):
+        # No diff supplied — fall back to project detection (used by
+        # unit tests that never pass a diff).
+        return True
+    return _change_is_rust_relevant(diff_text, tags or [])
 
 
 def prepare(
@@ -286,13 +321,13 @@ def prepare(
     for k in _MANDATORY_IDENTITY:
         _validate_sha(k, identity[k])
 
-    if rust_scope is None:
-        rust_scope = _detect_rust_scope(project_root)
-
     router = _load_router()
     diff = _read_optional(diff_path)
     tags = _load_tags(tags_path)
     story = _read_optional(story_path)
+
+    if rust_scope is None:
+        rust_scope = _detect_rust_scope(project_root, diff, tags)
 
     activations = replay(diff, router, tags)
     router_active_pack_ids = activated_pack_names(activations)

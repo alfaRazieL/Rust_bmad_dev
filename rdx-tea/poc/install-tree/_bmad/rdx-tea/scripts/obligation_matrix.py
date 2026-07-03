@@ -110,7 +110,7 @@ def generate_csv() -> str:
     import io
     import csv
     buf = io.StringIO(newline="")
-    writer = csv.writer(buf, quoting=csv.QUOTE_MINIMAL)
+    writer = csv.writer(buf, quoting=csv.QUOTE_MINIMAL, lineterminator="\n")
     writer.writerow(["workflow", "rule_id_or_pack", "included_fields",
                      "excluded_fields", "reason", "source_anchor", "test_id"])
     all_f = ";".join(sorted(ALL_FIELDS))

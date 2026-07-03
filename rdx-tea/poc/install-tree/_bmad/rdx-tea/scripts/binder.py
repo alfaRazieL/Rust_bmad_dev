@@ -45,14 +45,54 @@ _MANDATORY_IDENTITY = ("base_sha", "head_sha", "diff_digest",
                        "rdx_source_sha", "tea_source_sha")
 
 
+def _pre_bind_boundary(project_root: Path, artifact: Path,
+                        declared_output_roots: list[Path] | None = None) -> None:
+    """D3.3 §4.3: reject before touching the sidecar.
+
+    Order:
+      1. resolve artifact path;
+      2. reject symlink;
+      3. assert inside project-root;
+      4. assert inside a declared output root (if supplied);
+      5. path-traversal check.
+    """
+    if artifact.is_symlink():
+        raise BinderError(f"symlink artefact refused: {artifact}")
+    art_resolved = artifact.resolve(strict=True)
+    proj_resolved = project_root.resolve()
+    try:
+        art_resolved.relative_to(proj_resolved)
+    except ValueError:
+        raise BinderError(f"artefact outside project-root: {artifact}")
+    # Reject `..` components sneaking through.
+    if any(part == ".." for part in art_resolved.parts):
+        raise BinderError(f"artefact path traversal detected: {artifact}")
+    if declared_output_roots:
+        ok = False
+        for root in declared_output_roots:
+            try:
+                art_resolved.relative_to(root.resolve())
+                ok = True
+                break
+            except ValueError:
+                continue
+        if not ok:
+            raise BinderError(
+                f"artefact outside declared output roots: {artifact}; "
+                f"roots={declared_output_roots}"
+            )
+
+
 def bind(
     project_root: Path,
     workflow: str,
     artifact: Path,
     run_id: str,
+    declared_output_roots: list[Path] | None = None,
 ) -> dict:
-    """D3.2: binder now REQUIRES a run_id and resolves the run-scoped
-    runtime directory `<project-root>/_bmad/rdx-tea/runtime/<workflow>/<run_id>/`."""
+    """D3.2 + D3.3: pre-bind boundary before any write; symlink and
+    path-traversal artefacts are rejected."""
+    _pre_bind_boundary(project_root, artifact, declared_output_roots)
     runtime_dir = project_root / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id
     manifest_path = runtime_dir / "run-manifest.json"
     if not manifest_path.exists():

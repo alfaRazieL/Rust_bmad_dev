@@ -1,0 +1,106 @@
+# D3.3 §4.7 — independent oracle for the workflow obligation matrix.
+# Per (workflow × pack), lists a positive representative rule (must be
+# INCLUDE) and a negative representative pack (must be EXCLUDE). Also
+# names the explicit CORE-* subset for each workflow. Written by hand;
+# consumed by `test_l1_d33_obligation_oracle.py`.
+#
+# Grader hint: this file is the *expectation*, not the *source*. A drift
+# between this oracle and `obligation_matrix.py` means either the code
+# lost a rule or this file is stale — either way the CI test fails.
+
+workflows:
+  test-design:
+    positive_packs: [async, unsafe, ffi, macro, api, testing,
+                     data-security-io, db, time-config-client]
+    negative_packs: [cargo, ops, perf]
+    positive_rule_representative:
+      pack: async
+      rule_id: RP-ASYNC-005
+    negative_rule_representative:
+      pack: cargo
+      rule_id: RP-CARGO-001
+    core_rules_included: "*"
+
+  atdd:
+    positive_packs: [async, api, testing]
+    negative_packs: [unsafe, ffi, macro, cargo, ops, perf, db,
+                     time-config-client, data-security-io]
+    positive_rule_representative:
+      pack: async
+      rule_id: RP-ASYNC-005
+    negative_rule_representative:
+      pack: unsafe
+      rule_id: RP-UNSAFE-001
+    core_rules_included: [CORE-001, CORE-004, CORE-009]
+
+  automate:
+    positive_packs: [async, api, testing]
+    negative_packs: [unsafe, cargo, ops, ffi, macro, data-security-io,
+                     db, time-config-client, perf]
+    positive_rule_representative:
+      pack: testing
+      rule_id: RP-TEST-001
+    negative_rule_representative:
+      pack: cargo
+      rule_id: RP-CARGO-001
+    core_rules_included: [CORE-001, CORE-004]
+
+  test-review:
+    positive_packs: [api, testing]
+    negative_packs: [cargo, ops, db, async, unsafe, ffi, macro,
+                     data-security-io, time-config-client, perf]
+    positive_rule_representative:
+      pack: testing
+      rule_id: RP-TEST-001
+    negative_rule_representative:
+      pack: db
+      rule_id: RP-DB-001
+    core_rules_included: [CORE-001, CORE-002, CORE-004]
+
+  nfr:
+    positive_packs: [unsafe, data-security-io, perf, db,
+                     time-config-client, ops]
+    negative_packs: [cargo, testing, async, ffi, macro, api]
+    positive_rule_representative:
+      pack: unsafe
+      rule_id: RP-UNSAFE-001
+    negative_rule_representative:
+      pack: testing
+      rule_id: RP-TEST-001
+    core_rules_included: [CORE-004, CORE-014, CORE-015]
+
+  trace:
+    positive_packs: [testing]
+    negative_packs: [async, unsafe, ffi, macro, api, cargo, ops, perf,
+                     db, time-config-client, data-security-io]
+    positive_rule_representative:
+      pack: testing
+      rule_id: RP-TEST-001
+    negative_rule_representative:
+      pack: unsafe
+      rule_id: RP-UNSAFE-001
+    core_rules_included: [CORE-001]
+
+  framework:
+    positive_packs: [cargo, testing]
+    negative_packs: [async, db, api, perf, time-config-client, unsafe,
+                     ffi, macro, ops, data-security-io]
+    positive_rule_representative:
+      pack: cargo
+      rule_id: RP-CARGO-001
+    negative_rule_representative:
+      pack: async
+      rule_id: RP-ASYNC-005
+    core_rules_included: [CORE-004]
+
+  ci:
+    positive_packs: [testing, cargo]
+    negative_packs: [unsafe, ffi, macro, data-security-io, async, api,
+                     ops, perf, db, time-config-client]
+    positive_rule_representative:
+      pack: testing
+      rule_id: RP-TEST-001
+    negative_rule_representative:
+      pack: unsafe
+      rule_id: RP-UNSAFE-001
+    core_rules_included: [CORE-004]
