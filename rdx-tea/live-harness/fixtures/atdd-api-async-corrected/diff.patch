@@ -1,0 +1,39 @@
+diff --git a/src/lib.rs b/src/lib.rs
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/lib.rs
+@@ -0,0 +1,32 @@
++//! Public API for the user-registration surface.
++//!
++//! Cancellation semantics:
++//! - `create_user` is cancel-safe at every `.await` point.
++//! - On cancel, no persistent user is created; partial state is
++//!   dropped by the `User::drop` implementation.
++
++pub struct User {
++    pub id: u64,
++    pub name: String,
++}
++
++pub enum ApiError {
++    InvalidName,
++    Timeout,
++    Cancelled,
++}
++
++pub async fn create_user(name: String) -> Result<User, ApiError> {
++    if name.is_empty() {
++        return Err(ApiError::InvalidName);
++    }
++    let h = tokio::spawn(async move { validate(name).await });
++    match h.await {
++        Ok(Ok(u)) => Ok(u),
++        Ok(Err(e)) => Err(e),
++        Err(_) => Err(ApiError::Cancelled),
++    }
++}
++
++async fn validate(s: String) -> Result<User, ApiError> {
++    Ok(User { id: s.len() as u64, name: s })
++}

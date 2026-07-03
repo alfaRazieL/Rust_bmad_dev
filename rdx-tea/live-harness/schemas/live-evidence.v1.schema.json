@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/live-harness/schemas/live-evidence.v1.schema.json",
+  "title": "rdx-tea live evidence bundle v1",
+  "description": "Schema-valid contract for every evidence bundle emitted by run_live.py under rdx-tea/evidence/live/. Enforces completeness of run identity, hashes, invocation and observation fields required for D3.4 pilot admissibility.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scenario",
+    "arm",
+    "repetition",
+    "run_id",
+    "workspace",
+    "identity",
+    "runtime",
+    "invocation",
+    "artifacts",
+    "hashes",
+    "observation",
+    "cleanup"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "rdx-tea-live-evidence.v1"
+    },
+    "scenario": {
+      "type": "string",
+      "enum": [
+        "test-design-async",
+        "atdd-api-async",
+        "atdd-api-async-corrected",
+        "docs-only-rust-repo"
+      ]
+    },
+    "arm": {
+      "type": "string",
+      "enum": ["baseline", "candidate"]
+    },
+    "repetition": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{4,80}$"
+    },
+    "workspace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "config_dir", "config_dir_hash"],
+      "properties": {
+        "path": {"type": "string"},
+        "config_dir": {"type": "string"},
+        "config_dir_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_sha", "head_sha", "workflow"],
+      "properties": {
+        "base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "workflow": {
+          "type": "string",
+          "enum": ["test-design", "atdd"]
+        },
+        "diff_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claude_code_version",
+        "claude_code_path",
+        "model_id",
+        "permission_mode",
+        "available_tools",
+        "available_skills",
+        "mcp_servers",
+        "timeout_seconds",
+        "max_budget_usd"
+      ],
+      "properties": {
+        "claude_code_version": {"type": "string"},
+        "claude_code_path": {"type": "string"},
+        "model_id": {"type": "string"},
+        "permission_mode": {"type": "string"},
+        "available_tools": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "available_skills": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "timeout_seconds": {"type": "integer", "minimum": 30},
+        "max_budget_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command_hash", "started_at", "finished_at", "exit_code"],
+      "properties": {
+        "command_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "started_at": {"type": "string"},
+        "finished_at": {"type": "string"},
+        "exit_code": {"type": "integer"},
+        "reason": {
+          "type": "string",
+          "enum": ["normal", "timeout", "runtime_error", "aborted"]
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["new_artefacts", "sidecars"],
+      "properties": {
+        "new_artefacts": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "sidecars": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "required": ["run_report", "transcript", "bundle"],
+      "properties": {
+        "run_report": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "transcript": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "bundle": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_mode",
+        "configured_mode",
+        "observed_mode",
+        "observed_mode_basis",
+        "wrapper_skill_invoked",
+        "child_skill_invoked",
+        "task_tool_use_count",
+        "transcript_sha256",
+        "session_id"
+      ],
+      "properties": {
+        "requested_mode": {
+          "type": "string",
+          "enum": ["sequential"]
+        },
+        "configured_mode": {
+          "type": "string",
+          "enum": ["sequential", "auto", "subagent", "unknown"]
+        },
+        "observed_mode": {
+          "type": "string",
+          "enum": [
+            "OBSERVED_SEQUENTIAL",
+            "OBSERVED_SUBAGENT",
+            "TRANSCRIPT_MISSING",
+            "TRANSCRIPT_INVALID",
+            "INFERRED_ABSENT"
+          ]
+        },
+        "observed_mode_basis": {
+          "type": "string",
+          "enum": [
+            "no-subagent-events-surrogate",
+            "direct-subagent-event",
+            "transcript-missing",
+            "transcript-invalid",
+            "pending-reconciliation"
+          ]
+        },
+        "wrapper_skill_invoked": {"type": "boolean"},
+        "child_skill_invoked": {"type": "boolean"},
+        "task_tool_use_count": {"type": "integer", "minimum": 0},
+        "transcript_sha256": {"type": "string"},
+        "session_id": {"type": "string"}
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "lock_released", "overlay_restored"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["FINALIZED", "ABORTED", "FAILED"]
+        },
+        "lock_released": {"type": "boolean"},
+        "overlay_restored": {"type": "boolean"}
+      }
+    }
+  }
+}
