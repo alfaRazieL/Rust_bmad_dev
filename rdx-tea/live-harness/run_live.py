@@ -205,15 +205,19 @@ def arm_prompt(arm: str, workflow: str, run_id: str) -> str:
         )
     if arm == "candidate":
         return (
-            f"Invoke the /rdx-tea-{workflow} skill on the current project. "
-            f"Follow every activation step in the wrapper's SKILL.md. Do "
-            f"NOT skip the prepare-run or finalize-run subcommands. Use "
-            f"the actual bmad-testarch-{workflow} child skill — do not "
-            f"substitute output. The invocation contract file at "
-            f"_bmad-run/rdx-tea-invocation.json pins run_id={run_id}. "
-            f"Read that file first; use its run_id verbatim in every "
-            f"wrapper command. Halt on any non-zero exit. When done, "
-            f"summarise the run-report.json path."
+            f"Use the Skill tool to invoke the skill named "
+            f"rdx-tea-{workflow} (do NOT expand it as a slash command, and "
+            f"do NOT just read its SKILL.md — actually call the Skill "
+            f"tool with skill=rdx-tea-{workflow}). That wrapper skill will "
+            f"then instruct you to invoke the child skill "
+            f"bmad-testarch-{workflow}; invoke that child ALSO via the "
+            f"Skill tool. Follow every activation step in the wrapper's "
+            f"SKILL.md; do NOT skip the prepare-run or finalize-run "
+            f"subcommands. The invocation contract file at "
+            f"_bmad-run/rdx-tea-invocation.json pins run_id={run_id}; read "
+            f"it first and use its run_id verbatim in every wrapper "
+            f"command. Halt on any non-zero exit. When done, summarise the "
+            f"run-report.json path."
         )
     raise OrchestratorError(f"unknown arm {arm!r}")
 
@@ -1349,7 +1353,21 @@ def _verifier_all_pass(run_report_path: Path) -> bool:
     if not ver:
         return False
     for v in ver:
-        if str(v.get("status", "")).upper() != "PASS":
+        # Each verifier entry carries a top-level `verdict` plus a
+        # `checks` array. Accept either a top-level `verdict`/`status`
+        # of PASS OR an all-PASS `checks` array with no failed_checks.
+        verdict = str(v.get("verdict") or v.get("status") or "").upper()
+        if verdict and verdict != "PASS":
+            return False
+        if v.get("failed_checks"):
+            return False
+        checks = v.get("checks") or []
+        if checks and any(
+            str(c.get("status", "")).upper() != "PASS" for c in checks
+        ):
+            return False
+        if not verdict and not checks:
+            # Neither a verdict nor checks present — cannot confirm PASS.
             return False
     return True
 

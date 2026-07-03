@@ -75,6 +75,45 @@ def test_isolation_disallows_task_tools():
     assert iso.disallowed_tools() == ["Task", "TaskOutput", "TaskStop"]
 
 
+def test_candidate_prompt_forces_structured_skill_invocation():
+    """D3.3.3 live finding: Claude Code expands a slash-command skill
+    inline (no Skill tool_use). The candidate prompt must instruct the
+    model to use the Skill TOOL so a structured wrapper Skill event is
+    emitted."""
+    p = run_live.arm_prompt("candidate", "atdd", "smoke-x")
+    assert "Skill tool" in p
+    assert "rdx-tea-atdd" in p
+    assert "bmad-testarch-atdd" in p
+    # Must not tell the model to expand as a slash command.
+    assert "do NOT expand it as a slash command" in p
+
+
+def test_verifier_all_pass_reads_verdict_and_checks(tmp_path):
+    """The verifier entry uses top-level `verdict` + a `checks` array,
+    NOT a top-level `status` field."""
+    rr = tmp_path / "run-report.json"
+    rr.write_text(json.dumps({
+        "verifier": [
+            {"verdict": "PASS", "failed_checks": [],
+             "checks": [{"check": "schema", "status": "PASS"},
+                        {"check": "bundle_hash", "status": "PASS"}]},
+        ]
+    }), encoding="utf-8")
+    assert run_live._verifier_all_pass(rr) is True
+
+    rr.write_text(json.dumps({
+        "verifier": [
+            {"verdict": "FAIL", "failed_checks": ["bundle_hash"],
+             "checks": [{"check": "bundle_hash", "status": "FAIL"}]},
+        ]
+    }), encoding="utf-8")
+    assert run_live._verifier_all_pass(rr) is False
+
+    # Empty verifier -> not pass.
+    rr.write_text(json.dumps({"verifier": []}), encoding="utf-8")
+    assert run_live._verifier_all_pass(rr) is False
+
+
 # --------------------------------------------------- exact model IDs
 
 def test_exact_model_rejects_alias():

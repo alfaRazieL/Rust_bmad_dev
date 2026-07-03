@@ -35,7 +35,9 @@ def test_arm_prompt_baseline_never_mentions_rdx():
 
 def test_arm_prompt_candidate_names_wrapper_and_run_id():
     p = run_live.arm_prompt("candidate", "atdd", "pilot-042")
-    assert "/rdx-tea-atdd" in p
+    # D3.3.3: the wrapper is invoked via the Skill tool (no slash prefix)
+    # so the runtime emits a structured wrapper Skill event.
+    assert "rdx-tea-atdd" in p
     assert "pilot-042" in p
 
 
