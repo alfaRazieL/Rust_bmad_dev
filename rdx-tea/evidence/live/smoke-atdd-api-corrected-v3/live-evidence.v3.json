@@ -1,0 +1,214 @@
+{
+  "admissible": true,
+  "admission_reasons": [
+    "all checks passed"
+  ],
+  "arm": "candidate",
+  "artifacts": {
+    "new_artefacts": [
+      "/tmp/rdx-live-d333c-ev/atdd-api-async-corrected/candidate/rep-01/smoke-atdd-corrected-d3-3-3/tea-artifacts/atdd-checklist-public-async-api-with-cancellation-semantics-corrected.md"
+    ]
+  },
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "candidate": {
+    "active_packs": [
+      "api",
+      "async"
+    ],
+    "bundle_present": true,
+    "child_skill_invoked": true,
+    "expected_rp_ids": [
+      "RP-ASYNC-005",
+      "RP-API-001"
+    ],
+    "sidecars": [
+      "/tmp/rdx-live-d333c-ev/atdd-api-async-corrected/candidate/rep-01/smoke-atdd-corrected-d3-3-3/sidecars/atdd-checklist-public-async-api-with-cancellation-semantics-corrected.md.rdx-tea.json"
+    ],
+    "verifier_all_pass": true,
+    "wrapper_skill_invoked": true
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "absent",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FINALIZED"
+  },
+  "hashes": {
+    "bundle": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "run_report": "aa36cae735eb2788e142d0042a2b21249fe989cc2fa8ca3d665db37aa5a71701",
+    "transcript": "1385b099c4dd0b7ed3470f60363b1a7571f0c07cea93843786026c1068740b76"
+  },
+  "identity": {
+    "base_sha": "eec9fb1ed8180323dc8be557d94f404cf22e3fda",
+    "head_sha": "7ba02efeb2df08a9c770cafb22db12a9f079bf9b"
+  },
+  "invocation": {
+    "command_hash": "34068fb4548116604a5c2209fe5a19b83d69d25d10351517d879f1045679b104",
+    "exit_code": 0,
+    "finished_at": "2026-07-03T16:43:57+00:00",
+    "prompt_hash": "6a3c6c2c2e8e4cca07a1ca43d645ee644dda24327a10009a9a0177128718ed3a",
+    "reason": "normal",
+    "started_at": "2026-07-03T16:38:51+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": true,
+    "observed_mode": "OBSERVED_SEQUENTIAL",
+    "observed_mode_basis": "no-subagent-events-surrogate",
+    "session_id": "cc7e66b4-a26f-4846-9542-d1903edec1bc",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "1385b099c4dd0b7ed3470f60363b1a7571f0c07cea93843786026c1068740b76",
+    "wrapper_skill_invoked": true
+  },
+  "repetition": 1,
+  "run_id": "smoke-atdd-corrected-d3-3-3",
+  "run_id_handshake": {
+    "invocation_json": "smoke-atdd-corrected-d3-3-3",
+    "mismatch": false,
+    "run_report": "smoke-atdd-corrected-d3-3-3",
+    "schedule": "smoke-atdd-corrected-d3-3-3",
+    "workspace_runtime_dir": "smoke-atdd-corrected-d3-3-3"
+  },
+  "run_outcome": "SUCCESS",
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 2.0,
+    "model_expected": "claude-haiku-4-5-20251001",
+    "model_observed": "claude-haiku-4-5-20251001",
+    "observed_surface": {
+      "agents": [
+        "claude",
+        "Explore",
+        "general-purpose",
+        "Plan",
+        "statusline-setup"
+      ],
+      "analytics_disabled": false,
+      "api_key_source": "none",
+      "claude_code_version": "2.1.191",
+      "fast_mode_state": "off",
+      "init_event_seen": true,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "claude-haiku-4-5-20251001",
+      "output_style": "default",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "session_id": "cc7e66b4-a26f-4846-9542-d1903edec1bc",
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "slash_commands": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage-credits",
+        "extra-usage",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ],
+      "tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "surface_diff": {
+      "missing_expected_skills": [],
+      "model_mismatch": false,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [],
+      "unexpected_tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "timeout_seconds": 600
+  },
+  "runtime_result": {
+    "authentication_failed": false,
+    "is_error": false,
+    "model_turn_seen": true,
+    "result_event_seen": true,
+    "subtype": "success",
+    "terminal_reason": "completed"
+  },
+  "scenario": "atdd-api-async-corrected",
+  "schema_version": "rdx-tea-live-evidence.v3",
+  "workflow": "atdd",
+  "workspace": {
+    "config_dir_overridden": false,
+    "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+    "path": "/tmp/rdx-live-d333c-ws"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "collected_at": "2026-07-03T16:43:57+00:00",
+  "inventory": {
+    "active-context.md": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "diff.patch": "e13fcc5bbf9b0a2290d21cafedfb6f4549beb3fb1763ddd54ef277c29aaf85d7",
+    "run-manifest.json": "dceac00e0e1f956fe38afb1beb98bfc0b1c593ddd8cd7774571a8911736b3dbf",
+    "run-report.json": "aa36cae735eb2788e142d0042a2b21249fe989cc2fa8ca3d665db37aa5a71701",
+    "run-state.json": "1b5d79651e02101d88682a6dbe570a5a3594ddc24bc065a904eb98427aad72ff",
+    "sidecars/atdd-checklist-public-async-api-with-cancellation-semantics-corrected.md.rdx-tea.json": "de2e70d9a13c509e7788f715b518e503a1a684197e5d34df89aad281aee4fbd8",
+    "tea-artifacts/atdd-checklist-public-async-api-with-cancellation-semantics-corrected.md": "b709dd2c392792741c2454d7ea42dc85e5be2941828fd4647ab8c26ec77c8268",
+    "transcript.stream.jsonl": "1385b099c4dd0b7ed3470f60363b1a7571f0c07cea93843786026c1068740b76"
+  },
+  "run_id": "smoke-atdd-corrected-d3-3-3",
+  "scenario": "atdd-api-async-corrected/candidate/rep-01",
+  "workflow": "atdd",
+  "workspace": "/tmp/rdx-live-d333c-ws"
+}
