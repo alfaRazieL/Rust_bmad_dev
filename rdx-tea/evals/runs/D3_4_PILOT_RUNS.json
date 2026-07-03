@@ -1,0 +1,208 @@
+{
+  "generated_at": "2026-07-03T00:00:00+00:00",
+  "grader_version": "rdx-tea-grader.v1",
+  "locked": true,
+  "prompt_hash": "487e2150889ac9741cb4ec3b5a9b003ecd90c170613b7f625edff53f88b32279",
+  "runs": [
+    {
+      "arm": "candidate",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 1,
+      "repetition": 1,
+      "run_id": "pilot-001-docs-only-rust-repo-candidate-rep01",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 2,
+      "repetition": 2,
+      "run_id": "pilot-002-test-design-async-baseline-rep02",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 3,
+      "repetition": 2,
+      "run_id": "pilot-003-atdd-api-async-corrected-baseline-rep02",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 4,
+      "repetition": 2,
+      "run_id": "pilot-004-atdd-api-async-corrected-candidate-rep02",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 5,
+      "repetition": 3,
+      "run_id": "pilot-005-test-design-async-baseline-rep03",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 6,
+      "repetition": 2,
+      "run_id": "pilot-006-docs-only-rust-repo-candidate-rep02",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 7,
+      "repetition": 1,
+      "run_id": "pilot-007-test-design-async-candidate-rep01",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 8,
+      "repetition": 3,
+      "run_id": "pilot-008-docs-only-rust-repo-candidate-rep03",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 9,
+      "repetition": 1,
+      "run_id": "pilot-009-docs-only-rust-repo-baseline-rep01",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 10,
+      "repetition": 3,
+      "run_id": "pilot-010-atdd-api-async-corrected-baseline-rep03",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 11,
+      "repetition": 3,
+      "run_id": "pilot-011-test-design-async-candidate-rep03",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 12,
+      "repetition": 1,
+      "run_id": "pilot-012-atdd-api-async-corrected-candidate-rep01",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 13,
+      "repetition": 1,
+      "run_id": "pilot-013-test-design-async-baseline-rep01",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 14,
+      "repetition": 3,
+      "run_id": "pilot-014-atdd-api-async-corrected-candidate-rep03",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "621bf109a3bce0171ede89bed45990c7e907daff7325dd8c5f6fd42d335a935b",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 15,
+      "repetition": 1,
+      "run_id": "pilot-015-atdd-api-async-corrected-baseline-rep01",
+      "scenario": "atdd-api-async-corrected",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 16,
+      "repetition": 2,
+      "run_id": "pilot-016-docs-only-rust-repo-baseline-rep02",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "candidate",
+      "fixture_hash": "046a4a64c0a09f1ea1a8c2b4d8e05255a6f2f31f21b1583e1173bc576a52a798",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 17,
+      "repetition": 2,
+      "run_id": "pilot-017-test-design-async-candidate-rep02",
+      "scenario": "test-design-async",
+      "timeout_seconds": 900
+    },
+    {
+      "arm": "baseline",
+      "fixture_hash": "763ae4f0da9825cbb8d4d43b70614cead615a0572a10f27a087e8e49bf904ecd",
+      "max_budget_usd": 2.0,
+      "model": "claude-haiku-4-5-20251001",
+      "order_index": 18,
+      "repetition": 3,
+      "run_id": "pilot-018-docs-only-rust-repo-baseline-rep03",
+      "scenario": "docs-only-rust-repo",
+      "timeout_seconds": 900
+    }
+  ],
+  "schema_version": "rdx-tea-pilot-runs.v1",
+  "seed": 20260703
+}

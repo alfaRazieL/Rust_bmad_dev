@@ -1,0 +1,278 @@
+# D3.4 pilot grading rubric — precommitted before any pilot run.
+#
+# CORRECTED FROM D3_3_PILOT_RUBRIC.yaml PER D3.3.1 §4.8:
+#
+#  1. baseline is NEVER scored on internal RP-* IDs (it has no way to
+#     know them); RDX-ID metrics are candidate-only integration fidelity.
+#  2. docs-only negative control has NO division-by-zero: recall is not
+#     computed on an empty expected set; we assert leakage_count == 0
+#     and irrelevant_rust_requirement_count == 0 instead.
+#  3. ATDD scenario uses `atdd-api-async-corrected` (publish=true + async
+#     story tags, `pub struct` code signals) so the api pack activates.
+#  4. keyword-only detectors are the first layer only; substantive
+#     semantic metrics call the blinded LLM grader.
+#  5. metrics are split into two families that are graded separately:
+#       - candidate_integration_fidelity  (candidate only)
+#       - comparative_artifact_quality    (identical scoring on baseline
+#                                         and candidate)
+
+schema_version: rdx-tea-pilot-rubric.v2
+supersedes: rdx-tea/evals/D3_3_PILOT_RUBRIC.yaml
+last_edited_before_first_pilot_run: true
+
+task_scenario_binding:
+  test-design-async:
+    workflow: test-design
+    expected_active_pack_ids: [async]
+    expected_core_subset_min: [CORE-001, CORE-004, CORE-009]
+    expected_rp_ids_min: [RP-ASYNC-005]
+    forbidden_rp_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-, RP-CARGO-]
+  atdd-api-async-corrected:
+    workflow: atdd
+    expected_active_pack_ids: [api, async]
+    expected_core_subset_min: [CORE-001, CORE-004, CORE-009]
+    expected_rp_ids_min: [RP-ASYNC-005, RP-API-001]
+    forbidden_rp_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-]
+  docs-only-rust-repo:
+    workflow: test-design
+    expected_active_pack_ids: []
+    expected_core_subset_min: []
+    expected_rp_ids_min: []
+    forbidden_rp_prefixes: [RP-]
+
+candidate_integration_fidelity:
+  # SCOPE: candidate arm only. Baseline has no visibility of RDX IDs and
+  # MUST NOT be scored on any of these — that would be a category error.
+  applied_to_arms: [candidate]
+  metrics:
+    correct_active_packs:
+      kind: boolean
+      formula: |
+        set(run_manifest.active_packs) == set(expected_active_pack_ids)
+    expected_rp_ids_present:
+      kind: fraction
+      formula: |
+        count(rid in artefact.text for rid in expected_rp_ids_min)
+        / max(1, count(expected_rp_ids_min))
+      docs_only_special: metric_omitted_when_expected_set_is_empty
+    invented_rule_id_rate:
+      kind: fraction
+      formula: |
+        count(rid in artefact.text and rid not in KB.all_rule_ids)
+        / max(1, count(rid in artefact.text))
+    forbidden_pack_never_active:
+      kind: boolean
+      formula: |
+        no forbidden_rp_prefix appears in run_manifest.active_packs
+    sidecar_verifier_pass:
+      kind: boolean
+      formula: |
+        all(v.status == 'PASS' for v in run_report.verifier)
+    exact_bundle_hash_present:
+      kind: boolean
+      formula: |
+        run_manifest.bundle_sha256 == computed(run_dir/active-context.md)
+    observed_sequential:
+      kind: enum
+      values: [OBSERVED_SEQUENTIAL, OBSERVED_SUBAGENT, TRANSCRIPT_MISSING,
+               TRANSCRIPT_INVALID, INFERRED_ABSENT]
+      required_value: OBSERVED_SEQUENTIAL
+
+comparative_artifact_quality:
+  # SCOPE: baseline AND candidate — identical rubric, identical grader,
+  # identical prompts. This is what proves (or disproves) BEHAVIOURAL
+  # benefit.
+  applied_to_arms: [baseline, candidate]
+  layer1_deterministic_detectors:
+    cancellation_specificity:
+      kind: boolean
+      detector: |
+        any of [
+          "cancellation-safe", "cancel-safe", "cancellation point",
+          "select! { _ = cancel_token", "tokio::select! { biased",
+          "AbortHandle", "cancellation semantics"
+        ] in artefact.text
+    timeout_specificity:
+      kind: boolean
+      detector: |
+        any of [
+          "timeout(", "tokio::time::timeout", "deadline",
+          "hard timeout", "soft timeout"
+        ] in artefact.text
+    shutdown_specificity:
+      kind: boolean
+      detector: |
+        any of [
+          "graceful shutdown", "drain in-flight",
+          "shutdown broadcast", "SIGTERM handling"
+        ] in artefact.text
+    partial_progress_preservation:
+      kind: boolean
+      detector: |
+        any of [
+          "partial progress", "resume from checkpoint",
+          "idempotent write", "torn write", "no torn write"
+        ] in artefact.text
+    cleanup_ownership:
+      kind: boolean
+      detector: |
+        any of [
+          "drop guard", "RAII cleanup", "cleanup owner",
+          "who owns cleanup", "ownership of cleanup"
+        ] in artefact.text
+    task_lifecycle_ownership:
+      kind: boolean
+      detector: |
+        any of [
+          "task lifecycle", "spawn/join", "who joins",
+          "task ownership", "abort semantics"
+        ] in artefact.text
+    api_compatibility_boundary:
+      kind: boolean
+      detector: |
+        any of [
+          "public api", "public async fn", "boundary contract",
+          "semver", "breaking change"
+        ] in artefact.text
+    api_error_boundary_specificity:
+      kind: boolean
+      detector: |
+        any of [
+          "error boundary", "public error type",
+          "error contract", "exhaustive match"
+        ] in artefact.text
+    negative_path_coverage:
+      kind: boolean
+      detector: |
+        any of [
+          "error case", "failure mode", "negative test",
+          "invalid input", "adversarial input"
+        ] in artefact.text
+    executable_test_detail:
+      kind: boolean
+      detector: |
+        any of [
+          "assert_eq!", "#[tokio::test]", "expect(",
+          "Given/When/Then", "acceptance criteria:"
+        ] in artefact.text
+    irrelevant_rust_requirement_count:
+      kind: int
+      detector: |
+        count of Rust obligations in artefact.text for docs-only scenario
+        (should be zero for BOTH arms; docs-only never demands Rust rules)
+      docs_only_only: true
+    contradictions:
+      kind: int
+      detector: |
+        count of sentences containing mutually-exclusive claims
+    hallucinated_project_facts:
+      kind: int
+      detector: |
+        count of file paths / module names in artefact.text that do NOT
+        exist in the fixture project tree
+
+  layer2_blinded_llm_grader:
+    model_policy:
+      allowed: [claude-haiku-4-5-20251001, claude-sonnet-4-6]
+      forbidden: [claude-opus-4-7, opus]
+    grader_prompt_hash: "SHA256 pinned when grader runs — recorded per sample"
+    graded_metrics:
+      - cancellation_specificity_semantic
+      - timeout_specificity_semantic
+      - shutdown_specificity_semantic
+      - partial_progress_preservation_semantic
+      - cleanup_ownership_semantic
+      - task_lifecycle_ownership_semantic
+      - api_compatibility_semantic
+      - api_error_boundary_semantic
+      - actionability_semantic
+      - completeness_semantic
+    disagreement_handling: |
+      When deterministic detector and LLM grader disagree on a boolean:
+      record BOTH results in the per-sample JSON; treat the metric as
+      INCONCLUSIVE for that sample and exclude it from the effect
+      calculation. Never silently overwrite one signal with the other.
+  layer3_efficiency:
+    wall_clock_seconds:
+      kind: int
+    transcript_bytes:
+      kind: int
+    artifact_bytes:
+      kind: int
+    tokens_input:
+      kind: int
+    tokens_output:
+      kind: int
+    est_cost_usd:
+      kind: number
+
+docs_only_control:
+  # NEVER computes recall/precision on an empty expected set. Instead,
+  # verifies absence of Rust obligations under either arm.
+  metrics:
+    rdx_leakage_count:
+      kind: int
+      required_value: 0
+    irrelevant_rust_requirement_count:
+      kind: int
+      required_value: 0
+    forbidden_rp_prefix_hits:
+      kind: int
+      required_value: 0
+
+evaluator_isolation:
+  blinding: mandatory
+  arm_sanitisation:
+    # Applied before the comparative_artifact_quality grader sees any
+    # sample. Anything that could leak the arm is masked.
+    filenames_renamed_to: sample-XXX
+    frontmatter_masked: true
+    rdx_id_pattern_stripped: '\\bRP-[A-Z]+-\\d+\\b'
+    wrapper_name_stripped: 'rdx-tea-\\w+'
+    sidecars_hidden_from_grader: true
+    path_prefixes_normalised: [baseline/, candidate/]
+  candidate_integration_grader:
+    # Separate grader that DOES see un-sanitised evidence — it is the
+    # fidelity check, not the comparative check.
+    sees_full_evidence_bundle: true
+    scope: candidate_only
+  disagreement_and_leakage_tests:
+    - filename_leakage_zero
+    - metadata_leakage_zero
+    - path_leakage_zero
+    - rdx_id_leakage_in_sanitised_input_zero
+
+decision_rule:
+  positive_signal_requires_all:
+    - 18 valid samples OR precommitted retry accounting explains gaps
+    - candidate_integration_fidelity PASSES all boolean gates
+    - comparative_artifact_quality: candidate does not regress on
+      hallucinated_project_facts or contradictions (both counters ≤
+      baseline mean)
+    - comparative_artifact_quality: on ≥ 2 of 3 positive scenarios
+      candidate shows a persistent improvement (post-sanitisation) on
+      at least three of the semantic boolean detectors
+    - docs-only control PASSES for BOTH arms (leakage_count == 0)
+    - grader agreement is acceptable — see grader_agreement_min
+    - no arm leakage detected by the sanitisation tests
+
+  inconclusive_when:
+    - any scenario × arm has fewer than 3 successful runs and no
+      precommitted retry rule explains the gap
+    - candidate wins on some semantic metrics and loses on others
+      without a dominant direction
+
+  negative_when:
+    - baseline strictly better on comparative_artifact_quality boolean
+      counts on ≥ 2 of 3 positive scenarios
+    - candidate hallucinates more RP-* IDs than baseline (invented
+      RP-* IDs in the candidate arm — even though baseline emits none)
+
+  invalid_when:
+    - any arm produced no artefact
+    - transcripts show subagent dispatch under either arm
+    - arm leakage detected in sanitised input
+    - schedule modified after first run
+    - fixture hash changed after first run
+
+grader_agreement_min: 0.75
