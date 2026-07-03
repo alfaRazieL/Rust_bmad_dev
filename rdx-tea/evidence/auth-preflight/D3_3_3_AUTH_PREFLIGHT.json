@@ -1,0 +1,83 @@
+{
+  "schema_version": "rdx-tea-auth-preflight.v1",
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "generated": "2026-07-03T00:00:00Z",
+  "sanitisation_note": "No token, cookie, Keychain item, credential path contents, email, orgId, session_id, or full environment dump is stored here. The user's CLAUDE_CONFIG_DIR value is NOT recorded; only its presence and a SHA256 of the normalised path.",
+  "claude_code": {
+    "path": "/opt/homebrew/bin/claude",
+    "version": "2.1.191",
+    "updated_by_agent": false
+  },
+  "auth_policy": {
+    "api_key_used": false,
+    "oauth_token_exported": false,
+    "claude_config_dir_overridden_by_harness": false,
+    "setup_token_used": false,
+    "api_key_helper_used": false,
+    "bare_mode_used": false,
+    "credentials_copied_or_logged": false
+  },
+  "inherited_env": {
+    "CLAUDE_CONFIG_DIR_present": true,
+    "CLAUDE_CONFIG_DIR_normalized_path_sha256": "6fd0ee5af3a2140816681a59bb72218d73d31d81dba7447e34dd9a6e9213bfa9",
+    "CLAUDE_CONFIG_DIR_value_recorded": false,
+    "ANTHROPIC_API_KEY_present": false,
+    "CLAUDE_CODE_OAUTH_TOKEN_present": false
+  },
+  "auth_status": {
+    "command": "claude auth status",
+    "exit_code": 0,
+    "loggedIn": true,
+    "authMethod": "claude.ai",
+    "apiProvider": "firstParty",
+    "subscriptionType": "pro",
+    "pii_fields_redacted": ["email", "orgId", "orgName"]
+  },
+  "normal_profile_auth_ok": {
+    "status": "PASS",
+    "prompt": "Return exactly AUTH_OK and nothing else.",
+    "model_arg": "claude-haiku-4-5-20251001",
+    "config_dir_overridden": false,
+    "exit_code": 0,
+    "result_is_error": false,
+    "result": "AUTH_OK",
+    "observed_model": "claude-haiku-4-5-20251001",
+    "cost_usd": 0.01511
+  },
+  "project_isolated_auth_ok": {
+    "status": "PASS",
+    "prompt": "Return exactly AUTH_OK and nothing else.",
+    "model_arg": "claude-haiku-4-5-20251001",
+    "config_dir_overridden": false,
+    "flags": [
+      "--setting-sources project",
+      "--strict-mcp-config",
+      "--mcp-config <project-empty-mcp.json>",
+      "--disallowedTools Task TaskOutput TaskStop",
+      "--no-session-persistence"
+    ],
+    "project_settings": {
+      "disableBundledSkills": true,
+      "disableClaudeAiConnectors": true,
+      "autoMemoryEnabled": false
+    },
+    "exit_code": 0,
+    "result_is_error": false,
+    "result": "AUTH_OK",
+    "observed_model": "claude-haiku-4-5-20251001",
+    "observed_init_surface": {
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [],
+      "Task_in_tools": false,
+      "TaskOutput_in_tools": false,
+      "TaskStop_in_tools": false,
+      "apiKeySource": "none",
+      "apiKeySource_note": "none does NOT mean unauthenticated — subscription OAuth authenticated the session (result_is_error=false, result=AUTH_OK). apiKeySource only reflects whether an API-key env source was used; it was not.",
+      "memory_paths_present": false,
+      "memory_paths_note": "absent because autoMemoryEnabled=false. When present in other runs it is a dict like {\"auto\": \"...\"}; the runtime parser must handle dict/list/string/null.",
+      "permissionMode": "default"
+    }
+  },
+  "conclusion": "Existing Claude Code CLI OAuth (claude.ai, pro subscription) authenticates BOTH a normal-profile query and a project-isolated query. Project isolation via --setting-sources project + --strict-mcp-config + project .claude/settings.json does NOT break auth, because it does not touch CLAUDE_CONFIG_DIR. The D3.3.2 failure was caused solely by overriding CLAUDE_CONFIG_DIR to a temp dir, which pointed the CLI away from the real OAuth store. D3.3.3 harness must inherit the existing auth environment and never override CLAUDE_CONFIG_DIR."
+}
