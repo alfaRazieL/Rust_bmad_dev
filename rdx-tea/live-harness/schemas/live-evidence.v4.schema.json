@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/alfaRazieL/Rust_bmad_dev/rdx-tea-integration/rdx-tea/live-harness/schemas/live-evidence.v4.schema.json",
+  "title": "rdx-tea live evidence bundle v4 (rule-operation)",
+  "description": "D3.4.0 §9. Extends the v3 admission-aware bundle with workspace_delta, artifact_consistency, rule_operation (candidate) and baseline_control (baseline). The schema forbids admissible=true unless the rule-operation / control invariants for the arm hold. v3 is NOT rewritten; this is an additive versioned schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "arm", "scenario", "workflow", "repetition", "run_id",
+    "run_id_handshake", "auth_preflight_id", "workspace", "identity", "runtime",
+    "invocation", "runtime_result", "artifacts", "hashes", "observation",
+    "run_outcome", "admissible", "admission_reasons", "cleanup",
+    "workspace_delta", "artifact_consistency", "schedule_binding"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "rdx-tea-live-evidence.v4"},
+    "arm": {"type": "string", "enum": ["baseline", "candidate"]},
+    "scenario": {"type": "string"},
+    "workflow": {"type": "string", "enum": ["test-design", "atdd"]},
+    "repetition": {"type": "integer", "minimum": 1, "maximum": 20},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{4,80}$"},
+    "auth_preflight_id": {"type": "string", "minLength": 1},
+    "run_id_handshake": {
+      "type": "object", "required": ["schedule", "mismatch"],
+      "properties": {"schedule": {"type": "string"}, "mismatch": {"type": "boolean"}}
+    },
+    "workspace": {
+      "type": "object", "required": ["path", "config_dir_overridden", "fixture_hash"],
+      "additionalProperties": true,
+      "properties": {
+        "path": {"type": "string"},
+        "config_dir_overridden": {"type": "boolean"},
+        "fixture_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identity": {
+      "type": "object", "required": ["base_sha", "head_sha"],
+      "properties": {
+        "base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["expected_surface", "observed_surface", "surface_diff", "contamination", "model_expected", "model_observed"],
+      "additionalProperties": true,
+      "properties": {
+        "contamination": {"type": "string"},
+        "model_expected": {"type": "string"},
+        "model_observed": {"type": "string"}
+      }
+    },
+    "invocation": {
+      "type": "object", "required": ["command_hash", "prompt_hash", "exit_code", "reason"],
+      "additionalProperties": true,
+      "properties": {
+        "command_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "prompt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "exit_code": {"type": "integer"}, "reason": {"type": "string"}
+      }
+    },
+    "runtime_result": {
+      "type": "object",
+      "required": ["result_event_seen", "is_error", "authentication_failed", "model_turn_seen"],
+      "additionalProperties": true,
+      "properties": {
+        "is_error": {"type": ["boolean", "null"]},
+        "authentication_failed": {"type": "boolean"},
+        "model_turn_seen": {"type": "boolean"}
+      }
+    },
+    "artifacts": {
+      "type": "object", "required": ["new_artefacts"],
+      "properties": {"new_artefacts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}
+    },
+    "hashes": {
+      "type": "object", "required": ["run_report", "transcript", "bundle"],
+      "properties": {
+        "run_report": {"type": "string"}, "transcript": {"type": "string"}, "bundle": {"type": "string"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": ["observed_mode", "wrapper_skill_invoked", "child_skill_invoked", "task_tool_use_count", "transcript_sha256", "session_id"],
+      "additionalProperties": true,
+      "properties": {
+        "observed_mode": {"type": "string", "enum": ["OBSERVED_SEQUENTIAL", "OBSERVED_SUBAGENT", "TRANSCRIPT_MISSING", "TRANSCRIPT_INVALID", "INFERRED_ABSENT"]},
+        "wrapper_skill_invoked": {"type": "boolean"},
+        "child_skill_invoked": {"type": "boolean"},
+        "task_tool_use_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "run_outcome": {
+      "type": "string",
+      "enum": ["AUTH_FAILURE", "RUNTIME_FAILURE", "TIMEOUT", "CONTAMINATION", "RUN_ID_MISMATCH", "WORKFLOW_FAILURE", "VERIFIER_FAILURE", "SCHEMA_FAILURE", "ARTIFACT_DECLARATION_FAILURE", "ARTIFACT_CONSISTENCY_FAILURE", "SCHEDULE_DRIFT", "SUCCESS"]
+    },
+    "admissible": {"type": "boolean"},
+    "admission_reasons": {"type": "array", "items": {"type": "string"}},
+    "cleanup": {
+      "type": "object", "required": ["state", "observed"],
+      "properties": {
+        "state": {"type": "string", "enum": ["FINALIZED", "ABORTED", "FAILED"]},
+        "observed": {
+          "type": "object",
+          "required": ["lock_state", "overlay_state", "run_dir_retained", "transcript_retained"],
+          "properties": {
+            "lock_state": {"type": "string", "enum": ["absent", "owned-still-present", "foreign-present"]},
+            "overlay_state": {"type": "string", "enum": ["absent", "rdx-owned-still-present", "foreign-preserved"]},
+            "run_dir_retained": {"type": "boolean"},
+            "transcript_retained": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "workspace_delta": {
+      "type": "object",
+      "required": ["created_files", "modified_files", "deleted_files", "declared_generated_files", "declared_existing_files", "declared_missing_files", "consistency"],
+      "additionalProperties": true,
+      "properties": {
+        "created_files": {"type": "array", "items": {"type": "string"}},
+        "modified_files": {"type": "array", "items": {"type": "string"}},
+        "deleted_files": {"type": "array", "items": {"type": "string"}},
+        "declared_generated_files": {"type": "array", "items": {"type": "string"}},
+        "declared_existing_files": {"type": "array", "items": {"type": "string"}},
+        "declared_missing_files": {"type": "array", "items": {"type": "string"}},
+        "consistency": {"type": "string", "enum": ["PASS", "FAIL"]}
+      }
+    },
+    "artifact_consistency": {
+      "type": "object",
+      "required": ["status", "duplicate_frontmatter_keys", "contradictory_frontmatter", "phantom_file_claims"],
+      "additionalProperties": true,
+      "properties": {
+        "status": {"type": "string", "enum": ["PASS", "FAIL"]},
+        "duplicate_frontmatter_keys": {"type": "array"},
+        "contradictory_frontmatter": {"type": "array"},
+        "phantom_file_claims": {"type": "array"}
+      }
+    },
+    "schedule_binding": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": true,
+      "properties": {
+        "status": {"type": "string", "enum": ["PASS", "FAIL", "NOT_SCHEDULED"]},
+        "criteria_version": {"type": "string"},
+        "schedule_sha256": {"type": "string"},
+        "drift_reasons": {"type": "array"}
+      }
+    },
+    "rule_operation": {
+      "type": "object",
+      "required": ["active_packs", "expected_active_packs", "packs_ok", "expected_rule_condition", "forbidden_rule_condition"],
+      "additionalProperties": true,
+      "properties": {
+        "active_packs": {"type": "array", "items": {"type": "string"}},
+        "expected_active_packs": {"type": "array", "items": {"type": "string"}},
+        "packs_ok": {"type": "boolean"},
+        "expected_rule_condition": {"type": "string", "enum": ["PASS", "FAIL"]},
+        "forbidden_rule_condition": {"type": "string", "enum": ["PASS", "FAIL"]},
+        "matched_rules": {"type": "array"},
+        "criteria_version": {"type": "string"}
+      }
+    },
+    "baseline_control": {
+      "type": "object",
+      "required": ["rule_operation_absent", "rdx_bundle_absent", "rdx_sidecars_absent", "no_rp_obligation_leakage"],
+      "properties": {
+        "rule_operation_absent": {"type": "boolean"},
+        "rdx_bundle_absent": {"type": "boolean"},
+        "rdx_sidecars_absent": {"type": "boolean"},
+        "no_rp_obligation_leakage": {"type": "boolean"}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["wrapper_skill_invoked", "child_skill_invoked", "sidecars", "active_packs", "expected_rp_ids", "verifier_all_pass", "bundle_present"],
+      "properties": {
+        "sidecars": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "verifier_all_pass": {"type": "boolean"},
+        "bundle_present": {"type": "boolean"}
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "required": ["wrapper_skill_invoked", "direct_child_skill_invoked", "rdx_bundle_absent", "rdx_sidecars_absent", "rdx_overlay_absent"],
+      "properties": {
+        "wrapper_skill_invoked": {"const": false},
+        "rdx_bundle_absent": {"const": true},
+        "rdx_sidecars_absent": {"const": true},
+        "rdx_overlay_absent": {"const": true}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"arm": {"const": "candidate"}}, "required": ["arm"]},
+      "then": {"required": ["candidate", "rule_operation"], "not": {"required": ["baseline"]}}
+    },
+    {
+      "if": {"properties": {"arm": {"const": "baseline"}}, "required": ["arm"]},
+      "then": {"required": ["baseline", "baseline_control"], "not": {"required": ["candidate"]}}
+    },
+    {
+      "comment": "admissible forbids non-zero exit / contamination / mismatch / error.",
+      "if": {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+      "then": {
+        "properties": {
+          "run_outcome": {"const": "SUCCESS"},
+          "invocation": {"properties": {"exit_code": {"const": 0}}},
+          "runtime": {"properties": {"contamination": {"const": ""}}},
+          "run_id_handshake": {"properties": {"mismatch": {"const": false}}},
+          "runtime_result": {"properties": {"is_error": {"const": false}, "authentication_failed": {"const": false}}},
+          "workspace_delta": {"properties": {"consistency": {"const": "PASS"}}},
+          "artifact_consistency": {"properties": {"status": {"const": "PASS"}}},
+          "schedule_binding": {"properties": {"status": {"enum": ["PASS", "NOT_SCHEDULED"]}}}
+        }
+      }
+    },
+    {
+      "comment": "admissible candidate requires full rule-operation.",
+      "if": {"allOf": [
+        {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+        {"properties": {"arm": {"const": "candidate"}}, "required": ["arm"]}
+      ]},
+      "then": {
+        "properties": {
+          "observation": {"properties": {"observed_mode": {"const": "OBSERVED_SEQUENTIAL"}, "wrapper_skill_invoked": {"const": true}, "child_skill_invoked": {"const": true}, "task_tool_use_count": {"const": 0}}},
+          "candidate": {"properties": {"bundle_present": {"const": true}, "verifier_all_pass": {"const": true}}},
+          "rule_operation": {"properties": {"packs_ok": {"const": true}, "expected_rule_condition": {"const": "PASS"}, "forbidden_rule_condition": {"const": "PASS"}}}
+        }
+      }
+    },
+    {
+      "comment": "admissible baseline control requires no RDX contamination.",
+      "if": {"allOf": [
+        {"properties": {"admissible": {"const": true}}, "required": ["admissible"]},
+        {"properties": {"arm": {"const": "baseline"}}, "required": ["arm"]}
+      ]},
+      "then": {
+        "properties": {
+          "observation": {"properties": {"wrapper_skill_invoked": {"const": false}, "child_skill_invoked": {"const": true}, "task_tool_use_count": {"const": 0}}},
+          "baseline_control": {"properties": {"rule_operation_absent": {"const": true}, "rdx_bundle_absent": {"const": true}, "rdx_sidecars_absent": {"const": true}, "no_rp_obligation_leakage": {"const": true}}}
+        }
+      }
+    }
+  ]
+}

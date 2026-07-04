@@ -1,0 +1,8 @@
+[package]
+name = "atdd-api-async-latent"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+name = "atdd_api_async_latent"
+path = "src/lib.rs"

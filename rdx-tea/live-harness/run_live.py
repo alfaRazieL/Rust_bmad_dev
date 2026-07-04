@@ -37,6 +37,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -53,6 +54,7 @@ import collect_evidence
 import invoke_runtime
 import prepare_workspace
 import runtime_discovery
+import rule_operation
 
 
 SCHEMA_PATH = _HERE / "schemas" / "live-evidence.v1.schema.json"
@@ -61,17 +63,24 @@ SCHEMA_V3_PATH = _HERE / "schemas" / "live-evidence.v3.schema.json"
 SCHEMA_VERSION = "rdx-tea-live-evidence.v1"
 SCHEMA_V2_VERSION = "rdx-tea-live-evidence.v2"
 SCHEMA_V3_VERSION = "rdx-tea-live-evidence.v3"
+SCHEMA_V4_PATH = _HERE / "schemas" / "live-evidence.v4.schema.json"
+SCHEMA_V4_VERSION = "rdx-tea-live-evidence.v4"
 INVOCATION_SCHEMA_VERSION = "rdx-tea-invocation.v1"
 AUTH_PREFLIGHT_ID_DEFAULT = "D3_3_3_AUTH_PREFLIGHT"
 
 RDX_TEA_DIR = _HERE.parent
 EVIDENCE_ROOT_DEFAULT = RDX_TEA_DIR / "evidence" / "live"
+RULE_CRITERIA_PATH = RDX_TEA_DIR / "evals" / "D3_4_RULE_OPERATION_CRITERIA.v1.yaml"
 
 WORKFLOWS = {
     "test-design-async": "test-design",
     "atdd-api-async": "atdd",
     "atdd-api-async-corrected": "atdd",
     "docs-only-rust-repo": "test-design",
+    # D3.4.0 latent / control fixtures.
+    "test-design-async-latent": "test-design",
+    "atdd-api-async-latent": "atdd",
+    "docs-only-rust-repo-control": "test-design",
 }
 
 FIXTURE_DIR = _HERE / "fixtures"
@@ -1303,12 +1312,272 @@ def _finalize_evidence_v3(spec: RunSpec, prep: dict, invocation: dict,
     return bundle_out, outcome
 
 
+def _finalize_evidence_v4(spec: RunSpec, prep: dict, invocation: dict,
+                          runtime_probe: dict,
+                          isolation: ProjectRuntimeIsolation,
+                          obs: TranscriptObservation,
+                          cleanup_observed: dict, cleanup_state: str,
+                          auth_preflight_id: str,
+                          schedule_entry: dict | None = None,
+                          schedule_sha256: str | None = None,
+                          pinned_schedule_sha256: str | None = None) -> tuple[Path, RunOutcome]:
+    """D3.4.0 §9. Assemble and write the rule-operation v4 bundle.
+
+    Builds on the v3 extraction, then adds workspace_delta,
+    artifact_consistency, schedule_binding and (per-arm)
+    rule_operation / baseline_control. Never raises on a failed run.
+    """
+    workspace = Path(prep["project"])
+    workflow = spec.workflow
+    run_id = spec.run_id
+
+    inv = collect_evidence.collect(
+        workspace=workspace, workflow=workflow, run_id=run_id,
+        scenario=f"{spec.scenario}/{spec.arm}/rep-{spec.repetition:02d}",
+        evidence_root=spec.evidence_root, invocation=invocation,
+        runtime=runtime_probe,
+    )
+    evidence_dir = Path(inv["evidence_dir"])
+
+    canonical_roots = _canonicalize_output_roots([
+        workspace / "_bmad-output",
+        workspace / "_bmad-output" / "test-artifacts",
+    ])
+    walked = _walk_artefacts(canonical_roots)
+    workspace_artifacts = [f for f in walked if not f.name.endswith(".rdx-tea.json")]
+    new_artefacts = sorted({
+        str((evidence_dir / "tea-artifacts" / f.name).as_posix())
+        for f in workspace_artifacts
+    })
+    sidecars = sorted({
+        str((evidence_dir / "sidecars" / f.name).as_posix())
+        for f in walked if f.name.endswith(".rdx-tea.json")
+    })
+
+    run_report = evidence_dir / "run-report.json"
+    transcript = evidence_dir / "transcript.stream.jsonl"
+    bundle = evidence_dir / "active-context.md"
+
+    observed_surface = _extract_runtime_init(transcript)
+    runtime_result = extract_runtime_result(transcript)
+    expected_surface = {
+        "model": spec.model, "skills": sorted(isolation.project_skills),
+        "mcp_servers": [], "plugins": [], "tools": [],
+        "permission_mode": observed_surface.get("permission_mode", ""),
+    }
+    surface_diff = compare_runtime_surface(observed_surface, expected_surface)
+    contamination = contamination_reason(surface_diff) or ""
+    handshake = _check_run_id_handshake(workspace=workspace, workflow=workflow,
+                                        run_id=run_id)
+    cmd_hash = _sha256_text(json.dumps(invocation.get("command", []), sort_keys=True))
+
+    # D3.4.0 §7-§8 workspace delta + artifact consistency.
+    delta = rule_operation.collect_workspace_delta(
+        workspace, base_sha=prep.get("base_sha"),
+        artifact_paths=workspace_artifacts)
+    wds_status, wds_reasons = rule_operation.workspace_delta_consistency(delta)
+    ac = rule_operation.check_artifact_consistency(
+        workspace_artifacts, workspace, delta)
+    _copy_workspace_delta_to_evidence(workspace, evidence_dir, delta)
+
+    fixture_hash = _sha256_dir_tree(spec.fixture_dir)
+    prompt_hash = invocation.get("prompt_hash", "")
+    criteria = load_rule_criteria()
+    binding = evaluate_schedule_binding(
+        spec=spec, observed_prompt_hash=prompt_hash,
+        observed_fixture_hash=fixture_hash, schedule_entry=schedule_entry,
+        schedule_sha256=schedule_sha256,
+        pinned_schedule_sha256=pinned_schedule_sha256,
+        criteria_version=criteria.get("criteria_version", ""),
+        expected_criteria_version=(schedule_entry.get("criteria_version")
+                                   if schedule_entry else None),
+        schema_version=SCHEMA_V4_VERSION,
+        expected_schema_version=(schedule_entry.get("schema_version")
+                                 if schedule_entry else None),
+    )
+
+    common = {
+        "schema_version": SCHEMA_V4_VERSION,
+        "arm": spec.arm, "scenario": spec.scenario, "workflow": spec.workflow,
+        "repetition": spec.repetition, "run_id": spec.run_id,
+        "run_id_handshake": handshake, "auth_preflight_id": auth_preflight_id,
+        "workspace": {"path": str(workspace), "config_dir_overridden": False,
+                       "fixture_hash": fixture_hash},
+        "identity": {"base_sha": prep["base_sha"], "head_sha": prep["head_sha"]},
+        "runtime": {
+            "claude_code_path": runtime_probe.get("cli", "unknown"),
+            "expected_surface": expected_surface,
+            "observed_surface": {k: observed_surface.get(k) for k in (
+                "claude_code_version", "model", "permission_mode", "tools",
+                "skills", "slash_commands", "mcp_servers", "plugins",
+                "memory_paths", "session_id", "api_key_source", "agents",
+                "analytics_disabled", "output_style", "fast_mode_state",
+                "init_event_seen")},
+            "surface_diff": surface_diff, "contamination": contamination,
+            "model_expected": spec.model,
+            "model_observed": observed_surface.get("model", ""),
+            "timeout_seconds": spec.timeout_seconds,
+            "max_budget_usd": spec.max_budget_usd,
+        },
+        "invocation": {
+            "command_hash": cmd_hash, "prompt_hash": prompt_hash,
+            "started_at": invocation.get("started_at", _utc_now()),
+            "finished_at": invocation.get("finished_at", _utc_now()),
+            "exit_code": invocation.get("exit_code", 0),
+            "reason": ("timeout" if invocation.get("reason") == "timeout"
+                       else "normal" if invocation.get("exit_code") == 0
+                       else "runtime_error"),
+        },
+        "runtime_result": {
+            "result_event_seen": runtime_result["result_event_seen"],
+            "is_error": runtime_result["is_error"],
+            "subtype": runtime_result["subtype"],
+            "authentication_failed": runtime_result["authentication_failed"],
+            "model_turn_seen": runtime_result["model_turn_seen"],
+            "terminal_reason": runtime_result["terminal_reason"],
+        },
+        "artifacts": {"new_artefacts": new_artefacts},
+        "hashes": {
+            "run_report": _sha256_file(run_report) if run_report.exists() else "",
+            "transcript": _sha256_file(transcript),
+            "bundle": _sha256_file(bundle) if bundle.exists() else "",
+        },
+        "observation": {
+            "observed_mode": obs.observed_mode,
+            "observed_mode_basis": obs.observed_mode_basis,
+            "wrapper_skill_invoked": obs.wrapper_skill_invoked,
+            "child_skill_invoked": obs.child_skill_invoked,
+            "task_tool_use_count": obs.task_tool_use_count,
+            "transcript_sha256": obs.transcript_sha256 or "",
+            "session_id": obs.session_id or "",
+        },
+        "cleanup": {"state": cleanup_state, "observed": cleanup_observed},
+        "workspace_delta": {
+            "created_files": delta["created_files"],
+            "modified_files": delta["modified_files"],
+            "deleted_files": delta["deleted_files"],
+            "declared_generated_files": delta["declared_generated_files"],
+            "declared_existing_files": delta["declared_existing_files"],
+            "declared_missing_files": delta["declared_missing_files"],
+            "planned_not_generated": delta["planned_not_generated"],
+            "consistency": wds_status,
+        },
+        "artifact_consistency": {
+            "status": ac["status"],
+            "duplicate_frontmatter_keys": ac["duplicate_frontmatter_keys"],
+            "contradictory_frontmatter": ac["contradictory_frontmatter"],
+            "phantom_file_claims": ac["phantom_file_claims"],
+            "nonexistent_project_paths": ac["nonexistent_project_paths"],
+            "warnings": ac["warnings"],
+        },
+        "schedule_binding": binding,
+    }
+
+    extra_reasons: list[str] = []
+    candidate_checks = None
+    if spec.arm == "candidate":
+        active_packs = _collect_active_packs(run_report)
+        expected_packs = _expected_active_packs(spec.scenario)
+        ruleop = evaluate_rule_operation(
+            scenario=spec.scenario, active_packs=active_packs,
+            bundle_path=bundle, run_report_path=run_report,
+            artifact_paths=workspace_artifacts, criteria=criteria)
+        common["rule_operation"] = ruleop
+        common["candidate"] = {
+            "wrapper_skill_invoked": obs.wrapper_skill_invoked,
+            "child_skill_invoked": obs.child_skill_invoked,
+            "sidecars": sidecars, "active_packs": active_packs,
+            "expected_rp_ids": _collect_expected_rp_ids(spec.scenario),
+            "verifier_all_pass": _verifier_all_pass(run_report),
+            "bundle_present": bundle.exists(),
+        }
+        candidate_checks = {
+            "bundle_present": bundle.exists(),
+            "artifacts_non_empty": len(new_artefacts) > 0,
+            "active_packs": active_packs, "expected_packs": expected_packs,
+            "active_packs_ok": ruleop["packs_ok"],
+            "verifier_all_pass": _verifier_all_pass(run_report),
+            "one_sidecar_per_artifact": len(sidecars) == len(new_artefacts)
+            and len(new_artefacts) > 0,
+        }
+        if ruleop["expected_rule_condition"] != "PASS":
+            extra_reasons.append(f"expected_rule_condition FAIL matched="
+                                 f"{ruleop['matched_rules']}")
+        if ruleop["forbidden_rule_condition"] != "PASS":
+            extra_reasons.append(f"forbidden_rule_condition FAIL hits="
+                                 f"{ruleop['forbidden_hits']}")
+    else:  # baseline control
+        leak = evaluate_baseline_leakage(
+            artifact_paths=workspace_artifacts, workspace=workspace,
+            workflow=workflow, bundle_present=bundle.exists(),
+            sidecars=sidecars)
+        common["baseline_control"] = {
+            "rule_operation_absent": leak["rule_operation_absent"],
+            "rdx_bundle_absent": leak["rdx_bundle_absent"],
+            "rdx_sidecars_absent": leak["rdx_sidecars_absent"],
+            "no_rp_obligation_leakage": leak["no_rp_obligation_leakage"],
+            "rp_leakage_hits": leak["rp_leakage_hits"],
+        }
+        common["baseline"] = {
+            "wrapper_skill_invoked": obs.wrapper_skill_invoked,
+            "direct_child_skill_invoked": obs.child_skill_invoked,
+            "rdx_bundle_absent": not bundle.exists(),
+            "rdx_sidecars_absent": len(sidecars) == 0,
+            "rdx_overlay_absent": leak["rdx_overlay_absent"],
+        }
+        if not leak["no_rp_obligation_leakage"]:
+            extra_reasons.append(f"baseline RP-* leakage {leak['rp_leakage_hits']}")
+        if bundle.exists():
+            extra_reasons.append("baseline has RDX bundle")
+
+    # Base outcome (v3 semantics), then apply v4 gates.
+    outcome = classify_run_outcome(
+        invocation=invocation, runtime_result=runtime_result,
+        surface_diff=surface_diff, handshake=handshake,
+        observed_model=observed_surface.get("model", ""),
+        expected_model=spec.model, obs=obs, arm=spec.arm,
+        candidate_checks=candidate_checks,
+    )
+    # v4 additional fail-closed gates.
+    if outcome.outcome == "SUCCESS":
+        if binding.get("status") == "FAIL":
+            outcome = RunOutcome("SCHEDULE_DRIFT", False, binding["drift_reasons"])
+        elif wds_status != "PASS":
+            outcome = RunOutcome("ARTIFACT_DECLARATION_FAILURE", False, wds_reasons)
+        elif ac["status"] != "PASS":
+            outcome = RunOutcome("ARTIFACT_CONSISTENCY_FAILURE", False, ac["reasons"])
+        elif extra_reasons:
+            outcome = RunOutcome("WORKFLOW_FAILURE", False, extra_reasons)
+
+    common["run_outcome"] = outcome.outcome
+    common["admissible"] = outcome.admissible
+    common["admission_reasons"] = outcome.reasons
+
+    errors = _validate_bundle_v4(common)
+    if errors:
+        common["run_outcome"] = "SCHEMA_FAILURE"
+        common["admissible"] = False
+        common["admission_reasons"] = ["schema validation failed: "
+                                        + "; ".join(errors[:5])]
+        (evidence_dir / "live-evidence.v4.errors.txt").write_text(
+            "\n".join(errors) + "\n", encoding="utf-8")
+        outcome = RunOutcome("SCHEMA_FAILURE", False, common["admission_reasons"])
+
+    bundle_out = evidence_dir / "live-evidence.v4.json"
+    _atomic_write_json(bundle_out, common)
+    return bundle_out, outcome
+
+
 def _expected_active_packs(scenario: str) -> list[str]:
     return {
         "test-design-async": ["async"],
         "atdd-api-async": ["async"],
         "atdd-api-async-corrected": ["api", "async"],
         "docs-only-rust-repo": [],
+        # D3.4.0 latent / control fixtures.
+        "test-design-async-latent": ["async"],
+        "atdd-api-async-latent": ["api", "async"],
+        "docs-only-rust-repo-control": [],
     }.get(scenario, [])
 
 
@@ -1339,6 +1608,9 @@ def _collect_expected_rp_ids(scenario: str) -> list[str]:
         "atdd-api-async": ["RP-ASYNC-005"],
         "atdd-api-async-corrected": ["RP-ASYNC-005", "RP-API-001"],
         "docs-only-rust-repo": [],
+        "test-design-async-latent": ["RP-ASYNC-005"],
+        "atdd-api-async-latent": ["RP-ASYNC-005", "RP-API-001"],
+        "docs-only-rust-repo-control": [],
     }.get(scenario, [])
 
 
@@ -1418,9 +1690,11 @@ def admit_bundle(bundle: dict) -> AdmissionResult:
     reasons: list[str] = []
     arm = bundle.get("arm", "")
     run_id = bundle.get("run_id", "")
+    is_v4 = bundle.get("schema_version") == SCHEMA_V4_VERSION
 
-    # Schema-level gate first.
-    schema_errors = _validate_bundle_v3(bundle)
+    # Schema-level gate first (version-aware).
+    schema_errors = (_validate_bundle_v4(bundle) if is_v4
+                     else _validate_bundle_v3(bundle))
     if schema_errors:
         return AdmissionResult(False, "SCHEMA_FAILURE",
                                ["schema: " + e for e in schema_errors[:5]],
@@ -1471,6 +1745,16 @@ def admit_bundle(bundle: dict) -> AdmissionResult:
         arts = bundle.get("artifacts", {}).get("new_artefacts", [])
         if arts and len(sidecars) != len(arts):
             reasons.append(f"sidecars({len(sidecars)}) != artefacts({len(arts)})")
+        # D3.4.0 v4 candidate rule-operation gates.
+        if is_v4:
+            ro = bundle.get("rule_operation", {})
+            if not ro.get("packs_ok"):
+                reasons.append(f"packs_ok=false active={ro.get('active_packs')} "
+                               f"expected={ro.get('expected_active_packs')}")
+            if ro.get("expected_rule_condition") != "PASS":
+                reasons.append("expected_rule_condition FAIL")
+            if ro.get("forbidden_rule_condition") != "PASS":
+                reasons.append("forbidden_rule_condition FAIL")
     elif arm == "baseline":
         base = bundle.get("baseline", {})
         if obs.get("wrapper_skill_invoked"):
@@ -1481,6 +1765,22 @@ def admit_bundle(bundle: dict) -> AdmissionResult:
             reasons.append("baseline has RDX bundle")
         if not base.get("rdx_sidecars_absent"):
             reasons.append("baseline has RDX sidecars")
+        # D3.4.0 v4 baseline control gates.
+        if is_v4:
+            bc = bundle.get("baseline_control", {})
+            if not bc.get("no_rp_obligation_leakage"):
+                reasons.append("baseline RP-* obligation leakage")
+            if not bc.get("rule_operation_absent"):
+                reasons.append("baseline has rule_operation")
+
+    # D3.4.0 v4 shared gates.
+    if is_v4:
+        if bundle.get("workspace_delta", {}).get("consistency") != "PASS":
+            reasons.append("workspace_delta consistency FAIL")
+        if bundle.get("artifact_consistency", {}).get("status") != "PASS":
+            reasons.append("artifact_consistency FAIL")
+        if bundle.get("schedule_binding", {}).get("status") not in ("PASS", "NOT_SCHEDULED"):
+            reasons.append("schedule_binding FAIL")
 
     # Cleanup gate.
     cl = bundle.get("cleanup", {}).get("observed", {})
@@ -1599,16 +1899,256 @@ def abort_run(*, workspace: Path, workflow: str, run_id: str,
     return changed
 
 
+# --------------------------------------------------- rule-operation (v4)
+
+def load_rule_criteria(path: Path = RULE_CRITERIA_PATH) -> dict:
+    import yaml
+    if not path.exists():
+        raise OrchestratorError(f"rule-operation criteria missing: {path}")
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def _criteria_scenario_key(scenario: str, criteria: dict) -> str | None:
+    """Map a run scenario (which may be a *-latent / *-control fixture
+    name) to its criteria scenario key by matching the `fixture` field
+    or the scenario name itself."""
+    scenarios = criteria.get("scenarios", {})
+    if scenario in scenarios:
+        return scenario
+    for key, cfg in scenarios.items():
+        if cfg.get("fixture") == scenario:
+            return key
+    # tolerate the *-latent / *-control suffix mapping
+    base = (scenario.replace("-latent", "").replace("-control", ""))
+    if base in scenarios:
+        return base
+    return None
+
+
+def _rule_id_present(rule_id: str, *, bundle_text: str,
+                     sidecar_rule_ids: set[str],
+                     artifact_text: str, sources: list[str]) -> bool:
+    """A rule id counts as present if it appears in ANY enabled source."""
+    if "active_context_bundle" in sources and rule_id in bundle_text:
+        return True
+    if "sidecar_active_packs_rule_ids" in sources and rule_id in sidecar_rule_ids:
+        return True
+    if "artifact_text" in sources and rule_id in artifact_text:
+        return True
+    return False
+
+
+def _collect_sidecar_rule_ids(run_report_path: Path) -> set[str]:
+    ids: set[str] = set()
+    if not run_report_path.exists():
+        return ids
+    try:
+        data = json.loads(run_report_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return ids
+    for sc in data.get("sidecars", []):
+        if isinstance(sc, dict):
+            for p in sc.get("active_packs", []) or []:
+                if isinstance(p, dict):
+                    for rid in p.get("rule_ids", []) or []:
+                        ids.add(str(rid))
+    return ids
+
+
+def evaluate_rule_operation(*, scenario: str, active_packs: list[str],
+                            bundle_path: Path, run_report_path: Path,
+                            artifact_paths: list[Path],
+                            criteria: dict) -> dict:
+    """D3.4.0 §10. Evaluate candidate rule-operation against the
+    precommitted criteria file. Deterministic; no LLM."""
+    key = _criteria_scenario_key(scenario, criteria)
+    scfg = criteria.get("scenarios", {}).get(key, {}) if key else {}
+    expected_packs = list(scfg.get("expected_active_packs", []))
+    forbidden_prefixes = list(scfg.get("forbidden_prefixes", []))
+    required_conditions = scfg.get("required_rule_conditions", []) or []
+    sources = criteria.get("rule_presence_sources", [
+        "active_context_bundle", "sidecar_active_packs_rule_ids", "artifact_text"])
+
+    bundle_text = (bundle_path.read_text(encoding="utf-8", errors="replace")
+                   if bundle_path.exists() else "")
+    sidecar_ids = _collect_sidecar_rule_ids(run_report_path)
+    artifact_text = "\n".join(
+        p.read_text(encoding="utf-8", errors="replace")
+        for p in artifact_paths if p.exists()
+    )
+
+    def present(rid: str) -> bool:
+        return _rule_id_present(rid, bundle_text=bundle_text,
+                                sidecar_rule_ids=sidecar_ids,
+                                artifact_text=artifact_text, sources=sources)
+
+    matched: list[str] = []
+    expected_ok = True
+    for cond in required_conditions:
+        if "all_of" in cond:
+            for rid in cond["all_of"]:
+                if present(rid):
+                    matched.append(rid)
+                else:
+                    expected_ok = False
+        if "any_of" in cond:
+            hits = [rid for rid in cond["any_of"] if present(rid)]
+            if hits:
+                matched.extend(hits)
+            else:
+                expected_ok = False
+
+    packs_ok = sorted(active_packs) == sorted(expected_packs)
+
+    # Forbidden: a forbidden pack must not be ACTIVATED. We judge
+    # activation by (a) the active pack names and (b) the ACTIVE pack
+    # rule ids recorded in the sidecar — NOT by a raw scan of the
+    # bundle prose, which legitimately CROSS-REFERENCES other packs'
+    # rules in exception text (e.g. "ABI details remain owned by
+    # RP-FFI-003"). Cross-references are not activation.
+    forbidden_ok = True
+    forbidden_hits: list[str] = []
+    active_rule_ids = set(sidecar_ids)
+    # Map active pack names to their canonical rule-id prefix.
+    _pack_prefix = {
+        "unsafe": "RP-UNSAFE-", "ffi": "RP-FFI-", "macro": "RP-MACRO-",
+        "cargo": "RP-CARGO-", "api": "RP-API-", "async": "RP-ASYNC-",
+        "testing": "RP-TEST-", "db": "RP-DB-", "ops": "RP-OPS-",
+        "perf": "RP-PERF-",
+    }
+    for pfx in forbidden_prefixes:
+        # forbidden by ACTIVE pack name
+        for pack in active_packs:
+            if _pack_prefix.get(pack, "").startswith(pfx):
+                forbidden_ok = False
+                forbidden_hits.append(f"pack:{pack}")
+        # forbidden by ACTIVE rule id in sidecar
+        for rid in sorted(active_rule_ids):
+            if rid.startswith(pfx):
+                forbidden_ok = False
+                forbidden_hits.append(rid)
+
+    return {
+        "criteria_version": criteria.get("criteria_version", ""),
+        "criteria_scenario_key": key,
+        "active_packs": sorted(active_packs),
+        "expected_active_packs": sorted(expected_packs),
+        "packs_ok": packs_ok,
+        "expected_rule_condition": "PASS" if expected_ok else "FAIL",
+        "forbidden_rule_condition": "PASS" if forbidden_ok else "FAIL",
+        "matched_rules": sorted(set(matched)),
+        "forbidden_hits": sorted(set(forbidden_hits)),
+    }
+
+
+def evaluate_baseline_leakage(*, artifact_paths: list[Path],
+                              workspace: Path, workflow: str,
+                              bundle_present: bool, sidecars: list[str]) -> dict:
+    """D3.4.0 baseline control: prove no RDX contamination and no RP-*
+    obligation leakage in the baseline artifact."""
+    artifact_text = "\n".join(
+        p.read_text(encoding="utf-8", errors="replace")
+        for p in artifact_paths if p.exists()
+    )
+    rp_hits = sorted(set(re.findall(r"\bRP-[A-Z]+-\d+\b", artifact_text)))
+    overlay = (workspace / "_bmad" / "custom"
+               / f"bmad-testarch-{workflow}.toml")
+    return {
+        "rule_operation_absent": True,
+        "rdx_bundle_absent": not bundle_present,
+        "rdx_sidecars_absent": len(sidecars) == 0,
+        "no_rp_obligation_leakage": len(rp_hits) == 0,
+        "rp_leakage_hits": rp_hits,
+        "rdx_overlay_absent": not overlay.exists(),
+    }
+
+
+def evaluate_schedule_binding(*, spec: RunSpec, observed_prompt_hash: str,
+                              observed_fixture_hash: str,
+                              schedule_entry: dict | None,
+                              schedule_sha256: str | None,
+                              pinned_schedule_sha256: str | None,
+                              criteria_version: str,
+                              expected_criteria_version: str | None,
+                              schema_version: str,
+                              expected_schema_version: str | None) -> dict:
+    """D3.4.0 §13. When a schedule entry is supplied, recompute and
+    compare prompt/fixture/criteria/schema/schedule-sha. Any drift →
+    FAIL (SCHEDULE_DRIFT). Smokes with no schedule entry are
+    NOT_SCHEDULED (binding not required)."""
+    if schedule_entry is None:
+        return {"status": "NOT_SCHEDULED", "drift_reasons": [],
+                "criteria_version": criteria_version,
+                "schema_version": schema_version}
+    drift: list[str] = []
+    if schedule_entry.get("prompt_hash") not in (None, observed_prompt_hash):
+        drift.append("prompt_hash drift")
+    if schedule_entry.get("fixture_hash") not in (None, observed_fixture_hash):
+        drift.append("fixture_hash drift")
+    if (expected_criteria_version is not None
+            and criteria_version != expected_criteria_version):
+        drift.append("criteria_version drift")
+    if (expected_schema_version is not None
+            and schema_version != expected_schema_version):
+        drift.append("schema_version drift")
+    if (pinned_schedule_sha256 is not None and schedule_sha256 is not None
+            and schedule_sha256 != pinned_schedule_sha256):
+        drift.append("schedule_sha256 drift")
+    return {
+        "status": "PASS" if not drift else "FAIL",
+        "drift_reasons": drift,
+        "criteria_version": criteria_version,
+        "schema_version": schema_version,
+        "schedule_sha256": schedule_sha256 or "",
+    }
+
+
+def _validate_bundle_v4(bundle: dict) -> list[str]:
+    try:
+        import jsonschema
+    except ImportError:
+        return ["jsonschema library missing"]
+    if not SCHEMA_V4_PATH.exists():
+        return [f"v4 schema missing at {SCHEMA_V4_PATH}"]
+    schema = json.loads(SCHEMA_V4_PATH.read_text(encoding="utf-8"))
+    validator = jsonschema.Draft202012Validator(schema)
+    return [e.message for e in validator.iter_errors(bundle)]
+
+
+def _copy_workspace_delta_to_evidence(workspace: Path, evidence_dir: Path,
+                                      delta: dict) -> None:
+    """Preserve the actual created/modified/declared-existing files under
+    evidence/<...>/workspace-delta/ (D3.4.0 §7.3)."""
+    wd_dir = evidence_dir / "workspace-delta"
+    files = set(delta.get("created_files", [])) | set(
+        delta.get("modified_files", [])) | set(
+        delta.get("declared_existing_files", []))
+    for rel in sorted(files):
+        src = workspace / rel
+        if not src.exists() or not src.is_file():
+            continue
+        dst = wd_dir / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            shutil.copy2(src, dst)
+        except OSError:
+            continue
+
+
 # ------------------------------------------------------------- run-smoke
 
 def run_smoke(spec: RunSpec,
-              auth_preflight_id: str = AUTH_PREFLIGHT_ID_DEFAULT) -> dict:
-    """D3.3.3 full lifecycle, fail-closed.
+              auth_preflight_id: str = AUTH_PREFLIGHT_ID_DEFAULT,
+              schedule_entry: dict | None = None,
+              schedule_sha256: str | None = None,
+              pinned_schedule_sha256: str | None = None) -> dict:
+    """D3.4.0 full lifecycle, fail-closed, rule-operation v4 evidence.
 
     Success path (§13):
       prep → contract → lock → bootstrap → preflight → invoke →
       reconcile → RELEASE lock + restore overlay → observe cleanup →
-      emit v3 evidence + classify outcome.
+      emit v4 evidence (workspace_delta + artifact_consistency +
+      rule_operation / baseline_control + schedule_binding) + classify.
 
     A non-SUCCESS outcome yields a non-admissible bundle and a
     non-zero-style result dict (`status: failed`, `admissible: false`).
@@ -1681,11 +2221,14 @@ def run_smoke(spec: RunSpec,
         cleanup_state = ("FINALIZED"
                          if outcome_is_success(invocation, transcript_path)
                          else "FAILED")
-        bundle_path, outcome = _finalize_evidence_v3(
+        bundle_path, outcome = _finalize_evidence_v4(
             spec, prep, invocation, runtime_probe, isolation, obs,
             cleanup_observed=cleanup_observed,
             cleanup_state=cleanup_state,
             auth_preflight_id=auth_preflight_id,
+            schedule_entry=schedule_entry,
+            schedule_sha256=schedule_sha256,
+            pinned_schedule_sha256=pinned_schedule_sha256,
         )
         return {
             "status": "ok" if outcome.admissible else "failed",

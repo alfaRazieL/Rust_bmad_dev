@@ -1,0 +1,58 @@
+# D3.4.0 §10 — precommitted RDX rule-operation criteria.
+#
+# This file is the SINGLE source of truth for candidate rule-operation
+# admission. It is committed BEFORE any D3.4 rule-operation run so the
+# "which API rule counts" question is never decided post-hoc. Candidate
+# admission code reads THIS file, not ad hoc constants.
+#
+# Rationale for `any_of` on the API rule: the D3.3.3 admissible smoke
+# cited RP-API-004 / RP-API-005 (both relevant public-API contract
+# rules), while rubric v3 had listed RP-API-001. All three are members
+# of the canonical `api` pack (RP-API-001..018). We precommit an
+# any_of set so a correct run is not penalised for citing a different
+# but equally relevant API rule.
+
+criteria_version: rdx-tea-rule-operation-criteria.v1
+
+# What counts as a rule being "present" for a run. A required rule
+# condition is satisfied if the rule id appears in ANY of these places
+# (union), because rule-operation is proven by projection into the
+# workflow, not only by the model echoing the id in prose.
+rule_presence_sources:
+  - active_context_bundle        # _bmad/rdx-tea/runtime/<wf>/<run>/active-context.md
+  - sidecar_active_packs_rule_ids # run-report sidecars[].active_packs[].rule_ids
+  - artifact_text                 # the TEA artifact body (when the workflow surfaces rule ids)
+
+scenarios:
+  test-design-async:
+    fixture: test-design-async-latent
+    workflow: test-design
+    expected_active_packs: [async]
+    required_rule_conditions:
+      - all_of: [RP-ASYNC-005]
+    forbidden_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-, RP-CARGO-]
+
+  atdd-api-async-corrected:
+    fixture: atdd-api-async-latent
+    workflow: atdd
+    expected_active_packs: [api, async]
+    required_rule_conditions:
+      - all_of: [RP-ASYNC-005]
+      - any_of: [RP-API-001, RP-API-004, RP-API-005]
+    forbidden_prefixes: [RP-UNSAFE-, RP-FFI-, RP-MACRO-]
+
+  docs-only-rust-repo:
+    fixture: docs-only-rust-repo-control
+    workflow: test-design
+    expected_active_packs: []
+    required_rule_conditions: []
+    # A docs-only control must not activate ANY RDX pack / rule.
+    forbidden_prefixes: [RP-]
+
+# Baseline / control arm never has RDX rule-operation. These fields are
+# asserted absent for the baseline arm.
+baseline_control:
+  rule_operation_absent: true
+  rdx_bundle_absent: true
+  rdx_sidecars_absent: true
+  no_rp_obligation_leakage: true   # baseline artifact must not carry RP-* obligations

@@ -1,0 +1,15 @@
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..5555555
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,9 @@
++# widget
++
++A small widget crate.
++
++## Install
++
++Add `widget = "0.0.1"` to your Cargo dependencies.
++
++See the example below for usage.
