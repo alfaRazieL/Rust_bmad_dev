@@ -1,0 +1,127 @@
+{
+  "rdx_tea_verification_version": "v8-d4.0",
+  "generated": "2026-07-04T00:00:00Z",
+  "stage": "D4.0 — Master Implementation Plan (planning deliverable, no production code)",
+  "goal_framing": "productionize the PROVEN sequential wrapper-driven RDX->TEA rule-operation lifecycle; NOT a benefit-vs-baseline benchmark (G7 out of scope, not claimed)",
+
+  "branch": "rdx-tea-integration",
+  "start_head_sha": "1cd5b11b20ba8cea92101d47967665d44cea7e97",
+  "tested_subject_sha": "5baa0d0dbe312222f12f577553557678b9a48a3b",
+  "evidence_commit_sha": "",
+  "evidence_commit_note": "filled by the following pointer-closure commit; no PENDING sentinel survives in final HEAD",
+  "origin_main": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+
+  "d3_4_1_basis": {
+    "verdict": "D3_4_1_PASS",
+    "rule_operation_verdict": "RULE_OPERATION_PASS",
+    "overall_d3": "D3_RULE_OPERATION_PROVEN",
+    "readiness": "READY_FOR_D4_MASTER_IMPLEMENTATION_PLAN",
+    "tested_subject_sha": "135b5ed24c419d8e135698bb3b41dd55b1a0c33d",
+    "evidence_commit_sha": "4be4d3e1cff6f0b6ee8bacff11e1ee63c3525c94",
+    "ci_run_id": "28698462520",
+    "ci_conclusion": "success",
+    "pytest_unique": "562/562 pass, 0 fail, 0 skip",
+    "candidate_pass": "9/9",
+    "control_clean": "3/3",
+    "retries": 0,
+    "task_dispatch": 0,
+    "observed_mode": "OBSERVED_SEQUENTIAL (9/9)",
+    "source_lock": "PASS"
+  },
+
+  "source_lock": {
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "rdx_source_tag": "v1.1.0",
+    "bmad_source_sha": "3bcd6c3cce6e381b759e23185b099081496567a5",
+    "bmad_source_tag": "v6.8.0",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+    "tea_source_tag": "v1.19.0"
+  },
+
+  "plan_status": "COMPLETE",
+  "wave_count": 11,
+  "wave_count_note": "Wave 0 (validation) + Waves 1-10 (implementation). Enforcement plane is deferred backlog, not a D4 wave.",
+  "acceptance_gate_count": 36,
+  "acceptance_gate_blocking": 34,
+  "risk_count": 18,
+
+  "files_created": [
+    "rdx-tea/research/D4_0_MASTER_PLAN_PRECONDITION_AUDIT.md",
+    "rdx-tea/MASTER_IMPLEMENTATION_PLAN.md",
+    "rdx-tea/implementation/WAVE_INDEX.md",
+    "rdx-tea/implementation/PRODUCTION_EVAL_SPLIT.md",
+    "rdx-tea/implementation/ACCEPTANCE_GATES.md",
+    "rdx-tea/implementation/WAVE_PROMPTS.md",
+    "rdx-tea/implementation/RISK_REGISTER.md",
+    "rdx-tea/evidence/final/D4_0_MASTER_PLAN_FINAL_VERIFICATION.json"
+  ],
+  "files_modified": [],
+
+  "production_architecture_components": [
+    "RDX rule knowledge base (canonical/)",
+    "Rule router / pack activation (router.py + diff.py, vendored)",
+    "Active-context bundle builder / projection (prepare.py + obligation_matrix.py + rdx_parser.py)",
+    "TEA wrapper Skill layer (rdx-tea-{test-design,atdd}/SKILL.md)",
+    "Child BMAD TEA Skill invocation (upstream; overlay generator owned)",
+    "Workspace prepare/finalize lifecycle (rdx_tea_wrapper.py)",
+    "Sidecar binder (binder.py)",
+    "Validator / verifier (rdx_tea_validator.py — behavioural; enforcement verdict deferred)",
+    "Evidence / admission model (fail-closed; recompute from primitives)",
+    "Installer / bootstrapper (bootstrap.py + sources.lock; project installer new in W7)",
+    "CI / source-lock / acceptance gates (rdx-tea-integration-check.yml + ci_check.py)",
+    "Documentation & operator workflows (docs/, new in W9)"
+  ],
+
+  "production_eval_split_summary": "PRODUCTION = poc/install-tree/_bmad/rdx-tea/{canonical,scripts,bootstrap,VERSION} + .claude/skills/rdx-tea-*/SKILL.md + (future) installer/. EVAL-ONLY = live-harness/**, evals/**. HISTORICAL = evidence/**, research/**, architecture/**, implementation-plan/**, implementation/**, test-design/**. TEST-ONLY = tests/**, fixtures/**. TO-MIGRATE = poc/adapter/ (legacy), live-harness/rule_operation.py detectors (re-implement in W5). Boundary invariant: shipped surface must not import live-harness/evals or reference evidence/evals paths (G-SPLIT-IMPORT, enforced W1+W8).",
+
+  "implementation_waves": [
+    "W0 Plan validation & repository hygiene (meta, no code)",
+    "W1 Production layout & source boundaries (meta)",
+    "W2 Rule KB & router productionization (knowledge plane)",
+    "W3 Active-context bundle builder (knowledge plane)",
+    "W4 Wrapper Skills & non-interactive lifecycle (knowledge plane)",
+    "W5 Binder, sidecars, workspace delta, artifact consistency (knowledge plane)",
+    "W6 Verifier / admission & failure semantics (admission)",
+    "W7 Installer / bootstrap & project settings (packaging)",
+    "W8 CI gates & source-lock (packaging)",
+    "W9 Documentation & operator workflows (docs)",
+    "W10 End-to-end acceptance & release/merge plan (release)"
+  ],
+
+  "deferred_enforcement_plane_backlog": [
+    "rdx-tea-validate enforcement verdict in rdx-validator/rdx_tea/ (STAGE-08)",
+    "Modes MODE_0..4 / hooks / rdx-tea-gate.yml CI required check / judgment / Cat-4 approval (STAGE-09)",
+    "Subagent / agent-team worker propagation (G6F; sequential-only is proven v1)",
+    "G7 behavioural benefit vs baseline (out of scope, not claimed)"
+  ],
+
+  "caveats_carried_from_d3_4_1": [
+    "baseline artefact production is interaction-gated (control is isolation-only; not a production requirement)",
+    "schedule prompt_hash is actually a prompt TEMPLATE hash (eval-only; consider prompt_template_hash in a future schedule version)",
+    "LLM diagnostic is DRY_RUN_ONLY / optional; cannot override the deterministic verdict",
+    "absolute machine paths embedded in evidence bundles are cosmetic (no secrets)"
+  ],
+
+  "tests_run": {
+    "d4_0_artifact_presence_check": "PASS (5 required artifacts present, each > 500 chars; +audit +risk register)",
+    "pytest_test_harness_v4": "28 passed in 0.37s (rdx-tea/live-harness/tests/test_harness_v4.py, venv pytest 9.1.1)",
+    "live_claude_model_calls": "none (planning stage)",
+    "pilot_or_mass_eval": "not run (D3.4.1 evidence is authoritative)"
+  },
+
+  "ci_status": "not_observed_at_evidence_commit_time",
+  "ci_note": "D4.0 changes are docs/JSON only under rdx-tea/**; no test or runtime code changed. The rdx-tea-integration branch check (.github/workflows/rdx-tea-integration-check.yml) triggers on push and is expected to remain green (562/562, source-lock PASS). Actual push CI result reported in the stage final response.",
+  "ci_run_id": "",
+  "ci_run_url": "",
+
+  "plan_verdict": "D4_0_MASTER_PLAN_COMPLETE",
+  "next_recommended_stage": "Execute Wave 0 (plan validation) then Wave 1 (production layout & source boundaries) in a fresh CLI context using rdx-tea/implementation/WAVE_PROMPTS.md",
+
+  "honesty_notes": [
+    "This is a planning deliverable, not production implementation. No runtime/installer/hook/CI behaviour was changed.",
+    "No production code was written. The 12-run pilot was NOT re-run. No mass eval was run. No live model calls were made.",
+    "Auth policy honored: no API key / OAuth token / setup-token / apiKeyHelper; CLAUDE_CONFIG_DIR not set or overridden by this stage.",
+    "G7 behavioural benefit is deliberately NOT claimed.",
+    "The enforcement plane (rdx-tea-validate, modes/hooks/CI-gate, subagent propagation) is documented as deferred backlog, not scheduled as D4 waves."
+  ]
+}
