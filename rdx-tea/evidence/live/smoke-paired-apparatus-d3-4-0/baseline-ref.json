@@ -1,0 +1,18 @@
+{
+  "admissible": true,
+  "baseline_control": {
+    "no_rp_obligation_leakage": true,
+    "rdx_bundle_absent": true,
+    "rdx_sidecars_absent": true,
+    "rp_leakage_hits": [],
+    "rule_operation_absent": true
+  },
+  "baseline_run_id": "smoke-baseline-control-d3-4-0",
+  "direct_child_skill_invoked": true,
+  "evidence_path": "rdx-tea/evidence/live/smoke-baseline-control-d3-4-0/",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "model": "claude-haiku-4-5-20251001",
+  "note": "The paired-apparatus baseline arm IS the D3.4.0 baseline-control run (same latent fixture atdd-api-async-latent, same model). Full baseline evidence lives at rdx-tea/evidence/live/smoke-baseline-control-d3-4-0/. Reproduced here as a pointer to avoid duplicating the transcript.",
+  "run_outcome": "SUCCESS",
+  "wrapper_skill_invoked": false
+}

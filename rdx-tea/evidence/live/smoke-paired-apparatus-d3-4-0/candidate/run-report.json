@@ -1,0 +1,143 @@
+{
+  "child_skill_invoked": true,
+  "configured_mode": "sequential",
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-04T04:00:02+00:00",
+  "new_artefacts": [
+    "/private/tmp/rdx-paired-cand2-ws/_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md"
+  ],
+  "observed_mode": "OBSERVED_SEQUENTIAL",
+  "observed_mode_basis": "no-subagent-events-surrogate",
+  "reconciled_at": "2026-07-04T04:00:38+00:00",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "smoke-paired-candidate-d3-4-0",
+  "schema_version": "rdx-tea-run.v1",
+  "session_id": "ea1e05ba-ccd7-402a-bbaa-9d957736cd80",
+  "sidecars": [
+    {
+      "active_packs": [
+        {
+          "pack_id": "api",
+          "rule_ids": [
+            "RP-API-001",
+            "RP-API-002",
+            "RP-API-003",
+            "RP-API-004",
+            "RP-API-005",
+            "RP-API-006",
+            "RP-API-007",
+            "RP-API-008",
+            "RP-API-009",
+            "RP-API-010",
+            "RP-API-011",
+            "RP-API-012",
+            "RP-API-013",
+            "RP-API-014",
+            "RP-API-015",
+            "RP-API-016",
+            "RP-API-017",
+            "RP-API-018"
+          ]
+        },
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "/private/tmp/rdx-paired-cand2-ws/_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md",
+      "artifact_sha256": "51a117656d55aaf282cb7b5400e2d389d56e47e24f77885819363cb3e178e0eb",
+      "base_sha": "e0c50835df8af885f56ce9d76ca77c6b4c4e8afc",
+      "bound_at": "2026-07-04T04:00:01+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-004",
+        "CORE-009"
+      ],
+      "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+      "execution_mode": "sequential",
+      "head_sha": "78a1ad242e5deb961aeaaf5fe7941aedbca7c775",
+      "prepare_manifest_sha256": "e45d2a34cf4ead2609d1b0f9e2f9749f80fa7cc72a935ddb349e22c1169c9daa",
+      "prepared_at": "2026-07-04T03:55:38+00:00",
+      "projection_hash": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "smoke-paired-candidate-d3-4-0",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "atdd"
+    }
+  ],
+  "task_tool_use_count": 0,
+  "transcript_sha256": "40d01af753a7dce3864caab143ad0129f6408c51118085702ab196d60d09e473",
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=e45d2a34cf4e sidecar=e45d2a34cf4e",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=99a8906fe3fa sidecar=99a8906fe3fa",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0e12b99d9981 sidecar=0e12b99d9981",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "smoke-paired-candidate-d3-4-0",
+      "sidecar": "/private/tmp/rdx-paired-cand2-ws/_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "atdd"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "atdd",
+  "wrapper_skill_invoked": true
+}

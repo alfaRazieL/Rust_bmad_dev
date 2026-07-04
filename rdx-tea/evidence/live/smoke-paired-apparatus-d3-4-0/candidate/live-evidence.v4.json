@@ -1,0 +1,273 @@
+{
+  "admissible": true,
+  "admission_reasons": [
+    "all checks passed"
+  ],
+  "arm": "candidate",
+  "artifact_consistency": {
+    "contradictory_frontmatter": [],
+    "duplicate_frontmatter_keys": [
+      "atdd-checklist-public-async-user-registration-api.md:generatedTestFiles"
+    ],
+    "nonexistent_project_paths": [],
+    "phantom_file_claims": [],
+    "status": "PASS",
+    "warnings": [
+      "atdd-checklist-public-async-user-registration-api.md:generatedTestFiles"
+    ]
+  },
+  "artifacts": {
+    "new_artefacts": [
+      "/tmp/rdx-paired-cand2-ev/atdd-api-async-latent/candidate/rep-01/smoke-paired-candidate-d3-4-0/tea-artifacts/atdd-checklist-public-async-user-registration-api.md"
+    ]
+  },
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "candidate": {
+    "active_packs": [
+      "api",
+      "async"
+    ],
+    "bundle_present": true,
+    "child_skill_invoked": true,
+    "expected_rp_ids": [
+      "RP-ASYNC-005",
+      "RP-API-001"
+    ],
+    "sidecars": [
+      "/tmp/rdx-paired-cand2-ev/atdd-api-async-latent/candidate/rep-01/smoke-paired-candidate-d3-4-0/sidecars/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json"
+    ],
+    "verifier_all_pass": true,
+    "wrapper_skill_invoked": true
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "absent",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FINALIZED"
+  },
+  "hashes": {
+    "bundle": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "run_report": "73e755a5f62f6979d054beceeb6aefd69ffac4fac18321150a62606f3b670cd4",
+    "transcript": "40d01af753a7dce3864caab143ad0129f6408c51118085702ab196d60d09e473"
+  },
+  "identity": {
+    "base_sha": "e0c50835df8af885f56ce9d76ca77c6b4c4e8afc",
+    "head_sha": "78a1ad242e5deb961aeaaf5fe7941aedbca7c775"
+  },
+  "invocation": {
+    "command_hash": "b24ab7bb7b63682a695a029677d45f4da33643a84a4e3812b9a115015fcee701",
+    "exit_code": 0,
+    "finished_at": "2026-07-04T04:00:38+00:00",
+    "prompt_hash": "ce226691f65d3ec961d6ab69a87300efc13a1006256f4ebfb6ffb935ae63d9f6",
+    "reason": "normal",
+    "started_at": "2026-07-04T03:55:09+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": true,
+    "observed_mode": "OBSERVED_SEQUENTIAL",
+    "observed_mode_basis": "no-subagent-events-surrogate",
+    "session_id": "ea1e05ba-ccd7-402a-bbaa-9d957736cd80",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "40d01af753a7dce3864caab143ad0129f6408c51118085702ab196d60d09e473",
+    "wrapper_skill_invoked": true
+  },
+  "repetition": 1,
+  "rule_operation": {
+    "active_packs": [
+      "api",
+      "async"
+    ],
+    "criteria_scenario_key": "atdd-api-async-corrected",
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "expected_active_packs": [
+      "api",
+      "async"
+    ],
+    "expected_rule_condition": "PASS",
+    "forbidden_hits": [],
+    "forbidden_rule_condition": "PASS",
+    "matched_rules": [
+      "RP-API-001",
+      "RP-API-004",
+      "RP-API-005",
+      "RP-ASYNC-005"
+    ],
+    "packs_ok": true
+  },
+  "run_id": "smoke-paired-candidate-d3-4-0",
+  "run_id_handshake": {
+    "invocation_json": "smoke-paired-candidate-d3-4-0",
+    "mismatch": false,
+    "run_report": "smoke-paired-candidate-d3-4-0",
+    "schedule": "smoke-paired-candidate-d3-4-0",
+    "workspace_runtime_dir": "smoke-paired-candidate-d3-4-0"
+  },
+  "run_outcome": "SUCCESS",
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 3.0,
+    "model_expected": "claude-haiku-4-5-20251001",
+    "model_observed": "claude-haiku-4-5-20251001",
+    "observed_surface": {
+      "agents": [
+        "claude",
+        "Explore",
+        "general-purpose",
+        "Plan",
+        "statusline-setup"
+      ],
+      "analytics_disabled": false,
+      "api_key_source": "none",
+      "claude_code_version": "2.1.191",
+      "fast_mode_state": "off",
+      "init_event_seen": true,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "claude-haiku-4-5-20251001",
+      "output_style": "default",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "session_id": "ea1e05ba-ccd7-402a-bbaa-9d957736cd80",
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "slash_commands": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage-credits",
+        "extra-usage",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ],
+      "tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "surface_diff": {
+      "missing_expected_skills": [],
+      "model_mismatch": false,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [],
+      "unexpected_tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "timeout_seconds": 700
+  },
+  "runtime_result": {
+    "authentication_failed": false,
+    "is_error": false,
+    "model_turn_seen": true,
+    "result_event_seen": true,
+    "subtype": "success",
+    "terminal_reason": "completed"
+  },
+  "scenario": "atdd-api-async-latent",
+  "schedule_binding": {
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "drift_reasons": [],
+    "schema_version": "rdx-tea-live-evidence.v4",
+    "status": "NOT_SCHEDULED"
+  },
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "atdd",
+  "workspace": {
+    "config_dir_overridden": false,
+    "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+    "path": "/tmp/rdx-paired-cand2-ws"
+  },
+  "workspace_delta": {
+    "consistency": "PASS",
+    "created_files": [
+      "_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md",
+      "_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json",
+      "_bmad-run/rdx-tea-invocation.json",
+      "tests/integration_tests.rs"
+    ],
+    "declared_existing_files": [
+      "tests/integration_tests.rs"
+    ],
+    "declared_generated_files": [
+      "tests/integration_tests.rs"
+    ],
+    "declared_missing_files": [],
+    "deleted_files": [],
+    "modified_files": [],
+    "planned_not_generated": false
+  }
+}

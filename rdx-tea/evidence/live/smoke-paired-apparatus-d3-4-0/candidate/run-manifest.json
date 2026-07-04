@@ -1,0 +1,92 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "api",
+      "rule_ids": [
+        "RP-API-001",
+        "RP-API-002",
+        "RP-API-003",
+        "RP-API-004",
+        "RP-API-005",
+        "RP-API-006",
+        "RP-API-007",
+        "RP-API-008",
+        "RP-API-009",
+        "RP-API-010",
+        "RP-API-011",
+        "RP-API-012",
+        "RP-API-013",
+        "RP-API-014",
+        "RP-API-015",
+        "RP-API-016",
+        "RP-API-017",
+        "RP-API-018"
+      ]
+    },
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "bundle_bytes": 40846,
+  "bundle_sha256": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+  "core_rules": [
+    "CORE-001",
+    "CORE-004",
+    "CORE-009"
+  ],
+  "diff_present": true,
+  "execution_mode": "sequential",
+  "identity": {
+    "base_sha": "e0c50835df8af885f56ce9d76ca77c6b4c4e8afc",
+    "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+    "head_sha": "78a1ad242e5deb961aeaaf5fe7941aedbca7c775",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+  },
+  "prepared_at": "2026-07-04T03:55:38+00:00",
+  "rdx_canonical_snapshot_sha256": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8",
+  "rdx_kb_source_hashes": {
+    "canonical/kb-sections/section-4-core.md": "aa419c1a76551b8aa6248fad6a7f1cdafc8bcfeae7251e8f4fc4f3fa6a30c876",
+    "canonical/kb-sections/section-6-packs.md": "d4665fc9351164ce6744620a2c25c6e1c3ecb9fe0852307d164b4ddabaafa270",
+    "canonical/kb-sections/section-8-governance.md": "4d683f87054f940d9398bef4b86705063a721975adbe8a43caeb60c78981a07f"
+  },
+  "requested_mode": "sequential",
+  "run_id": "smoke-paired-candidate-d3-4-0",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "story_present": true,
+  "story_tags": [
+    "publish=true",
+    "async"
+  ],
+  "workflow": "atdd",
+  "workflow_obligation_matrix": {
+    "core_rules_policy": [
+      "CORE-001",
+      "CORE-004",
+      "CORE-009"
+    ],
+    "fields": [
+      "exceptions",
+      "required_reasoning",
+      "rule",
+      "validation"
+    ],
+    "packs": [
+      "api",
+      "async",
+      "testing"
+    ]
+  }
+}

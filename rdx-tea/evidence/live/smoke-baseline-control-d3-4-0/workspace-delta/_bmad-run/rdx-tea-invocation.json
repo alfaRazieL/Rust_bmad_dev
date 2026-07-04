@@ -1,0 +1,12 @@
+{
+  "arm": "baseline",
+  "base_sha": "21eb569d4c13dc3834a58cce2a2bc0409c1ed3c5",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "head_sha": "5b37707852dd9833f4774d50686201b6dd2e357b",
+  "prompt_hash": "4953ed62f47934301ee5c31dd4bf76d8b8fdfcac82ef7d9325240ce918dca18d",
+  "repetition": 1,
+  "run_id": "smoke-baseline-control-d3-4-0",
+  "scenario": "atdd-api-async-latent",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "atdd"
+}

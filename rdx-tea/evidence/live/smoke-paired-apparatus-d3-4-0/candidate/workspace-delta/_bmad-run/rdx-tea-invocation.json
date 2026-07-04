@@ -1,0 +1,12 @@
+{
+  "arm": "candidate",
+  "base_sha": "e0c50835df8af885f56ce9d76ca77c6b4c4e8afc",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "head_sha": "78a1ad242e5deb961aeaaf5fe7941aedbca7c775",
+  "prompt_hash": "ce226691f65d3ec961d6ab69a87300efc13a1006256f4ebfb6ffb935ae63d9f6",
+  "repetition": 1,
+  "run_id": "smoke-paired-candidate-d3-4-0",
+  "scenario": "atdd-api-async-latent",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "atdd"
+}

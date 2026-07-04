@@ -1,0 +1,17 @@
+{
+  "collected_at": "2026-07-04T04:00:38+00:00",
+  "inventory": {
+    "active-context.md": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "diff.patch": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+    "run-manifest.json": "e45d2a34cf4ead2609d1b0f9e2f9749f80fa7cc72a935ddb349e22c1169c9daa",
+    "run-report.json": "73e755a5f62f6979d054beceeb6aefd69ffac4fac18321150a62606f3b670cd4",
+    "run-state.json": "24a3f01b5403b8c0d3c0b4b0592c04a234c4be3ce0366e9df09233052666d5de",
+    "sidecars/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json": "d6a4399a62e9e8b2b2cbf04052bfe0c23967b37d19f61f1f24560d0f14fdbcbb",
+    "tea-artifacts/atdd-checklist-public-async-user-registration-api.md": "51a117656d55aaf282cb7b5400e2d389d56e47e24f77885819363cb3e178e0eb",
+    "transcript.stream.jsonl": "40d01af753a7dce3864caab143ad0129f6408c51118085702ab196d60d09e473"
+  },
+  "run_id": "smoke-paired-candidate-d3-4-0",
+  "scenario": "atdd-api-async-latent/candidate/rep-01",
+  "workflow": "atdd",
+  "workspace": "/tmp/rdx-paired-cand2-ws"
+}

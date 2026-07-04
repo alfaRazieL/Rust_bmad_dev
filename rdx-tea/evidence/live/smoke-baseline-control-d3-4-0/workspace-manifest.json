@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T03:47:02+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "a9f20fe374bfec11554b4b86ca6a50cccb516cf2f368d5fc40de962e9512b348"
+  },
+  "run_id": "smoke-baseline-control-d3-4-0",
+  "scenario": "atdd-api-async-latent/baseline/rep-01",
+  "workflow": "atdd",
+  "workspace": "/tmp/rdx-baseline-ctrl-ws"
+}
