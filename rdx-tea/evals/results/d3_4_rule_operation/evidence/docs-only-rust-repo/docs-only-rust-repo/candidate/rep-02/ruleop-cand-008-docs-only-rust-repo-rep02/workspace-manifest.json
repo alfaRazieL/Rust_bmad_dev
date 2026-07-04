@@ -1,0 +1,15 @@
+{
+  "collected_at": "2026-07-04T06:49:31+00:00",
+  "inventory": {
+    "active-context.md": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+    "diff.patch": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+    "run-manifest.json": "4f5e4fc3b5a919e1c2eed75ed03df7a66a6448baf32a10b192554f193d96e129",
+    "run-report.json": "2b0d4bc282bd9b0f2b3c94a1686b09281e06f2073c1c0dbfe023a40d014b1e51",
+    "run-state.json": "55ba514c275066e2e1dcd19f6fcf06775865186b420348e31e89481476245a38",
+    "transcript.stream.jsonl": "d73c0b387afed1d23d56d88827ee6e6781990cd3416ae1a5a722d14c033ddac7"
+  },
+  "run_id": "ruleop-cand-008-docs-only-rust-repo-rep02",
+  "scenario": "docs-only-rust-repo/candidate/rep-02",
+  "workflow": "test-design",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02"
+}

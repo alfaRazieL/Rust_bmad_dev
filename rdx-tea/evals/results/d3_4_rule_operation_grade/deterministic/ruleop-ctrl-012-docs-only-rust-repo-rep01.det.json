@@ -1,0 +1,14 @@
+{
+  "admissible": true,
+  "arm": "baseline",
+  "control_clean": true,
+  "no_rp_leakage": true,
+  "rdx_bundle_absent": true,
+  "rdx_sidecars_absent": true,
+  "reasons": [
+    "all admission checks passed"
+  ],
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "run_outcome": "SUCCESS",
+  "scenario": "docs-only-rust-repo"
+}

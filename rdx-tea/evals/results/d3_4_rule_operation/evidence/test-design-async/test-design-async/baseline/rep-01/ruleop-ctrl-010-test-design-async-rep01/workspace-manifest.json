@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T06:53:47+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "2bf7595f7a6914de3a55b70725e37830405d33d10fa103dadc1f07a5a43f3c3b"
+  },
+  "run_id": "ruleop-ctrl-010-test-design-async-rep01",
+  "scenario": "test-design-async/baseline/rep-01",
+  "workflow": "test-design",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-ctrl-010-test-design-async-rep01"
+}

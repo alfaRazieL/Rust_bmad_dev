@@ -1,0 +1,21 @@
+{
+  "active_packs": [],
+  "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-epic-001.md",
+  "artifact_sha256": "efe1a35b97fb9972441b445a0a519d7a4ceb4449d6d94344fe716d2647e68d57",
+  "base_sha": "28d2fa2ac82c6ee8b6fafb59715e20a89420c5c8",
+  "bound_at": "2026-07-04T06:45:54+00:00",
+  "completed": true,
+  "core_rules": [],
+  "diff_digest": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+  "execution_mode": "sequential",
+  "head_sha": "5b54d186b7d4da0a74d29574f72503f3c3bec4fe",
+  "prepare_manifest_sha256": "9b0c22e7a65535c2bc3b4cddf0bf4cba51fb3b8afee4399510c8aa1c47f669bf",
+  "prepared_at": "2026-07-04T06:42:13+00:00",
+  "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+  "rust_scope": false,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "test-design"
+}

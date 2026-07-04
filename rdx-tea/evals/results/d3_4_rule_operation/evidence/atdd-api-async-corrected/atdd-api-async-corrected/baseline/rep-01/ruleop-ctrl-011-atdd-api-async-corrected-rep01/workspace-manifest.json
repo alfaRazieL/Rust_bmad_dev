@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T06:54:34+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "dafa52f3b52576f5f12717785e3f8244b1e8da906c5ee20797bd9edfdc5b0c7b"
+  },
+  "run_id": "ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "scenario": "atdd-api-async-corrected/baseline/rep-01",
+  "workflow": "atdd",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-ctrl-011-atdd-api-async-corrected-rep01"
+}

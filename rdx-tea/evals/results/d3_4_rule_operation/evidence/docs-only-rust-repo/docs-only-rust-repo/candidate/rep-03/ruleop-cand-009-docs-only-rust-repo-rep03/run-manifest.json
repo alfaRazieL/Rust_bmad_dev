@@ -1,0 +1,52 @@
+{
+  "active_packs": [],
+  "bundle_bytes": 282,
+  "bundle_sha256": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+  "core_rules": [],
+  "diff_present": true,
+  "execution_mode": "sequential",
+  "identity": {
+    "base_sha": "e8c999ca8e2033dd0f04932a8fcab16db07d275e",
+    "diff_digest": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+    "head_sha": "9aec7387621234f366f2ac07c4a38d5acfe166be",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+  },
+  "prepared_at": "2026-07-04T06:49:52+00:00",
+  "rdx_canonical_snapshot_sha256": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8",
+  "rdx_kb_source_hashes": {
+    "canonical/kb-sections/section-4-core.md": "aa419c1a76551b8aa6248fad6a7f1cdafc8bcfeae7251e8f4fc4f3fa6a30c876",
+    "canonical/kb-sections/section-6-packs.md": "d4665fc9351164ce6744620a2c25c6e1c3ecb9fe0852307d164b4ddabaafa270",
+    "canonical/kb-sections/section-8-governance.md": "4d683f87054f940d9398bef4b86705063a721975adbe8a43caeb60c78981a07f"
+  },
+  "requested_mode": "sequential",
+  "run_id": "ruleop-cand-009-docs-only-rust-repo-rep03",
+  "rust_scope": false,
+  "schema_version": "rdx-tea-run.v1",
+  "story_present": true,
+  "story_tags": [],
+  "workflow": "test-design",
+  "workflow_obligation_matrix": {
+    "core_rules_policy": "all",
+    "fields": [
+      "exceptions",
+      "required_reasoning",
+      "risk",
+      "rule",
+      "sources",
+      "trigger",
+      "validation"
+    ],
+    "packs": [
+      "api",
+      "async",
+      "data-security-io",
+      "db",
+      "ffi",
+      "macro",
+      "testing",
+      "time-config-client",
+      "unsafe"
+    ]
+  }
+}

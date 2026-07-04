@@ -1,0 +1,63 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "api",
+      "rule_ids": [
+        "RP-API-001",
+        "RP-API-002",
+        "RP-API-003",
+        "RP-API-004",
+        "RP-API-005",
+        "RP-API-006",
+        "RP-API-007",
+        "RP-API-008",
+        "RP-API-009",
+        "RP-API-010",
+        "RP-API-011",
+        "RP-API-012",
+        "RP-API-013",
+        "RP-API-014",
+        "RP-API-015",
+        "RP-API-016",
+        "RP-API-017",
+        "RP-API-018"
+      ]
+    },
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/user_registration.rs",
+  "artifact_sha256": "3b2712ffc59b314577fb2a6123a4c7acbee7978c85ee29b64a79cbc16d3bbe7f",
+  "base_sha": "c097b1f4945d107b2f42ec2fcf38fa05df37dcfd",
+  "bound_at": "2026-07-04T06:41:30+00:00",
+  "completed": true,
+  "core_rules": [
+    "CORE-001",
+    "CORE-004",
+    "CORE-009"
+  ],
+  "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+  "execution_mode": "sequential",
+  "head_sha": "40072b0f125b3525314cb45433a2a46158112cf1",
+  "prepare_manifest_sha256": "84f98c5be33e6c3996f193872c80047d931ba152a48d041d82a7f2047d404d0b",
+  "prepared_at": "2026-07-04T06:36:21+00:00",
+  "projection_hash": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "atdd"
+}

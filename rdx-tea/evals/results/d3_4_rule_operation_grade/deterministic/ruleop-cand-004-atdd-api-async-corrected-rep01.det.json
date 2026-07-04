@@ -1,0 +1,17 @@
+{
+  "admissible": true,
+  "arm": "candidate",
+  "artifact_consistency": "PASS",
+  "expected_rule_condition": "PASS",
+  "forbidden_rule_condition": "PASS",
+  "packs_ok": true,
+  "reasons": [
+    "all admission checks passed"
+  ],
+  "rule_operation_pass": true,
+  "run_id": "ruleop-cand-004-atdd-api-async-corrected-rep01",
+  "run_outcome": "SUCCESS",
+  "scenario": "atdd-api-async-corrected",
+  "verifier_all_pass": true,
+  "workspace_delta_consistency": "PASS"
+}

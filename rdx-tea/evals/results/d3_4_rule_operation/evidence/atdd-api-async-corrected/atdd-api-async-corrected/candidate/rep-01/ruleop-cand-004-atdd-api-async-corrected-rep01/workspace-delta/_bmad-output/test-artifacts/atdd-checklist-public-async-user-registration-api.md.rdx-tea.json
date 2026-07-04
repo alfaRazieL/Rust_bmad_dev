@@ -1,0 +1,63 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "api",
+      "rule_ids": [
+        "RP-API-001",
+        "RP-API-002",
+        "RP-API-003",
+        "RP-API-004",
+        "RP-API-005",
+        "RP-API-006",
+        "RP-API-007",
+        "RP-API-008",
+        "RP-API-009",
+        "RP-API-010",
+        "RP-API-011",
+        "RP-API-012",
+        "RP-API-013",
+        "RP-API-014",
+        "RP-API-015",
+        "RP-API-016",
+        "RP-API-017",
+        "RP-API-018"
+      ]
+    },
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/_bmad-output/test-artifacts/atdd-checklist-public-async-user-registration-api.md",
+  "artifact_sha256": "79e589812e7d5a17e5017641085da09a194ec339a178264341abd5a9db060166",
+  "base_sha": "abfb01721ed52ba56df32d35aa4304fff6ea268c",
+  "bound_at": "2026-07-04T06:30:30+00:00",
+  "completed": true,
+  "core_rules": [
+    "CORE-001",
+    "CORE-004",
+    "CORE-009"
+  ],
+  "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+  "execution_mode": "sequential",
+  "head_sha": "1c9ec077ce45bd36e49d44af45d1e911b79960f5",
+  "prepare_manifest_sha256": "fa278df7ce2c313bdcaddcf6b150533209dbea9d65413234247add6f1dadeb92",
+  "prepared_at": "2026-07-04T06:27:02+00:00",
+  "projection_hash": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "ruleop-cand-004-atdd-api-async-corrected-rep01",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "atdd"
+}

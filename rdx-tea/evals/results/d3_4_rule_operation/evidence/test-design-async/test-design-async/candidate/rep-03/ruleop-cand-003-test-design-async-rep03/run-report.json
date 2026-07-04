@@ -1,0 +1,245 @@
+{
+  "child_skill_invoked": true,
+  "configured_mode": "sequential",
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-04T06:26:20+00:00",
+  "new_artefacts": [
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-epic-001.md",
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-progress.md"
+  ],
+  "observed_mode": "OBSERVED_SEQUENTIAL",
+  "observed_mode_basis": "no-subagent-events-surrogate",
+  "reconciled_at": "2026-07-04T06:26:34+00:00",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "ruleop-cand-003-test-design-async-rep03",
+  "schema_version": "rdx-tea-run.v1",
+  "session_id": "06b20df6-93b8-4095-aea7-c43e9d0fb5a0",
+  "sidecars": [
+    {
+      "active_packs": [
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-epic-001.md",
+      "artifact_sha256": "6f14aa02e91f597f3dd7b960fe4143350d78b994f5681458612485bbeed3bb4b",
+      "base_sha": "89e3ab3d873351af17309abca397d79890938aa3",
+      "bound_at": "2026-07-04T06:26:20+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-002",
+        "CORE-003",
+        "CORE-004",
+        "CORE-005",
+        "CORE-006",
+        "CORE-007",
+        "CORE-008",
+        "CORE-009",
+        "CORE-010",
+        "CORE-011",
+        "CORE-012",
+        "CORE-013",
+        "CORE-014",
+        "CORE-015",
+        "CORE-016",
+        "CORE-017",
+        "CORE-018"
+      ],
+      "diff_digest": "a49debd01939e6e389633b290a952a4ffc5ebb3dfc4bf229dd6d886616ac94d9",
+      "execution_mode": "sequential",
+      "head_sha": "ebb247ac7c12580987e1e7b1e331bb99f7cac546",
+      "prepare_manifest_sha256": "32eb1039fe92c454ddd9f7cc3a7376093f81be8daf0b9ef39f370cefaede5e17",
+      "prepared_at": "2026-07-04T06:22:34+00:00",
+      "projection_hash": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-003-test-design-async-rep03",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    },
+    {
+      "active_packs": [
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-progress.md",
+      "artifact_sha256": "fc36f0426b7a44135e3abfc3a97dfd0e42adb661ee6ffe956b3e852e41abfec7",
+      "base_sha": "89e3ab3d873351af17309abca397d79890938aa3",
+      "bound_at": "2026-07-04T06:26:20+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-002",
+        "CORE-003",
+        "CORE-004",
+        "CORE-005",
+        "CORE-006",
+        "CORE-007",
+        "CORE-008",
+        "CORE-009",
+        "CORE-010",
+        "CORE-011",
+        "CORE-012",
+        "CORE-013",
+        "CORE-014",
+        "CORE-015",
+        "CORE-016",
+        "CORE-017",
+        "CORE-018"
+      ],
+      "diff_digest": "a49debd01939e6e389633b290a952a4ffc5ebb3dfc4bf229dd6d886616ac94d9",
+      "execution_mode": "sequential",
+      "head_sha": "ebb247ac7c12580987e1e7b1e331bb99f7cac546",
+      "prepare_manifest_sha256": "32eb1039fe92c454ddd9f7cc3a7376093f81be8daf0b9ef39f370cefaede5e17",
+      "prepared_at": "2026-07-04T06:22:34+00:00",
+      "projection_hash": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-003-test-design-async-rep03",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    }
+  ],
+  "task_tool_use_count": 0,
+  "transcript_sha256": "378d1b9ca04162ed77bfcb2ea92c738747ac7e01cb51ad129835d2877ac47720",
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=32eb1039fe92 sidecar=32eb1039fe92",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=2b488ca96a5a sidecar=2b488ca96a5a",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=a49debd01939 sidecar=a49debd01939",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-003-test-design-async-rep03",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-epic-001.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=32eb1039fe92 sidecar=32eb1039fe92",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=2b488ca96a5a sidecar=2b488ca96a5a",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=a49debd01939 sidecar=a49debd01939",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-003-test-design-async-rep03",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-003-test-design-async-rep03/_bmad-output/test-design-progress.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "test-design",
+  "wrapper_skill_invoked": true
+}

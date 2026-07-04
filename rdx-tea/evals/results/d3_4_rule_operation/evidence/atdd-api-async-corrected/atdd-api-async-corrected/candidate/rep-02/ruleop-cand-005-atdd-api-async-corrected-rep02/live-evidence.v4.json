@@ -1,0 +1,273 @@
+{
+  "admissible": true,
+  "admission_reasons": [
+    "all checks passed"
+  ],
+  "arm": "candidate",
+  "artifact_consistency": {
+    "contradictory_frontmatter": [],
+    "duplicate_frontmatter_keys": [],
+    "nonexistent_project_paths": [],
+    "phantom_file_claims": [],
+    "status": "PASS",
+    "warnings": []
+  },
+  "artifacts": {
+    "new_artefacts": [
+      "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/evidence/atdd-api-async-corrected/atdd-api-async-corrected/candidate/rep-02/ruleop-cand-005-atdd-api-async-corrected-rep02/tea-artifacts/atdd-checklist-public-async-user-registration-api.md"
+    ]
+  },
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "candidate": {
+    "active_packs": [
+      "api",
+      "async"
+    ],
+    "bundle_present": true,
+    "child_skill_invoked": true,
+    "expected_rp_ids": [
+      "RP-ASYNC-005",
+      "RP-API-001"
+    ],
+    "sidecars": [
+      "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/evidence/atdd-api-async-corrected/atdd-api-async-corrected/candidate/rep-02/ruleop-cand-005-atdd-api-async-corrected-rep02/sidecars/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json"
+    ],
+    "verifier_all_pass": true,
+    "wrapper_skill_invoked": true
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "absent",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FINALIZED"
+  },
+  "hashes": {
+    "bundle": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "run_report": "3f1cd63e699ee76459f757345873400be7ab464d0550ff2ce3451b45d5656181",
+    "transcript": "2f770c43dc87887431a4e6e0fa99f7eab2bd162733aa88129e7443e30a319c50"
+  },
+  "identity": {
+    "base_sha": "56e19444fb153031fba3d9de40227f100545142e",
+    "head_sha": "a2f48942c36798e6472542371a064eb6a64dcf77"
+  },
+  "invocation": {
+    "command_hash": "6e49dadb2f7745f7be1026095d0f626156e3c406bfbfb9271ce3095c3e1e6c95",
+    "exit_code": 0,
+    "finished_at": "2026-07-04T06:35:46+00:00",
+    "prompt_hash": "a44de178337be553671752dc03ec1bfddd3d7d133ee6db94d3e01be840427934",
+    "reason": "normal",
+    "started_at": "2026-07-04T06:30:43+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": true,
+    "observed_mode": "OBSERVED_SEQUENTIAL",
+    "observed_mode_basis": "no-subagent-events-surrogate",
+    "session_id": "49c491ad-f297-43ab-bc8f-2f77a99f5cf7",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "2f770c43dc87887431a4e6e0fa99f7eab2bd162733aa88129e7443e30a319c50",
+    "wrapper_skill_invoked": true
+  },
+  "repetition": 2,
+  "rule_operation": {
+    "active_packs": [
+      "api",
+      "async"
+    ],
+    "criteria_scenario_key": "atdd-api-async-corrected",
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "expected_active_packs": [
+      "api",
+      "async"
+    ],
+    "expected_rule_condition": "PASS",
+    "forbidden_hits": [],
+    "forbidden_rule_condition": "PASS",
+    "matched_rules": [
+      "RP-API-001",
+      "RP-API-004",
+      "RP-API-005",
+      "RP-ASYNC-005"
+    ],
+    "packs_ok": true
+  },
+  "run_id": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+  "run_id_handshake": {
+    "invocation_json": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+    "mismatch": false,
+    "run_report": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+    "schedule": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+    "workspace_runtime_dir": "ruleop-cand-005-atdd-api-async-corrected-rep02"
+  },
+  "run_outcome": "SUCCESS",
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 2.0,
+    "model_expected": "claude-haiku-4-5-20251001",
+    "model_observed": "claude-haiku-4-5-20251001",
+    "observed_surface": {
+      "agents": [
+        "claude",
+        "Explore",
+        "general-purpose",
+        "Plan",
+        "statusline-setup"
+      ],
+      "analytics_disabled": false,
+      "api_key_source": "none",
+      "claude_code_version": "2.1.191",
+      "fast_mode_state": "off",
+      "init_event_seen": true,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "claude-haiku-4-5-20251001",
+      "output_style": "default",
+      "permission_mode": "bypassPermissions",
+      "plugins": [],
+      "session_id": "49c491ad-f297-43ab-bc8f-2f77a99f5cf7",
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "slash_commands": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage-credits",
+        "extra-usage",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ],
+      "tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "surface_diff": {
+      "missing_expected_skills": [],
+      "model_mismatch": false,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [],
+      "unexpected_tools": [
+        "Bash",
+        "CronCreate",
+        "CronDelete",
+        "CronList",
+        "DesignSync",
+        "Edit",
+        "EnterWorktree",
+        "ExitWorktree",
+        "Monitor",
+        "NotebookEdit",
+        "PushNotification",
+        "Read",
+        "RemoteTrigger",
+        "ScheduleWakeup",
+        "SendMessage",
+        "Skill",
+        "TaskCreate",
+        "TaskGet",
+        "TaskList",
+        "TaskUpdate",
+        "ToolSearch",
+        "WebFetch",
+        "WebSearch",
+        "Write"
+      ]
+    },
+    "timeout_seconds": 900
+  },
+  "runtime_result": {
+    "authentication_failed": false,
+    "is_error": false,
+    "model_turn_seen": true,
+    "result_event_seen": true,
+    "subtype": "success",
+    "terminal_reason": "completed"
+  },
+  "scenario": "atdd-api-async-corrected",
+  "schedule_binding": {
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "drift_reasons": [],
+    "schedule_sha256": "0b2cd8eede3c8ae6c7d6d02cd98f464a7cfb119012caed41d0b59f3844abc97d",
+    "schema_version": "rdx-tea-live-evidence.v4",
+    "status": "PASS"
+  },
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "atdd",
+  "workspace": {
+    "config_dir_overridden": false,
+    "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+    "path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-005-atdd-api-async-corrected-rep02"
+  },
+  "workspace_delta": {
+    "consistency": "PASS",
+    "created_files": [
+      "_bmad-output/atdd-checklist-public-async-user-registration-api.md",
+      "_bmad-output/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json",
+      "_bmad-run/rdx-tea-invocation.json",
+      "tests/acceptance/user_registration_flow.rs",
+      "tests/integration/user_registration.rs"
+    ],
+    "declared_existing_files": [
+      "tests/acceptance/user_registration_flow.rs",
+      "tests/integration/user_registration.rs"
+    ],
+    "declared_generated_files": [
+      "tests/acceptance/user_registration_flow.rs",
+      "tests/integration/user_registration.rs"
+    ],
+    "declared_missing_files": [],
+    "deleted_files": [],
+    "modified_files": [],
+    "planned_not_generated": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "config_resolved_mode": "sequential",
+  "manifest_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/_bmad/rdx-tea/runtime/atdd/ruleop-cand-004-atdd-api-async-corrected-rep01/run-manifest.json",
+  "output_dirs": [
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/_bmad-output"
+  ],
+  "overlay_backup_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/_bmad/rdx-tea/runtime/atdd/ruleop-cand-004-atdd-api-async-corrected-rep01/overlay-backup.toml",
+  "overlay_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/_bmad/custom/bmad-testarch-atdd.toml",
+  "phase": "finalized",
+  "pre_snapshot": {},
+  "prepared_at": "2026-07-04T06:27:02+00:00",
+  "run_id": "ruleop-cand-004-atdd-api-async-corrected-rep01",
+  "skill_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01/.claude/skills/bmad-testarch-atdd",
+  "workflow": "atdd"
+}

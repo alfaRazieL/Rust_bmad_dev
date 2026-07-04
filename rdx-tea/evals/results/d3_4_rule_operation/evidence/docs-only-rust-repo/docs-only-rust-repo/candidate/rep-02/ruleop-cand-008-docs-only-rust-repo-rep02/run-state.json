@@ -1,0 +1,15 @@
+{
+  "config_resolved_mode": "sequential",
+  "manifest_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02/_bmad/rdx-tea/runtime/test-design/ruleop-cand-008-docs-only-rust-repo-rep02/run-manifest.json",
+  "output_dirs": [
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02/_bmad-output"
+  ],
+  "overlay_backup_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02/_bmad/rdx-tea/runtime/test-design/ruleop-cand-008-docs-only-rust-repo-rep02/overlay-backup.toml",
+  "overlay_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02/_bmad/custom/bmad-testarch-test-design.toml",
+  "phase": "finalized",
+  "pre_snapshot": {},
+  "prepared_at": "2026-07-04T06:46:33+00:00",
+  "run_id": "ruleop-cand-008-docs-only-rust-repo-rep02",
+  "skill_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02/.claude/skills/bmad-testarch-test-design",
+  "workflow": "test-design"
+}

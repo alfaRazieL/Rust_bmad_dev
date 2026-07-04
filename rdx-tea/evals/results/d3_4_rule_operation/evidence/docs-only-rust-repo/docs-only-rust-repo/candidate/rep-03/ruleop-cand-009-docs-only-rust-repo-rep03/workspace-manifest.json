@@ -1,0 +1,17 @@
+{
+  "collected_at": "2026-07-04T06:53:17+00:00",
+  "inventory": {
+    "active-context.md": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+    "diff.patch": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+    "run-manifest.json": "e3552f173575eda5da8a06da96faf993998cba654b8993e62b6b11211b3dead9",
+    "run-report.json": "3aad63e64c53a8de074d181963eca02f835b51cda72f908f3371aa15717bf565",
+    "run-state.json": "8b7edcdc588bd79010396d25fbfa086b686c998874353e8ef4c8da141caa9913",
+    "sidecars/test-design-epic-docs-only-readme.md.rdx-tea.json": "25eb4ddd71bec940d80caaa3e19414fe423c002d58a2aebea8b07e5b4ddb7702",
+    "tea-artifacts/test-design-epic-docs-only-readme.md": "b7b9fdf1ba8b2676cebdb006261ec9e9f7bdd3f245a8290ff035d092552769c8",
+    "transcript.stream.jsonl": "834145ddcd6a79bd95d8558634e159b066c9e4230f32ee35ebb597a868899452"
+  },
+  "run_id": "ruleop-cand-009-docs-only-rust-repo-rep03",
+  "scenario": "docs-only-rust-repo/candidate/rep-03",
+  "workflow": "test-design",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-009-docs-only-rust-repo-rep03"
+}

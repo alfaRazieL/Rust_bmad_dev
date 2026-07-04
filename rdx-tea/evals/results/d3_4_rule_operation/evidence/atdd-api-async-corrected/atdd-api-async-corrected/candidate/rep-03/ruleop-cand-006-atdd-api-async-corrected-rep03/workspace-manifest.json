@@ -1,0 +1,15 @@
+{
+  "collected_at": "2026-07-04T06:41:47+00:00",
+  "inventory": {
+    "active-context.md": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "diff.patch": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+    "run-manifest.json": "84f98c5be33e6c3996f193872c80047d931ba152a48d041d82a7f2047d404d0b",
+    "run-report.json": "829561ff74adc63f10f4e4be7eee57d24346be719fccd9b76534a4ce580581b7",
+    "run-state.json": "55761f010fd9cc5e49d969efcb0e289b95e3de7e58cb4927d4556728fe4d7764",
+    "transcript.stream.jsonl": "fbc742f600325fe7e25ef841ddd807eb674dce6ea123fa7ae63aaf329ab98a35"
+  },
+  "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+  "scenario": "atdd-api-async-corrected/candidate/rep-03",
+  "workflow": "atdd",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03"
+}

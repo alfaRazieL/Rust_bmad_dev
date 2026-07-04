@@ -1,0 +1,15 @@
+{
+  "collected_at": "2026-07-04T06:17:33+00:00",
+  "inventory": {
+    "active-context.md": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+    "diff.patch": "a49debd01939e6e389633b290a952a4ffc5ebb3dfc4bf229dd6d886616ac94d9",
+    "run-manifest.json": "32650f3805f4af17ed2d61f6e38e45288a81ee95117c721421038363ac5ca0be",
+    "run-report.json": "5aa4ff6b77c1a554d5b403d9cd345462d4ab51e86e8842d88aaccc656be4da17",
+    "run-state.json": "4e7887a747ec3b386584f2bfe510fe1a4f7cd2e6c56520b83ce085cf25139f2a",
+    "transcript.stream.jsonl": "561845f0fadc7892d712b6205c9d204f77a3037982e5411a4dfed08144498eaa"
+  },
+  "run_id": "ruleop-cand-001-test-design-async-rep01",
+  "scenario": "test-design-async/candidate/rep-01",
+  "workflow": "test-design",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-001-test-design-async-rep01"
+}

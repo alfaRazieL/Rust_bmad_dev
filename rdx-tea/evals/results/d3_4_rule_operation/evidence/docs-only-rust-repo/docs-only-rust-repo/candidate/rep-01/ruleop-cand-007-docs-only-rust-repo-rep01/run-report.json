@@ -1,0 +1,177 @@
+{
+  "child_skill_invoked": true,
+  "configured_mode": "sequential",
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-04T06:45:54+00:00",
+  "new_artefacts": [
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-epic-001.md",
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-progress.md"
+  ],
+  "observed_mode": "OBSERVED_SEQUENTIAL",
+  "observed_mode_basis": "no-subagent-events-surrogate",
+  "reconciled_at": "2026-07-04T06:46:07+00:00",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+  "schema_version": "rdx-tea-run.v1",
+  "session_id": "b5e97d73-64d3-4b80-a5f1-5f1bf7def2c6",
+  "sidecars": [
+    {
+      "active_packs": [],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-epic-001.md",
+      "artifact_sha256": "efe1a35b97fb9972441b445a0a519d7a4ceb4449d6d94344fe716d2647e68d57",
+      "base_sha": "28d2fa2ac82c6ee8b6fafb59715e20a89420c5c8",
+      "bound_at": "2026-07-04T06:45:54+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+      "execution_mode": "sequential",
+      "head_sha": "5b54d186b7d4da0a74d29574f72503f3c3bec4fe",
+      "prepare_manifest_sha256": "9b0c22e7a65535c2bc3b4cddf0bf4cba51fb3b8afee4399510c8aa1c47f669bf",
+      "prepared_at": "2026-07-04T06:42:13+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    },
+    {
+      "active_packs": [],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-progress.md",
+      "artifact_sha256": "4999257a9dd98a1d26f8a82add12915c834c2d5f46cc60432f410e1e30f7a231",
+      "base_sha": "28d2fa2ac82c6ee8b6fafb59715e20a89420c5c8",
+      "bound_at": "2026-07-04T06:45:54+00:00",
+      "completed": true,
+      "core_rules": [],
+      "diff_digest": "37b54a5de1e745d91485f181cf8bfd5c3244785d19d3269020b0f193a7480a35",
+      "execution_mode": "sequential",
+      "head_sha": "5b54d186b7d4da0a74d29574f72503f3c3bec4fe",
+      "prepare_manifest_sha256": "9b0c22e7a65535c2bc3b4cddf0bf4cba51fb3b8afee4399510c8aa1c47f669bf",
+      "prepared_at": "2026-07-04T06:42:13+00:00",
+      "projection_hash": "a475cd1d12284a4ded628498c0ba2ef8f9e3f311f0e1b174deee47ebdbbeeae0",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+      "rust_scope": false,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    }
+  ],
+  "task_tool_use_count": 0,
+  "transcript_sha256": "f3d3ddc7ebfd52093e05f85cb1aa9ac466fe9c6b45357c795e287bbf37e550b9",
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=9b0c22e7a655 sidecar=9b0c22e7a655",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=37b54a5de1e7 sidecar=37b54a5de1e7",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-epic-001.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=9b0c22e7a655 sidecar=9b0c22e7a655",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=a475cd1d1228 sidecar=a475cd1d1228",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=37b54a5de1e7 sidecar=37b54a5de1e7",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-007-docs-only-rust-repo-rep01/_bmad-output/test-design-progress.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "test-design",
+  "wrapper_skill_invoked": true
+}

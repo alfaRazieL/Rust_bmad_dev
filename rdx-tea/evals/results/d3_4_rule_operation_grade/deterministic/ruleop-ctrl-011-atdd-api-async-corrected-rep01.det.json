@@ -1,0 +1,14 @@
+{
+  "admissible": true,
+  "arm": "baseline",
+  "control_clean": true,
+  "no_rp_leakage": true,
+  "rdx_bundle_absent": true,
+  "rdx_sidecars_absent": true,
+  "reasons": [
+    "all admission checks passed"
+  ],
+  "run_id": "ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "run_outcome": "SUCCESS",
+  "scenario": "atdd-api-async-corrected"
+}

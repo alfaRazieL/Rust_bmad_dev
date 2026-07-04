@@ -1,0 +1,55 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-001-test-design-async-rep01/_bmad-output/test-design-progress.md",
+  "artifact_sha256": "aede3b27b80e478e5337d40b7f36387ba7d65fa52b47c8e94ab3178445d3ad46",
+  "base_sha": "e769f75fe8040024ea47e33d5b514576ba482084",
+  "bound_at": "2026-07-04T06:17:14+00:00",
+  "completed": true,
+  "core_rules": [
+    "CORE-001",
+    "CORE-002",
+    "CORE-003",
+    "CORE-004",
+    "CORE-005",
+    "CORE-006",
+    "CORE-007",
+    "CORE-008",
+    "CORE-009",
+    "CORE-010",
+    "CORE-011",
+    "CORE-012",
+    "CORE-013",
+    "CORE-014",
+    "CORE-015",
+    "CORE-016",
+    "CORE-017",
+    "CORE-018"
+  ],
+  "diff_digest": "a49debd01939e6e389633b290a952a4ffc5ebb3dfc4bf229dd6d886616ac94d9",
+  "execution_mode": "sequential",
+  "head_sha": "f372234bd4c2077a5b97b0c97297b9b5317e072c",
+  "prepare_manifest_sha256": "32650f3805f4af17ed2d61f6e38e45288a81ee95117c721421038363ac5ca0be",
+  "prepared_at": "2026-07-04T06:13:19+00:00",
+  "projection_hash": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+  "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "run_id": "ruleop-cand-001-test-design-async-rep01",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+  "workflow": "test-design"
+}

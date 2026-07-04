@@ -1,0 +1,17 @@
+{
+  "collected_at": "2026-07-04T06:30:42+00:00",
+  "inventory": {
+    "active-context.md": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+    "diff.patch": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+    "run-manifest.json": "fa278df7ce2c313bdcaddcf6b150533209dbea9d65413234247add6f1dadeb92",
+    "run-report.json": "2b61d033d5b0e4b7c95ffc99e543ebc264f89cb791530fc3daa9e7a13a671c6b",
+    "run-state.json": "12dd984bfa9e43d3cd3bf3ff5e8558b7f0b147374438cf2729d277b79588b0ac",
+    "sidecars/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json": "505bff74885f75d1c715dad5c5b9c16d99ab342f717a251e7dd86300314b63b7",
+    "tea-artifacts/atdd-checklist-public-async-user-registration-api.md": "79e589812e7d5a17e5017641085da09a194ec339a178264341abd5a9db060166",
+    "transcript.stream.jsonl": "69c38e92a9404c1371cfc194f684f936cc450b35858e5cf54ad9f0c0734ce39c"
+  },
+  "run_id": "ruleop-cand-004-atdd-api-async-corrected-rep01",
+  "scenario": "atdd-api-async-corrected/candidate/rep-01",
+  "workflow": "atdd",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-004-atdd-api-async-corrected-rep01"
+}

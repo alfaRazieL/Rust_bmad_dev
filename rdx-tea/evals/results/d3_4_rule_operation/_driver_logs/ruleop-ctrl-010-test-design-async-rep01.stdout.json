@@ -1,0 +1,10 @@
+{
+  "admissible": true,
+  "admission_reasons": [
+    "all checks passed"
+  ],
+  "bundle": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/evidence/test-design-async/test-design-async/baseline/rep-01/ruleop-ctrl-010-test-design-async-rep01/live-evidence.v4.json",
+  "run_id": "ruleop-ctrl-010-test-design-async-rep01",
+  "run_outcome": "SUCCESS",
+  "status": "ok"
+}

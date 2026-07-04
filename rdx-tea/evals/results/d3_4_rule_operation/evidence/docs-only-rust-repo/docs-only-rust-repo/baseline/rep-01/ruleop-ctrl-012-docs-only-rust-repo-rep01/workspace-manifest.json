@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T06:55:07+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "2f01c22fdef3e8901322d55bef2fc5c0a14b93090554b549c39bbfde649013fc"
+  },
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "scenario": "docs-only-rust-repo/baseline/rep-01",
+  "workflow": "test-design",
+  "workspace": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-ctrl-012-docs-only-rust-repo-rep01"
+}

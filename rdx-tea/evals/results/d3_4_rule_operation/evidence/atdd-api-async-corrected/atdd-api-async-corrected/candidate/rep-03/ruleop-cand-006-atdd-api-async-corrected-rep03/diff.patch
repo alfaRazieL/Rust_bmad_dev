@@ -1,0 +1,71 @@
+diff --git a/_bmad-run/diff.patch b/_bmad-run/diff.patch
+new file mode 100644
+index 0000000..5c22929
+--- /dev/null
++++ b/_bmad-run/diff.patch
+@@ -0,0 +1,33 @@
++diff --git a/src/lib.rs b/src/lib.rs
++new file mode 100644
++index 0000000..3333333
++--- /dev/null
+++++ b/src/lib.rs
++@@ -0,0 +1,26 @@
+++//! Public user-registration surface for downstream crates.
+++
+++pub struct User {
+++    pub id: u64,
+++    pub name: String,
+++}
+++
+++pub enum ApiError {
+++    InvalidName,
+++    Backend,
+++}
+++
+++pub async fn create_user(name: String) -> Result<User, ApiError> {
+++    if name.is_empty() {
+++        return Err(ApiError::InvalidName);
+++    }
+++    let h = tokio::spawn(async move { validate(name).await });
+++    match h.await {
+++        Ok(Ok(u)) => Ok(u),
+++        Ok(Err(e)) => Err(e),
+++        Err(_) => Err(ApiError::Backend),
+++    }
+++}
+++
+++async fn validate(s: String) -> Result<User, ApiError> {
+++    Ok(User { id: s.len() as u64, name: s })
+++}
+diff --git a/src/lib.rs b/src/lib.rs
+new file mode 100644
+index 0000000..5ec7033
+--- /dev/null
++++ b/src/lib.rs
+@@ -0,0 +1,26 @@
++//! Public user-registration surface for downstream crates.
++
++pub struct User {
++    pub id: u64,
++    pub name: String,
++}
++
++pub enum ApiError {
++    InvalidName,
++    Backend,
++}
++
++pub async fn create_user(name: String) -> Result<User, ApiError> {
++    if name.is_empty() {
++        return Err(ApiError::InvalidName);
++    }
++    let h = tokio::spawn(async move { validate(name).await });
++    match h.await {
++        Ok(Ok(u)) => Ok(u),
++        Ok(Err(e)) => Err(e),
++        Err(_) => Err(ApiError::Backend),
++    }
++}
++
++async fn validate(s: String) -> Result<User, ApiError> {
++    Ok(User { id: s.len() as u64, name: s })

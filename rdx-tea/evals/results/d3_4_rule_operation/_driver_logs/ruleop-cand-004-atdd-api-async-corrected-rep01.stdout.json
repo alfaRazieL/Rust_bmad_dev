@@ -1,0 +1,10 @@
+{
+  "admissible": true,
+  "admission_reasons": [
+    "all checks passed"
+  ],
+  "bundle": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/evidence/atdd-api-async-corrected/atdd-api-async-corrected/candidate/rep-01/ruleop-cand-004-atdd-api-async-corrected-rep01/live-evidence.v4.json",
+  "run_id": "ruleop-cand-004-atdd-api-async-corrected-rep01",
+  "run_outcome": "SUCCESS",
+  "status": "ok"
+}

@@ -1,0 +1,261 @@
+{
+  "child_skill_invoked": true,
+  "configured_mode": "sequential",
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-04T06:41:30+00:00",
+  "new_artefacts": [
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/atdd-checklist-public-async-user-registration-api.md",
+    "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/user_registration.rs"
+  ],
+  "observed_mode": "OBSERVED_SEQUENTIAL",
+  "observed_mode_basis": "no-subagent-events-surrogate",
+  "reconciled_at": "2026-07-04T06:41:47+00:00",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+  "schema_version": "rdx-tea-run.v1",
+  "session_id": "fff6f16f-e738-461d-8c5d-f6681c8842b8",
+  "sidecars": [
+    {
+      "active_packs": [
+        {
+          "pack_id": "api",
+          "rule_ids": [
+            "RP-API-001",
+            "RP-API-002",
+            "RP-API-003",
+            "RP-API-004",
+            "RP-API-005",
+            "RP-API-006",
+            "RP-API-007",
+            "RP-API-008",
+            "RP-API-009",
+            "RP-API-010",
+            "RP-API-011",
+            "RP-API-012",
+            "RP-API-013",
+            "RP-API-014",
+            "RP-API-015",
+            "RP-API-016",
+            "RP-API-017",
+            "RP-API-018"
+          ]
+        },
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/atdd-checklist-public-async-user-registration-api.md",
+      "artifact_sha256": "7f7c9f4f0853cab58c2421e818a014a06913b34887b933c9043cf1b3a08cdc85",
+      "base_sha": "c097b1f4945d107b2f42ec2fcf38fa05df37dcfd",
+      "bound_at": "2026-07-04T06:41:30+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-004",
+        "CORE-009"
+      ],
+      "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+      "execution_mode": "sequential",
+      "head_sha": "40072b0f125b3525314cb45433a2a46158112cf1",
+      "prepare_manifest_sha256": "84f98c5be33e6c3996f193872c80047d931ba152a48d041d82a7f2047d404d0b",
+      "prepared_at": "2026-07-04T06:36:21+00:00",
+      "projection_hash": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "atdd"
+    },
+    {
+      "active_packs": [
+        {
+          "pack_id": "api",
+          "rule_ids": [
+            "RP-API-001",
+            "RP-API-002",
+            "RP-API-003",
+            "RP-API-004",
+            "RP-API-005",
+            "RP-API-006",
+            "RP-API-007",
+            "RP-API-008",
+            "RP-API-009",
+            "RP-API-010",
+            "RP-API-011",
+            "RP-API-012",
+            "RP-API-013",
+            "RP-API-014",
+            "RP-API-015",
+            "RP-API-016",
+            "RP-API-017",
+            "RP-API-018"
+          ]
+        },
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/user_registration.rs",
+      "artifact_sha256": "3b2712ffc59b314577fb2a6123a4c7acbee7978c85ee29b64a79cbc16d3bbe7f",
+      "base_sha": "c097b1f4945d107b2f42ec2fcf38fa05df37dcfd",
+      "bound_at": "2026-07-04T06:41:30+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-004",
+        "CORE-009"
+      ],
+      "diff_digest": "0e12b99d9981aaf2dd32622e7394fa6a68d104c0a7789f40e9313b2a59ae513d",
+      "execution_mode": "sequential",
+      "head_sha": "40072b0f125b3525314cb45433a2a46158112cf1",
+      "prepare_manifest_sha256": "84f98c5be33e6c3996f193872c80047d931ba152a48d041d82a7f2047d404d0b",
+      "prepared_at": "2026-07-04T06:36:21+00:00",
+      "projection_hash": "99a8906fe3fade134ae24af959e9a98c697dd5721ba4d3053c2b402fcbb4f57c",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "atdd"
+    }
+  ],
+  "task_tool_use_count": 0,
+  "transcript_sha256": "fbc742f600325fe7e25ef841ddd807eb674dce6ea123fa7ae63aaf329ab98a35",
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=84f98c5be33e sidecar=84f98c5be33e",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=99a8906fe3fa sidecar=99a8906fe3fa",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0e12b99d9981 sidecar=0e12b99d9981",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/atdd-checklist-public-async-user-registration-api.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "atdd"
+    },
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=84f98c5be33e sidecar=84f98c5be33e",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=99a8906fe3fa sidecar=99a8906fe3fa",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=0e12b99d9981 sidecar=0e12b99d9981",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+      "sidecar": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-006-atdd-api-async-corrected-rep03/_bmad-output/user_registration.rs.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "atdd"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "atdd",
+  "wrapper_skill_invoked": true
+}
