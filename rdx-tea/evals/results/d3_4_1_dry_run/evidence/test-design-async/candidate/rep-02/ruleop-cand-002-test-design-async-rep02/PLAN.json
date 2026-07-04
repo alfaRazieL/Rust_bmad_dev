@@ -1,0 +1,18 @@
+{
+  "arm": "candidate",
+  "command": [
+    "/rdx-tea-test-design"
+  ],
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_dir": "rdx-tea/evals/results/d3_4_1_dry_run/evidence/test-design-async/candidate/rep-02/ruleop-cand-002-test-design-async-rep02",
+  "fixture": "test-design-async-latent",
+  "fixture_hash": "a4860c0c58fbd52d39addf3c212805ebe2b6d995c1074a883fa3ff6b3f71516c",
+  "model": "claude-haiku-4-5-20251001",
+  "prompt_hash": "0273c3d62285355a53a2cea9a866b2fb992fefbdb79664a48f71d70943465cb5",
+  "repetition": 2,
+  "run_id": "ruleop-cand-002-test-design-async-rep02",
+  "scenario": "test-design-async",
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "test-design",
+  "workspace_dir": "rdx-tea/evals/results/d3_4_1_dry_run/workspaces/ruleop-cand-002-test-design-async-rep02"
+}

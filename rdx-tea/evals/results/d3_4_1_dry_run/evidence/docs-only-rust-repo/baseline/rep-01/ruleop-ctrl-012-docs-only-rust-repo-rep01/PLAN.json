@@ -1,0 +1,18 @@
+{
+  "arm": "baseline",
+  "command": [
+    "/bmad-testarch-test-design"
+  ],
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_dir": "rdx-tea/evals/results/d3_4_1_dry_run/evidence/docs-only-rust-repo/baseline/rep-01/ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "fixture": "docs-only-rust-repo-control",
+  "fixture_hash": "24c8d22ec93315e4cd868d58581c49c01048d2760b0e6442af43802ccce99356",
+  "model": "claude-haiku-4-5-20251001",
+  "prompt_hash": "312318f0223a15567507ba19baa19848f0f9ca8b6cd995391098e59c319e8a96",
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "scenario": "docs-only-rust-repo",
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "test-design",
+  "workspace_dir": "rdx-tea/evals/results/d3_4_1_dry_run/workspaces/ruleop-ctrl-012-docs-only-rust-repo-rep01"
+}
