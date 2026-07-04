@@ -225,8 +225,13 @@ def arm_prompt(arm: str, workflow: str, run_id: str) -> str:
             f"subcommands. The invocation contract file at "
             f"_bmad-run/rdx-tea-invocation.json pins run_id={run_id}; read "
             f"it first and use its run_id verbatim in every wrapper "
-            f"command. Halt on any non-zero exit. When done, summarise the "
-            f"run-report.json path."
+            f"command. Halt on any non-zero exit. Your FINAL action before "
+            f"finishing MUST be to run the wrapper's finalize-run bash "
+            f"command and confirm that _bmad/rdx-tea/runtime/{workflow}/"
+            f"{run_id}/run-report.json now exists on disk; do NOT end the "
+            f"session until you have run finalize-run and that run-report."
+            f"json file exists. When done, summarise the run-report.json "
+            f"path."
         )
     raise OrchestratorError(f"unknown arm {arm!r}")
 
