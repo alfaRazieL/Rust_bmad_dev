@@ -1,0 +1,18 @@
+{
+  "arm": "candidate",
+  "command": [
+    "/rdx-tea-test-design"
+  ],
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/evidence/docs-only-rust-repo/candidate/rep-02/ruleop-cand-008-docs-only-rust-repo-rep02",
+  "fixture": "docs-only-rust-repo-control",
+  "fixture_hash": "24c8d22ec93315e4cd868d58581c49c01048d2760b0e6442af43802ccce99356",
+  "model": "claude-haiku-4-5-20251001",
+  "prompt_hash": "65a4914c556f31d43761a6654156d37954ffa7b80cc01289b98f92b2f010d353",
+  "repetition": 2,
+  "run_id": "ruleop-cand-008-docs-only-rust-repo-rep02",
+  "scenario": "docs-only-rust-repo",
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "test-design",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/workspaces/ruleop-cand-008-docs-only-rust-repo-rep02"
+}

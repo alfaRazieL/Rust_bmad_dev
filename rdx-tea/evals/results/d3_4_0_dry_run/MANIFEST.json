@@ -1,0 +1,17 @@
+{
+  "baseline_control": 3,
+  "candidate": 9,
+  "candidate_control_paths_separate": true,
+  "collisions": 0,
+  "criteria_sha256": "3288de4fb4cdce54050d4811105e9520e2952d0cf14b41cd18d51b5188530920",
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_schema_version": "rdx-tea-live-evidence.v4",
+  "locked": true,
+  "schedule_sha256": "a62fa7ccc5d0935e7baa479c0a272fc320cac5fe3535f11609723e0be512df4e",
+  "total_runs": 12,
+  "unique_evidence_dirs": 12,
+  "unique_fixture_hashes": 3,
+  "unique_prompt_hashes": 4,
+  "unique_run_ids": 12,
+  "unique_workspace_dirs": 12
+}

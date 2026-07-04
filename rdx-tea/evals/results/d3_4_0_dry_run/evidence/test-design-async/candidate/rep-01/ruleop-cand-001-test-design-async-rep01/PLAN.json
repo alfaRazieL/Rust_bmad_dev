@@ -1,0 +1,18 @@
+{
+  "arm": "candidate",
+  "command": [
+    "/rdx-tea-test-design"
+  ],
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/evidence/test-design-async/candidate/rep-01/ruleop-cand-001-test-design-async-rep01",
+  "fixture": "test-design-async-latent",
+  "fixture_hash": "a4860c0c58fbd52d39addf3c212805ebe2b6d995c1074a883fa3ff6b3f71516c",
+  "model": "claude-haiku-4-5-20251001",
+  "prompt_hash": "65a4914c556f31d43761a6654156d37954ffa7b80cc01289b98f92b2f010d353",
+  "repetition": 1,
+  "run_id": "ruleop-cand-001-test-design-async-rep01",
+  "scenario": "test-design-async",
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "test-design",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/workspaces/ruleop-cand-001-test-design-async-rep01"
+}

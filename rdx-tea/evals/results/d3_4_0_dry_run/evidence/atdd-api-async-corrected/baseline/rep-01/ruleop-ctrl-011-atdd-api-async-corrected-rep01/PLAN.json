@@ -1,0 +1,18 @@
+{
+  "arm": "baseline",
+  "command": [
+    "/bmad-testarch-atdd"
+  ],
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "evidence_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/evidence/atdd-api-async-corrected/baseline/rep-01/ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "fixture": "atdd-api-async-latent",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "model": "claude-haiku-4-5-20251001",
+  "prompt_hash": "b391e73de79d9df4299d07e26e8a36184ca7d4f33b2cba08602b64d55cf16ed1",
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "scenario": "atdd-api-async-corrected",
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "atdd",
+  "workspace_dir": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/evals/results/d3_4_0_dry_run/workspaces/ruleop-ctrl-011-atdd-api-async-corrected-rep01"
+}
