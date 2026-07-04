@@ -1,0 +1,148 @@
+{
+  "rdx_tea_verification_version": "v7-d3.4.1",
+  "generated": "2026-07-04T07:00:00Z",
+  "stage": "D3.4.1 — execute 12-run RDX rule-operation pilot",
+  "goal_framing": "prove RDX rule-operation correctness and stability in real BMAD TEA workflows (NOT benefit-vs-baseline)",
+  "baseline_role": "isolation / no-RDX-contamination control arm only",
+  "candidate_rule_operation_role": "primary object of proof",
+
+  "branch": "rdx-tea-integration",
+  "start_head_sha": "b3f4b47a43f21bd9fd412a8bb32382cdd46b8c44",
+  "tested_subject_sha": "135b5ed24c419d8e135698bb3b41dd55b1a0c33d",
+  "evidence_commit_sha": "POINTER_CLOSURE_PENDING",
+  "origin_main": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "predecessor_d3_4_0_tested_subject_sha": "f145c14bd7d3ec20143cb48ea76b9cab3feddb80",
+
+  "apparatus_fix": {
+    "commit": "b9b244c",
+    "summary": "fix false SCHEDULE_DRIFT: bind on run-id-normalised prompt TEMPLATE hash, matching schedule generator + dry-run; run_id still verified by run_id_handshake",
+    "schedule_or_criteria_modified": false,
+    "regression_test": "test_scheduled_prompt_hash_is_run_id_normalised_template"
+  },
+
+  "schedule_version": "rdx-tea-rule-operation-runs.v3",
+  "schedule_sha256": "0b2cd8eede3c8ae6c7d6d02cd98f464a7cfb119012caed41d0b59f3844abc97d",
+  "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+  "criteria_sha256": "3288de4fb4cdce54050d4811105e9520e2952d0cf14b41cd18d51b5188530920",
+  "evidence_schema": "rdx-tea-live-evidence.v4",
+
+  "auth_policy": {
+    "api_key_used": false,
+    "claude_code_oauth_token_used": false,
+    "setup_token_used": false,
+    "api_key_helper_used": false,
+    "claude_config_dir_overridden": false,
+    "auth_preflight_status": "PASS (existing CLI OAuth; claude 2.1.191; functional AUTH_OK query returned exactly AUTH_OK)"
+  },
+
+  "ci": {
+    "github_actions_run_id": "28698462520",
+    "github_actions_run_url": "https://github.com/alfaRazieL/Rust_bmad_dev/actions/runs/28698462520",
+    "github_actions_conclusion": "success",
+    "source_lock": "PASS",
+    "source_lock_hashes_verified": true,
+    "worktrees_clean": true,
+    "mandatory_skipped": 0
+  },
+  "test_counts_pytest": {
+    "unique_collected": 562,
+    "unique_passed": 562,
+    "unique_failed": 0,
+    "unique_skipped": 0,
+    "canonical_passed": 562,
+    "live_harness_passed": 115,
+    "note": "562 canonical (was 561 in D3.4.0; +1 = D3.4.1 binding regression test); 115 live-harness/evals; 0 skips."
+  },
+
+  "dry_run": {
+    "status": "PASS",
+    "total_runs": 12,
+    "candidate": 9,
+    "baseline_control": 3,
+    "collisions": 0,
+    "path": "rdx-tea/evals/results/d3_4_1_dry_run/MANIFEST.json"
+  },
+
+  "pilot": {
+    "total_runs": 12,
+    "completed_runs": 12,
+    "candidate_total": 9,
+    "candidate_pass": 9,
+    "candidate_partial_or_failed": 0,
+    "control_total": 3,
+    "control_clean": 3,
+    "control_failed": 0,
+    "retries_used": 0,
+    "failed_attempts_preserved": true,
+    "failure_count_by_class": {
+      "AUTH_FAILURE": 0,
+      "SCHEDULE_DRIFT": 0,
+      "RUN_ID_MISMATCH": 0,
+      "CONTAMINATION": 0,
+      "TASK_DISPATCH": 0,
+      "SCHEMA_FAILURE": 0,
+      "RULE_OPERATION_FAILURE": 0,
+      "CONTROL_LEAKAGE": 0,
+      "VERIFIER_FAILURE": 0,
+      "ARTIFACT_DECLARATION_FAILURE": 0,
+      "WORKFLOW_FAILURE": 0
+    },
+    "preserved_pre_pilot_attempts": [
+      {"id": "attempt-01-relpath-infra", "class": "INFRA_FAILURE", "model_invoked": false, "note": "relative --out-root; 0-byte transcripts"},
+      {"id": "attempt-02-prompthash-binding-bug", "class": "apparatus defect (false SCHEDULE_DRIFT)", "model_invoked": true, "note": "run-1 lifecycle correct; fixed at b9b244c"}
+    ],
+    "finalize_completion_rate": "9/9 (100%) in one session; D3.4.0 finalize-run gap did not recur"
+  },
+
+  "per_scenario": {
+    "test-design-async": {"candidate_runs": 3, "candidate_pass": 3, "expected_packs": ["async"], "matched_rules": ["RP-ASYNC-005"]},
+    "atdd-api-async-corrected": {"candidate_runs": 3, "candidate_pass": 3, "expected_packs": ["api", "async"], "matched_rules": ["RP-ASYNC-005", "RP-API-001", "RP-API-004", "RP-API-005"]},
+    "docs-only-rust-repo": {"candidate_runs": 3, "candidate_pass": 3, "expected_packs": [], "matched_rules": [], "note": "correctly activated no pack (forbidden RP- prefix respected)"}
+  },
+
+  "rule_operation_summary": {
+    "task_tool_use_count_all_runs": 0,
+    "runtime_contamination_all_runs": "",
+    "observed_mode_candidates": "OBSERVED_SEQUENTIAL (9/9)",
+    "wrapper_and_child_invoked_candidates": "9/9",
+    "verifier_all_pass_candidates": "9/9",
+    "expected_rule_condition": "PASS (9/9)",
+    "forbidden_rule_condition": "PASS (9/9)",
+    "workspace_delta_consistency": "PASS (12/12)",
+    "artifact_consistency": "PASS (12/12)",
+    "schedule_binding": "PASS (12/12)",
+    "control_isolation": "3/3 clean: no wrapper, child invoked, no RDX bundle/sidecars/rule_operation, zero RP-* leakage",
+    "control_artifact_note": "controls produced 0 TEA artefacts (bare child TEA workflow is interaction-gated); acceptable for isolation-only role"
+  },
+
+  "gates": {
+    "G5_real_tea_workflow_rule_operation": "PASS",
+    "G6_context_continuity_sequential": "PASS",
+    "G7_behavioural_benefit_vs_baseline": "OUT_OF_SCOPE_NOT_CLAIMED",
+    "G13_verification_identity_two_commit": "PASS",
+    "G14_atdd_api_pack_activation_live": "PASS",
+    "G24_live_pilot": "PASS"
+  },
+
+  "verdicts": {
+    "d3_4_1_verdict": "D3_4_1_PASS",
+    "rule_operation_verdict": "RULE_OPERATION_PASS",
+    "overall_d3_verdict": "D3_RULE_OPERATION_PROVEN",
+    "next_readiness": "READY_FOR_D4_MASTER_IMPLEMENTATION_PLAN",
+    "llm_diagnostic": "not run (optional; cannot override deterministic verdict)"
+  },
+
+  "evidence_paths": {
+    "precondition_audit": "rdx-tea/research/D3_4_1_PRECONDITION_AUDIT.md",
+    "pilot_report": "rdx-tea/research/D3_4_1_RULE_OPERATION_PILOT_REPORT.md",
+    "blockers": "rdx-tea/research/D3_4_1_BLOCKERS.md",
+    "dry_run": "rdx-tea/evals/results/d3_4_1_dry_run/",
+    "pilot_evidence": "rdx-tea/evals/results/d3_4_rule_operation/evidence/",
+    "grade_deterministic": "rdx-tea/evals/results/d3_4_rule_operation_grade/deterministic/",
+    "rule_operation_report": "rdx-tea/evals/results/d3_4_rule_operation_grade/RULE_OPERATION_REPORT.json",
+    "preserved_failed_attempts": "rdx-tea/evals/results/_d3_4_1_preserved_failed_attempts/",
+    "final_verification": "rdx-tea/evidence/final/D3_4_1_FINAL_VERIFICATION.json"
+  },
+
+  "verdict_justification": "The locked 12-run pilot (schedule v3 0b2cd8ee, criteria v1 3288de4f, both unchanged) ran against a fixed apparatus using existing CLI OAuth with no API key and no CLAUDE_CONFIG_DIR override. All 9 candidate runs operate RDX rules end-to-end (wrapper+child OBSERVED_SEQUENTIAL, task-dispatch 0, latent-driven pack activation [async]/[api,async]/[], RP-ASYNC-005 (+RP-API) matched, verifier PASS, one-sidecar-per-artifact, workspace_delta + artifact_consistency PASS, exact model, no contamination) and are admissible; the deterministic grader returns rule_operation_pass 9/9. All 3 controls are clean (no wrapper, child invoked, no RDX bundle/sidecars/rule_operation, zero RP-* leakage), proving isolation. Finalize-run completed 9/9 in a single session (the D3.4.0 gap did not recur); 0 retries were needed in the graded pilot. Two pre-pilot failed attempts (relative-path infra; false SCHEDULE_DRIFT binding bug) are preserved, never overwritten. CI is green with 562/562 unique pass, 0 skips, source-lock PASS. Aggregate RULE_OPERATION_PASS; overall D3 advances to D3_RULE_OPERATION_PROVEN. Behavioural benefit over baseline (G7) is deliberately NOT claimed."
+}
