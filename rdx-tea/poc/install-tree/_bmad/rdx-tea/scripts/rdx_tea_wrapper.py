@@ -310,34 +310,59 @@ def _assert_sequential_mode(config: dict) -> None:
 
 # --------------------------------------------------------------- discovery
 
+def _canonical_output_roots(dirs) -> list[Path]:
+    """D3.4.0 §6 — remove nested duplicate coverage.
+
+    `_bmad-output/test-artifacts` is a descendant of `_bmad-output`;
+    rglob-scanning both discovers every artefact under test-artifacts
+    twice. Collapse to the closest common ancestors: keep a root only
+    if it is NOT a descendant of another retained root. Deterministic
+    order (shortest path first)."""
+    resolved = sorted({Path(d).resolve() for d in dirs},
+                      key=lambda p: len(p.parts))
+    canon: list[Path] = []
+    for r in resolved:
+        if any(r != existing and r.is_relative_to(existing) for existing in canon):
+            continue
+        canon.append(r)
+    return canon
+
+
 def _output_dirs(skill_dir: Path, project_root: Path, config: dict) -> list[Path]:
-    """Directories under which the child skill will write outputs."""
+    """Canonical roots under which the child skill will write outputs.
+    Nested duplicate coverage is removed so a single artefact is never
+    discovered twice (D3.4.0 §6)."""
     ta = str(config.get("test_artifacts", str(project_root / "_bmad-output/test-artifacts")))
     ta = ta.replace("{project-root}", str(project_root))
     of = str(config.get("output_folder", str(project_root / "_bmad-output")))
     of = of.replace("{project-root}", str(project_root))
-    dirs = {Path(ta), Path(of)}
-    return [d for d in dirs if d.exists() or True]  # returned even if not yet existing
+    return _canonical_output_roots([Path(ta), Path(of)])
 
 
 def _snapshot_outputs(dirs: list[Path]) -> dict:
-    """Return `{path: sha256}` for every existing file under each dir."""
+    """Return `{resolved_path: sha256}` for every existing file under
+    the canonical roots. Deduped by resolved path."""
     inv: dict[str, str] = {}
-    for d in dirs:
+    for d in _canonical_output_roots(dirs):
         if not d.exists():
             continue
         for p in d.rglob("*"):
             if not p.is_file():
                 continue
-            inv[str(p.resolve())] = hashlib.sha256(p.read_bytes()).hexdigest()
+            key = str(p.resolve())
+            if key in inv:
+                continue
+            inv[key] = hashlib.sha256(p.read_bytes()).hexdigest()
     return inv
 
 
 def _delta_outputs(pre: dict, dirs: list[Path]) -> list[Path]:
     """Return artefacts that are NEW or whose SHA-256 changed since the
-    pre-snapshot. Symlinks are refused (safety boundary)."""
+    pre-snapshot, DEDUPED by resolved real path (D3.4.0 §6). Symlinks
+    are refused (safety boundary)."""
+    seen: set[str] = set()
     now: list[Path] = []
-    for d in dirs:
+    for d in _canonical_output_roots(dirs):
         if not d.exists():
             continue
         for p in d.rglob("*"):
@@ -345,8 +370,11 @@ def _delta_outputs(pre: dict, dirs: list[Path]) -> list[Path]:
                 continue
             if p.is_symlink():
                 raise WrapperError(f"symlink artefact refused: {p}")
-            digest = hashlib.sha256(p.read_bytes()).hexdigest()
             key = str(p.resolve())
+            if key in seen:
+                continue
+            seen.add(key)
+            digest = hashlib.sha256(p.read_bytes()).hexdigest()
             if key not in pre or pre[key] != digest:
                 now.append(p)
     return sorted(now)
