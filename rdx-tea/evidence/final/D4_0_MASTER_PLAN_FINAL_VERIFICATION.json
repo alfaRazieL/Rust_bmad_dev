@@ -7,8 +7,8 @@
   "branch": "rdx-tea-integration",
   "start_head_sha": "1cd5b11b20ba8cea92101d47967665d44cea7e97",
   "tested_subject_sha": "5baa0d0dbe312222f12f577553557678b9a48a3b",
-  "evidence_commit_sha": "",
-  "evidence_commit_note": "filled by the following pointer-closure commit; no PENDING sentinel survives in final HEAD",
+  "evidence_commit_sha": "f9b170ebb7cd72605495e74dde5d99b6f7ddcc98",
+  "evidence_commit_note": "two-commit identity: this SHA is the publish commit; the following pointer-closure commit filled this field. No PENDING sentinel survives in final HEAD.",
   "origin_main": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
 
   "d3_4_1_basis": {
