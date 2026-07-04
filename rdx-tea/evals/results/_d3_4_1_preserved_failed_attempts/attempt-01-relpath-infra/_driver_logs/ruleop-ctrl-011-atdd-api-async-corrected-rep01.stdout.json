@@ -1,0 +1,12 @@
+{
+  "admissible": false,
+  "admission_reasons": [
+    "exit_code=1",
+    "no terminal result event",
+    "no model turn"
+  ],
+  "bundle": "rdx-tea/evals/results/d3_4_rule_operation/evidence/atdd-api-async-corrected/atdd-api-async-corrected/baseline/rep-01/ruleop-ctrl-011-atdd-api-async-corrected-rep01/live-evidence.v4.json",
+  "run_id": "ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "run_outcome": "RUNTIME_FAILURE",
+  "status": "failed"
+}

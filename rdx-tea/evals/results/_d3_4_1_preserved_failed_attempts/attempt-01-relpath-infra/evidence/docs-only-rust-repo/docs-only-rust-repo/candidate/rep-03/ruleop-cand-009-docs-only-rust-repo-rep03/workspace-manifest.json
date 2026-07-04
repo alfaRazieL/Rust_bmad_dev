@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T06:00:44+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run_id": "ruleop-cand-009-docs-only-rust-repo-rep03",
+  "scenario": "docs-only-rust-repo/candidate/rep-03",
+  "workflow": "test-design",
+  "workspace": "rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-009-docs-only-rust-repo-rep03"
+}

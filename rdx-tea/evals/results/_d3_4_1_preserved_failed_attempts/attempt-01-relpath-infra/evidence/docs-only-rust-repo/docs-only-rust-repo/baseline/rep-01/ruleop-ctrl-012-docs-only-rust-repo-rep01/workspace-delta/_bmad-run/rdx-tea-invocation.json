@@ -1,0 +1,12 @@
+{
+  "arm": "baseline",
+  "base_sha": "1fce3a90804ccd3c1894dd9613b480a2413fbb65",
+  "fixture_hash": "24c8d22ec93315e4cd868d58581c49c01048d2760b0e6442af43802ccce99356",
+  "head_sha": "33cdbb43423bd321e1efe6a21024c27ee2a3253f",
+  "prompt_hash": "795821ec849e898f43f34305b51a0b1501bc4b6f028d561ca881e85738330f81",
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "scenario": "docs-only-rust-repo",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "test-design"
+}

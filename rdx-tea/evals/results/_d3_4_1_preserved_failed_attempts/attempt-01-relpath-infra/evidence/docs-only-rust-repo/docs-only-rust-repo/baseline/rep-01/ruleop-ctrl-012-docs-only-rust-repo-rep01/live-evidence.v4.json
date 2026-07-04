@@ -1,0 +1,164 @@
+{
+  "admissible": false,
+  "admission_reasons": [
+    "exit_code=1",
+    "no terminal result event",
+    "no model turn"
+  ],
+  "arm": "baseline",
+  "artifact_consistency": {
+    "contradictory_frontmatter": [],
+    "duplicate_frontmatter_keys": [],
+    "nonexistent_project_paths": [],
+    "phantom_file_claims": [],
+    "status": "PASS",
+    "warnings": []
+  },
+  "artifacts": {
+    "new_artefacts": []
+  },
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "baseline": {
+    "direct_child_skill_invoked": false,
+    "rdx_bundle_absent": true,
+    "rdx_overlay_absent": true,
+    "rdx_sidecars_absent": true,
+    "wrapper_skill_invoked": false
+  },
+  "baseline_control": {
+    "no_rp_obligation_leakage": true,
+    "rdx_bundle_absent": true,
+    "rdx_sidecars_absent": true,
+    "rp_leakage_hits": [],
+    "rule_operation_absent": true
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "absent",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FAILED"
+  },
+  "hashes": {
+    "bundle": "",
+    "run_report": "",
+    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity": {
+    "base_sha": "1fce3a90804ccd3c1894dd9613b480a2413fbb65",
+    "head_sha": "33cdbb43423bd321e1efe6a21024c27ee2a3253f"
+  },
+  "invocation": {
+    "command_hash": "7b6e21f8f87ff3ed59db4063fea77bd9ed7bd304674a308ffaaa30546690cf3a",
+    "exit_code": 1,
+    "finished_at": "2026-07-04T06:00:46+00:00",
+    "prompt_hash": "795821ec849e898f43f34305b51a0b1501bc4b6f028d561ca881e85738330f81",
+    "reason": "runtime_error",
+    "started_at": "2026-07-04T06:00:46+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": false,
+    "observed_mode": "TRANSCRIPT_INVALID",
+    "observed_mode_basis": "transcript-invalid",
+    "session_id": "",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wrapper_skill_invoked": false
+  },
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "run_id_handshake": {
+    "invocation_json": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+    "mismatch": false,
+    "run_report": null,
+    "schedule": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+    "workspace_runtime_dir": "ruleop-ctrl-012-docs-only-rust-repo-rep01"
+  },
+  "run_outcome": "RUNTIME_FAILURE",
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-test-design"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 2.0,
+    "model_expected": "claude-haiku-4-5-20251001",
+    "model_observed": "",
+    "observed_surface": {
+      "agents": [],
+      "analytics_disabled": null,
+      "api_key_source": "",
+      "claude_code_version": "",
+      "fast_mode_state": "",
+      "init_event_seen": false,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "",
+      "output_style": "",
+      "permission_mode": "",
+      "plugins": [],
+      "session_id": "",
+      "skills": [],
+      "slash_commands": [],
+      "tools": []
+    },
+    "surface_diff": {
+      "missing_expected_skills": [
+        "bmad-testarch-test-design"
+      ],
+      "model_mismatch": false,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [],
+      "unexpected_tools": []
+    },
+    "timeout_seconds": 900
+  },
+  "runtime_result": {
+    "authentication_failed": false,
+    "is_error": null,
+    "model_turn_seen": false,
+    "result_event_seen": false,
+    "subtype": "",
+    "terminal_reason": ""
+  },
+  "scenario": "docs-only-rust-repo",
+  "schedule_binding": {
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "drift_reasons": [
+      "prompt_hash drift"
+    ],
+    "schedule_sha256": "0b2cd8eede3c8ae6c7d6d02cd98f464a7cfb119012caed41d0b59f3844abc97d",
+    "schema_version": "rdx-tea-live-evidence.v4",
+    "status": "FAIL"
+  },
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "test-design",
+  "workspace": {
+    "config_dir_overridden": false,
+    "fixture_hash": "24c8d22ec93315e4cd868d58581c49c01048d2760b0e6442af43802ccce99356",
+    "path": "rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-ctrl-012-docs-only-rust-repo-rep01"
+  },
+  "workspace_delta": {
+    "consistency": "PASS",
+    "created_files": [
+      "_bmad-run/rdx-tea-invocation.json"
+    ],
+    "declared_existing_files": [],
+    "declared_generated_files": [],
+    "declared_missing_files": [],
+    "deleted_files": [],
+    "modified_files": [],
+    "planned_not_generated": false
+  }
+}

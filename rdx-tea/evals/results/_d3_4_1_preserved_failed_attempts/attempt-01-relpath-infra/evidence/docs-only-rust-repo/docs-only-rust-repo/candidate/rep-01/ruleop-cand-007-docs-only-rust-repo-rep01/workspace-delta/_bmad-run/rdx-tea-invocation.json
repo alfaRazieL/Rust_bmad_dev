@@ -1,0 +1,12 @@
+{
+  "arm": "candidate",
+  "base_sha": "3ab335147e6e90ffe28cd560e951af975fbe9f17",
+  "fixture_hash": "24c8d22ec93315e4cd868d58581c49c01048d2760b0e6442af43802ccce99356",
+  "head_sha": "36ef4cfd0772a0ece260dfad717630a6e98c9e85",
+  "prompt_hash": "55b96d3c0a582273d78dff3786e253f1360faee8d201a7292e0ba7225a0c46e0",
+  "repetition": 1,
+  "run_id": "ruleop-cand-007-docs-only-rust-repo-rep01",
+  "scenario": "docs-only-rust-repo",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "test-design"
+}

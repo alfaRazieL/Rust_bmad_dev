@@ -1,0 +1,88 @@
+{
+  "active_packs": [
+    {
+      "pack_id": "async",
+      "rule_ids": [
+        "RP-ASYNC-001",
+        "RP-ASYNC-002",
+        "RP-ASYNC-003",
+        "RP-ASYNC-004",
+        "RP-ASYNC-005",
+        "RP-ASYNC-006",
+        "RP-ASYNC-007",
+        "RP-ASYNC-008",
+        "RP-ASYNC-009"
+      ]
+    }
+  ],
+  "bundle_bytes": 46835,
+  "bundle_sha256": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+  "core_rules": [
+    "CORE-001",
+    "CORE-002",
+    "CORE-003",
+    "CORE-004",
+    "CORE-005",
+    "CORE-006",
+    "CORE-007",
+    "CORE-008",
+    "CORE-009",
+    "CORE-010",
+    "CORE-011",
+    "CORE-012",
+    "CORE-013",
+    "CORE-014",
+    "CORE-015",
+    "CORE-016",
+    "CORE-017",
+    "CORE-018"
+  ],
+  "diff_present": true,
+  "execution_mode": "sequential",
+  "identity": {
+    "base_sha": "65cb454946d299c625aca306adf2973b47aac6a9",
+    "diff_digest": "a49debd01939e6e389633b290a952a4ffc5ebb3dfc4bf229dd6d886616ac94d9",
+    "head_sha": "d19cd970d1a430eccd610f845df61a57386ba433",
+    "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+    "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77"
+  },
+  "prepared_at": "2026-07-04T06:04:23+00:00",
+  "rdx_canonical_snapshot_sha256": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8",
+  "rdx_kb_source_hashes": {
+    "canonical/kb-sections/section-4-core.md": "aa419c1a76551b8aa6248fad6a7f1cdafc8bcfeae7251e8f4fc4f3fa6a30c876",
+    "canonical/kb-sections/section-6-packs.md": "d4665fc9351164ce6744620a2c25c6e1c3ecb9fe0852307d164b4ddabaafa270",
+    "canonical/kb-sections/section-8-governance.md": "4d683f87054f940d9398bef4b86705063a721975adbe8a43caeb60c78981a07f"
+  },
+  "requested_mode": "sequential",
+  "run_id": "ruleop-cand-001-test-design-async-rep01",
+  "rust_scope": true,
+  "schema_version": "rdx-tea-run.v1",
+  "story_present": true,
+  "story_tags": [
+    "async"
+  ],
+  "workflow": "test-design",
+  "workflow_obligation_matrix": {
+    "core_rules_policy": "all",
+    "fields": [
+      "exceptions",
+      "required_reasoning",
+      "risk",
+      "rule",
+      "sources",
+      "trigger",
+      "validation"
+    ],
+    "packs": [
+      "api",
+      "async",
+      "data-security-io",
+      "db",
+      "ffi",
+      "macro",
+      "testing",
+      "time-config-client",
+      "unsafe"
+    ]
+  }
+}

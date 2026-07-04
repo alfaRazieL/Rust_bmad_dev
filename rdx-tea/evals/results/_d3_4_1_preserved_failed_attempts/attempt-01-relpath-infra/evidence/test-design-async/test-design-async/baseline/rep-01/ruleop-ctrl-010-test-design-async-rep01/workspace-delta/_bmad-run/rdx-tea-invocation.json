@@ -1,0 +1,12 @@
+{
+  "arm": "baseline",
+  "base_sha": "fe033c7cc5897a15d22bd25744abbbd6c9a4971f",
+  "fixture_hash": "a4860c0c58fbd52d39addf3c212805ebe2b6d995c1074a883fa3ff6b3f71516c",
+  "head_sha": "ea6fa3c87bde9c8493f94679f7fe0c0004cdf7c3",
+  "prompt_hash": "c2ce4b15f94973bf16fc0ba9adc59364d5cdab972ed737c5ed7ad88f66fc70fe",
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-010-test-design-async-rep01",
+  "scenario": "test-design-async",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "test-design"
+}

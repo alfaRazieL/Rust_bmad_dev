@@ -1,0 +1,12 @@
+{
+  "arm": "baseline",
+  "base_sha": "8a0c6e9cfa2dace1b588b5b206936020fcf936b5",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "head_sha": "8d971e785a2284ec9e3ba5b534cc7ef763b7cb9a",
+  "prompt_hash": "a86a88ce6ecde95cee7914f2b47a4db2aa3accdee3e74c8a7dfbd341ced44a73",
+  "repetition": 1,
+  "run_id": "ruleop-ctrl-011-atdd-api-async-corrected-rep01",
+  "scenario": "atdd-api-async-corrected",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "atdd"
+}

@@ -1,0 +1,12 @@
+{
+  "admissible": false,
+  "admission_reasons": [
+    "exit_code=1",
+    "no terminal result event",
+    "no model turn"
+  ],
+  "bundle": "rdx-tea/evals/results/d3_4_rule_operation/evidence/test-design-async/test-design-async/baseline/rep-01/ruleop-ctrl-010-test-design-async-rep01/live-evidence.v4.json",
+  "run_id": "ruleop-ctrl-010-test-design-async-rep01",
+  "run_outcome": "RUNTIME_FAILURE",
+  "status": "failed"
+}

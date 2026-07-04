@@ -1,0 +1,3 @@
+# Disposable per-run Claude workspaces (evidence is collected into evidence/).
+d3_4_rule_operation/workspaces/
+_d3_4_1_preserved_failed_attempts/**/workspaces/

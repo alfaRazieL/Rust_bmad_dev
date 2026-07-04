@@ -1,0 +1,26 @@
+PILOT_START 2026-07-04T06:00:40Z count=12
+START ruleop-cand-001-test-design-async-rep01 2026-07-04T06:00:40Z
+END   ruleop-cand-001-test-design-async-rep01 2026-07-04T06:00:40Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-002-test-design-async-rep02 2026-07-04T06:00:40Z
+END   ruleop-cand-002-test-design-async-rep02 2026-07-04T06:00:41Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-003-test-design-async-rep03 2026-07-04T06:00:41Z
+END   ruleop-cand-003-test-design-async-rep03 2026-07-04T06:00:41Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-004-atdd-api-async-corrected-rep01 2026-07-04T06:00:41Z
+END   ruleop-cand-004-atdd-api-async-corrected-rep01 2026-07-04T06:00:42Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-005-atdd-api-async-corrected-rep02 2026-07-04T06:00:42Z
+END   ruleop-cand-005-atdd-api-async-corrected-rep02 2026-07-04T06:00:42Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-006-atdd-api-async-corrected-rep03 2026-07-04T06:00:42Z
+END   ruleop-cand-006-atdd-api-async-corrected-rep03 2026-07-04T06:00:43Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-007-docs-only-rust-repo-rep01 2026-07-04T06:00:43Z
+END   ruleop-cand-007-docs-only-rust-repo-rep01 2026-07-04T06:00:43Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-008-docs-only-rust-repo-rep02 2026-07-04T06:00:43Z
+END   ruleop-cand-008-docs-only-rust-repo-rep02 2026-07-04T06:00:44Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-cand-009-docs-only-rust-repo-rep03 2026-07-04T06:00:44Z
+END   ruleop-cand-009-docs-only-rust-repo-rep03 2026-07-04T06:00:44Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-ctrl-010-test-design-async-rep01 2026-07-04T06:00:44Z
+END   ruleop-ctrl-010-test-design-async-rep01 2026-07-04T06:00:45Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-ctrl-011-atdd-api-async-corrected-rep01 2026-07-04T06:00:45Z
+END   ruleop-ctrl-011-atdd-api-async-corrected-rep01 2026-07-04T06:00:45Z exit=4 RUNTIME_FAILURE admissible=False
+START ruleop-ctrl-012-docs-only-rust-repo-rep01 2026-07-04T06:00:45Z
+END   ruleop-ctrl-012-docs-only-rust-repo-rep01 2026-07-04T06:00:46Z exit=4 RUNTIME_FAILURE admissible=False
+PILOT_DONE 2026-07-04T06:00:46Z

@@ -1,0 +1,178 @@
+{
+  "admissible": false,
+  "admission_reasons": [
+    "exit_code=1",
+    "no terminal result event",
+    "no model turn"
+  ],
+  "arm": "candidate",
+  "artifact_consistency": {
+    "contradictory_frontmatter": [],
+    "duplicate_frontmatter_keys": [],
+    "nonexistent_project_paths": [],
+    "phantom_file_claims": [],
+    "status": "PASS",
+    "warnings": []
+  },
+  "artifacts": {
+    "new_artefacts": []
+  },
+  "auth_preflight_id": "D3_3_3_AUTH_PREFLIGHT",
+  "candidate": {
+    "active_packs": [],
+    "bundle_present": false,
+    "child_skill_invoked": false,
+    "expected_rp_ids": [
+      "RP-ASYNC-005",
+      "RP-API-001"
+    ],
+    "sidecars": [],
+    "verifier_all_pass": false,
+    "wrapper_skill_invoked": false
+  },
+  "cleanup": {
+    "observed": {
+      "lock_state": "absent",
+      "overlay_state": "absent",
+      "run_dir_retained": true,
+      "transcript_retained": true
+    },
+    "state": "FAILED"
+  },
+  "hashes": {
+    "bundle": "",
+    "run_report": "",
+    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity": {
+    "base_sha": "b1c2bd176ed57d0ba7dc140f4bd2427da0b6c1b7",
+    "head_sha": "e76530398f3df973223b5297506c2207898df346"
+  },
+  "invocation": {
+    "command_hash": "1de38ace77146b6ca86993ea7c190c6e6964158d6f9f7452f3ff3445bc29c398",
+    "exit_code": 1,
+    "finished_at": "2026-07-04T06:00:42+00:00",
+    "prompt_hash": "a44de178337be553671752dc03ec1bfddd3d7d133ee6db94d3e01be840427934",
+    "reason": "runtime_error",
+    "started_at": "2026-07-04T06:00:42+00:00"
+  },
+  "observation": {
+    "child_skill_invoked": false,
+    "observed_mode": "TRANSCRIPT_INVALID",
+    "observed_mode_basis": "transcript-invalid",
+    "session_id": "",
+    "task_tool_use_count": 0,
+    "transcript_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wrapper_skill_invoked": false
+  },
+  "repetition": 2,
+  "rule_operation": {
+    "active_packs": [],
+    "criteria_scenario_key": "atdd-api-async-corrected",
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "expected_active_packs": [
+      "api",
+      "async"
+    ],
+    "expected_rule_condition": "FAIL",
+    "forbidden_hits": [],
+    "forbidden_rule_condition": "PASS",
+    "matched_rules": [],
+    "packs_ok": false
+  },
+  "run_id": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+  "run_id_handshake": {
+    "invocation_json": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+    "mismatch": false,
+    "run_report": null,
+    "schedule": "ruleop-cand-005-atdd-api-async-corrected-rep02",
+    "workspace_runtime_dir": "ruleop-cand-005-atdd-api-async-corrected-rep02"
+  },
+  "run_outcome": "RUNTIME_FAILURE",
+  "runtime": {
+    "claude_code_path": "/opt/homebrew/bin/claude",
+    "contamination": "",
+    "expected_surface": {
+      "mcp_servers": [],
+      "model": "claude-haiku-4-5-20251001",
+      "permission_mode": "",
+      "plugins": [],
+      "skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "tools": []
+    },
+    "max_budget_usd": 2.0,
+    "model_expected": "claude-haiku-4-5-20251001",
+    "model_observed": "",
+    "observed_surface": {
+      "agents": [],
+      "analytics_disabled": null,
+      "api_key_source": "",
+      "claude_code_version": "",
+      "fast_mode_state": "",
+      "init_event_seen": false,
+      "mcp_servers": [],
+      "memory_paths": [],
+      "model": "",
+      "output_style": "",
+      "permission_mode": "",
+      "plugins": [],
+      "session_id": "",
+      "skills": [],
+      "slash_commands": [],
+      "tools": []
+    },
+    "surface_diff": {
+      "missing_expected_skills": [
+        "bmad-testarch-atdd",
+        "rdx-tea-atdd"
+      ],
+      "model_mismatch": false,
+      "permission_mode_mismatch": false,
+      "unexpected_mcp_servers": [],
+      "unexpected_plugins": [],
+      "unexpected_skills": [],
+      "unexpected_tools": []
+    },
+    "timeout_seconds": 900
+  },
+  "runtime_result": {
+    "authentication_failed": false,
+    "is_error": null,
+    "model_turn_seen": false,
+    "result_event_seen": false,
+    "subtype": "",
+    "terminal_reason": ""
+  },
+  "scenario": "atdd-api-async-corrected",
+  "schedule_binding": {
+    "criteria_version": "rdx-tea-rule-operation-criteria.v1",
+    "drift_reasons": [
+      "prompt_hash drift"
+    ],
+    "schedule_sha256": "0b2cd8eede3c8ae6c7d6d02cd98f464a7cfb119012caed41d0b59f3844abc97d",
+    "schema_version": "rdx-tea-live-evidence.v4",
+    "status": "FAIL"
+  },
+  "schema_version": "rdx-tea-live-evidence.v4",
+  "workflow": "atdd",
+  "workspace": {
+    "config_dir_overridden": false,
+    "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+    "path": "rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-cand-005-atdd-api-async-corrected-rep02"
+  },
+  "workspace_delta": {
+    "consistency": "PASS",
+    "created_files": [
+      "_bmad-run/rdx-tea-invocation.json"
+    ],
+    "declared_existing_files": [],
+    "declared_generated_files": [],
+    "declared_missing_files": [],
+    "deleted_files": [],
+    "modified_files": [],
+    "planned_not_generated": false
+  }
+}

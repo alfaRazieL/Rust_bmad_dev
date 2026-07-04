@@ -1387,9 +1387,20 @@ def _finalize_evidence_v4(spec: RunSpec, prep: dict, invocation: dict,
 
     fixture_hash = _sha256_dir_tree(spec.fixture_dir)
     prompt_hash = invocation.get("prompt_hash", "")
+    # D3.4.1 §binding-fix. The schedule pins the prompt TEMPLATE hash,
+    # computed with a `__RUN_ID__` placeholder (see run_rule_operation.
+    # dry_run: sha256(arm_prompt(arm, wf, "__RUN_ID__"))). That is why all
+    # repetitions of a scenario share one prompt_hash. Schedule binding
+    # must therefore compare the same run-id-normalised template, NOT the
+    # per-run prompt (which legitimately embeds the variable run_id and is
+    # verified separately by run_id_handshake). Comparing the per-run hash
+    # produced a false SCHEDULE_DRIFT on every scheduled run. The recorded
+    # invocation.prompt_hash below stays the REAL prompt hash for audit.
+    binding_prompt_hash = _sha256_text(
+        arm_prompt(spec.arm, spec.workflow, "__RUN_ID__"))
     criteria = load_rule_criteria()
     binding = evaluate_schedule_binding(
-        spec=spec, observed_prompt_hash=prompt_hash,
+        spec=spec, observed_prompt_hash=binding_prompt_hash,
         observed_fixture_hash=fixture_hash, schedule_entry=schedule_entry,
         schedule_sha256=schedule_sha256,
         pinned_schedule_sha256=pinned_schedule_sha256,

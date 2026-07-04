@@ -1,0 +1,23 @@
+{
+  "cli": "/opt/homebrew/bin/claude",
+  "default_model_policy": {
+    "allowed": [
+      "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-6"
+    ],
+    "forbidden": [
+      "claude-opus-4-7",
+      "opus"
+    ],
+    "note": "D3.3 cost policy: live evals never use Opus."
+  },
+  "status": "READY",
+  "surface": {
+    "max_budget_usd": "--max-budget-usd",
+    "output_format": "stream-json",
+    "print": "--print",
+    "session_id": "--session-id",
+    "verbose": "--verbose"
+  },
+  "version": "2.1.191"
+}

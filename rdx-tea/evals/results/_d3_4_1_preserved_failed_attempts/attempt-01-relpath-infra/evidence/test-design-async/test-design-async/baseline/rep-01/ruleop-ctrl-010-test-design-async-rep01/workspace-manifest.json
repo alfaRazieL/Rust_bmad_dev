@@ -1,0 +1,10 @@
+{
+  "collected_at": "2026-07-04T06:00:45+00:00",
+  "inventory": {
+    "transcript.stream.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "run_id": "ruleop-ctrl-010-test-design-async-rep01",
+  "scenario": "test-design-async/baseline/rep-01",
+  "workflow": "test-design",
+  "workspace": "rdx-tea/evals/results/d3_4_rule_operation/workspaces/ruleop-ctrl-010-test-design-async-rep01"
+}

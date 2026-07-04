@@ -230,6 +230,65 @@ def test_schedule_binding_sha_drift():
     assert "schedule_sha256 drift" in b["drift_reasons"]
 
 
+# --------- D3.4.1 regression: run-id-normalised prompt-template binding
+
+_SCHEDULE_V3 = LIVE.parent / "evals" / "runs" / "D3_4_RULE_OPERATION_RUNS.v3.json"
+
+
+def test_scheduled_prompt_hash_is_run_id_normalised_template():
+    """The schedule pins the prompt TEMPLATE hash (run_id placeholder),
+    which is why all repetitions of a scenario share one prompt_hash and
+    why the runtime binding must normalise the run_id before hashing.
+
+    Regression for the D3.4.1 false SCHEDULE_DRIFT: every scheduled run
+    reported `prompt_hash drift` because the runtime compared the real
+    per-run prompt (with the variable run_id embedded) against the
+    template hash the schedule pins.
+    """
+    schedule = json.loads(_SCHEDULE_V3.read_text(encoding="utf-8"))
+    runs = schedule["runs"]
+
+    # (a) Each entry's pinned prompt_hash equals the run-id-normalised
+    # template hash the runtime now computes for binding.
+    for e in runs:
+        template_hash = run_live._sha256_text(
+            run_live.arm_prompt(e["arm"], e["workflow"], "__RUN_ID__"))
+        assert e["prompt_hash"] == template_hash, e["run_id"]
+
+    # (b) Repetitions of one scenario/arm share the template hash even
+    # though their real run_ids (and thus real prompts) differ.
+    reps = [e for e in runs
+            if e["scenario"] == "test-design-async" and e["arm"] == "candidate"]
+    assert len({e["run_id"] for e in reps}) == 3
+    assert len({e["prompt_hash"] for e in reps}) == 1
+    real_prompts = {run_live._sha256_text(
+        run_live.arm_prompt(e["arm"], e["workflow"], e["run_id"])) for e in reps}
+    assert len(real_prompts) == 3  # real per-run prompts genuinely differ
+
+    # (c) Binding PASSES when compared with the normalised template hash.
+    e0 = reps[0]
+    b = run_live.evaluate_schedule_binding(
+        spec=_spec(), observed_prompt_hash=e0["prompt_hash"],
+        observed_fixture_hash=e0["fixture_hash"], schedule_entry=e0,
+        schedule_sha256="S", pinned_schedule_sha256="S",
+        criteria_version=e0["criteria_version"],
+        expected_criteria_version=e0["criteria_version"],
+        schema_version=e0["schema_version"],
+        expected_schema_version=e0["schema_version"])
+    assert b["status"] == "PASS", b["drift_reasons"]
+
+    # (d) A genuine template change is still caught as drift.
+    b2 = run_live.evaluate_schedule_binding(
+        spec=_spec(), observed_prompt_hash="TAMPERED", observed_fixture_hash=e0["fixture_hash"],
+        schedule_entry=e0, schedule_sha256="S", pinned_schedule_sha256="S",
+        criteria_version=e0["criteria_version"],
+        expected_criteria_version=e0["criteria_version"],
+        schema_version=e0["schema_version"],
+        expected_schema_version=e0["schema_version"])
+    assert b2["status"] == "FAIL"
+    assert "prompt_hash drift" in b2["drift_reasons"]
+
+
 # --------------------------------------------------- v4 schema
 
 def _valid_v4_candidate(**over):

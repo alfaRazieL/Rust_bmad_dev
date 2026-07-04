@@ -1,0 +1,12 @@
+{
+  "arm": "candidate",
+  "base_sha": "56165d1bcfc2b1647906396e6d2a387847946c4c",
+  "fixture_hash": "3695de221cc8b4b3bf3d3ce9c443d43a28c4d08b389fcdfef6b5432700e91ba2",
+  "head_sha": "6b7dc03e0aeab37a032d297aa5f78ea9fee23bbe",
+  "prompt_hash": "35517ac3694c03a5745a8115d82dbc1f259938eaf2578455846940c538564d77",
+  "repetition": 3,
+  "run_id": "ruleop-cand-006-atdd-api-async-corrected-rep03",
+  "scenario": "atdd-api-async-corrected",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "atdd"
+}

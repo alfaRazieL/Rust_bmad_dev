@@ -1,0 +1,12 @@
+{
+  "arm": "candidate",
+  "base_sha": "fca063a046e4aae4acf2c5df0ee47c2c706bb9e9",
+  "fixture_hash": "a4860c0c58fbd52d39addf3c212805ebe2b6d995c1074a883fa3ff6b3f71516c",
+  "head_sha": "521a0fcb6fcbc92fb3e2728a1488e25be6144169",
+  "prompt_hash": "83868377dc497fda56cdbc8def35a47b66bdee32ebafe03c5607ed10701de495",
+  "repetition": 1,
+  "run_id": "ruleop-cand-001-test-design-async-rep01",
+  "scenario": "test-design-async",
+  "schema_version": "rdx-tea-invocation.v1",
+  "workflow": "test-design"
+}

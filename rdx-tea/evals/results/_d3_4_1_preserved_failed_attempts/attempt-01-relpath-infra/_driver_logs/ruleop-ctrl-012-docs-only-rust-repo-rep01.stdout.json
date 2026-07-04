@@ -1,0 +1,12 @@
+{
+  "admissible": false,
+  "admission_reasons": [
+    "exit_code=1",
+    "no terminal result event",
+    "no model turn"
+  ],
+  "bundle": "rdx-tea/evals/results/d3_4_rule_operation/evidence/docs-only-rust-repo/docs-only-rust-repo/baseline/rep-01/ruleop-ctrl-012-docs-only-rust-repo-rep01/live-evidence.v4.json",
+  "run_id": "ruleop-ctrl-012-docs-only-rust-repo-rep01",
+  "run_outcome": "RUNTIME_FAILURE",
+  "status": "failed"
+}
