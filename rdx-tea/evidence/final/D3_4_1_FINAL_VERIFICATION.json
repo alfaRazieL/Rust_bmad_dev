@@ -9,7 +9,7 @@
   "branch": "rdx-tea-integration",
   "start_head_sha": "b3f4b47a43f21bd9fd412a8bb32382cdd46b8c44",
   "tested_subject_sha": "135b5ed24c419d8e135698bb3b41dd55b1a0c33d",
-  "evidence_commit_sha": "POINTER_CLOSURE_PENDING",
+  "evidence_commit_sha": "4be4d3e1cff6f0b6ee8bacff11e1ee63c3525c94",
   "origin_main": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
   "predecessor_d3_4_0_tested_subject_sha": "f145c14bd7d3ec20143cb48ea76b9cab3feddb80",
 
