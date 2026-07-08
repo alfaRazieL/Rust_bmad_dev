@@ -1,0 +1,16 @@
+# W2 canonical snapshot hash pin (G-W2-CANON)
+#
+# sha256 over a sorted `<name> <sha256(file)>` manifest of the
+# install-tree canonical KB files, as computed by the PRODUCTION
+# prepare._canonical_snapshot_hash() and stamped into every
+# run-manifest.json as rdx_canonical_snapshot_sha256.
+#
+# Canonical files hashed (under poc/install-tree/_bmad/rdx-tea/canonical/):
+#   router-rules.json, status-definitions.json, rule-check-map.json,
+#   authority-matrix.json, kb-sections/section-4-core.md,
+#   kb-sections/section-6-packs.md, kb-sections/section-8-governance.md
+#
+# Deterministic (sorted, no wallclock/random). Any canonical/ change
+# moves this hash and REQUIRES a source-lock re-pin + SOURCE_LOCK
+# addendum before re-pinning. Verify: w2_canonical_snapshot.py.
+a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8  canonical-snapshot
