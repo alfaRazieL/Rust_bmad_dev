@@ -77,6 +77,7 @@ sys.path.insert(0, str(_HERE))
 import prepare  # noqa: E402
 import binder   # noqa: E402
 import rdx_tea_validator  # noqa: E402
+import workspace_delta  # noqa: E402
 
 
 SUPPORTED_MODES = ("sequential",)
@@ -547,6 +548,23 @@ def finalize_run(
         )
         verifier_results.append(v)
 
+    # D3.4.0 §7-§8 — workspace delta + artifact consistency, judged against
+    # REALITY (the real delta + files on disk) via the promoted production
+    # module (no eval-plane import). A phantom file claim or a declared-but-
+    # missing generated file fails the run closed; duplicate frontmatter is a
+    # warning only.
+    delta = workspace_delta.collect_workspace_delta(
+        project_root=project_root,
+        new_artefacts=new,
+        artifact_paths=new,
+        pre_snapshot=state.get("pre_snapshot"),
+    )
+    wdc_status, wdc_reasons = workspace_delta.workspace_delta_consistency(delta)
+    artifact_consistency = workspace_delta.check_artifact_consistency(
+        new, project_root, delta)
+    consistency_ok = (wdc_status == "PASS"
+                      and artifact_consistency["status"] == "PASS")
+
     # D3.3 §4.5 — observed_mode surrogate. If we can find a transcript
     # file adjacent to the artefacts, parse it for subagent/agent-team
     # dispatch tokens. Absence = INFERRED_ABSENT (an inference, not a
@@ -573,6 +591,11 @@ def finalize_run(
         "observed_mode": observed_mode,
         "sidecars": sidecars,
         "verifier": verifier_results,
+        "workspace_delta": delta,
+        "workspace_delta_consistency": {
+            "status": wdc_status, "reasons": wdc_reasons},
+        "artifact_consistency": artifact_consistency,
+        "consistency_status": "PASS" if consistency_ok else "FAIL",
         "created_at": audit_now,
         "finalized_at": audit_now,
         "new_artefacts": [str(a) for a in new],
@@ -580,12 +603,21 @@ def finalize_run(
     }
     report_path = (project_root / "_bmad" / "rdx-tea" / "runtime"
                    / workflow / run_id / "run-report.json")
+    # Preserve the report honestly even on a consistency failure — a failed
+    # run is recorded with consistency_status=FAIL, never silently promoted.
     _write_state(report_path, report)
-    state["phase"] = "finalized"
+    state["phase"] = "finalized" if consistency_ok else "finalized_consistency_failed"
     _write_state(_run_state_path(project_root, workflow, run_id), state)
-    # Restore/remove overlay + release lock.
+    # Restore/remove overlay + release lock — always, even when the run
+    # fails closed, so the workspace is left clean and unlocked.
     _restore_or_remove_overlay(project_root, workflow, run_id)
     _release_active_run_lock(project_root, run_id)
+    if not consistency_ok:
+        reasons = wdc_reasons + list(artifact_consistency.get("reasons", []))
+        raise WrapperError(
+            "artifact/workspace consistency failed (fail-closed): "
+            + "; ".join(reasons)
+        )
     return report
 
 

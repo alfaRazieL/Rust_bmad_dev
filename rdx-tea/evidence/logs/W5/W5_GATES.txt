@@ -1,0 +1,33 @@
+WAVE 5 GATE EVIDENCE
+cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+branch: rdx-tea-integration
+START_HEAD: 8e024f10ba2b4788060589cd68ff0d09ee95c463
+HEAD(before W5 impl commit): 1cbda92c79bc3befe1efae5267e839d2caac9714
+python: Python 3.14.4; pytest: pytest 9.1.1
+env: RDX_TEA_ALLOW_FIXTURE_DIFF/ALLOW_TEST_ARTEFACT used in tests only; no auth env set/overridden
+
+== G-W5-SIDECAR: pytest -k 'sidecar or dedupe' ==
+17 passed, 218 deselected in 1.16s
+== bundle-tamper: pytest -k tamper ==
+2 passed, 233 deselected in 0.32s
+== G-W5-DELTA: pytest -k delta ==
+15 passed, 220 deselected in 1.12s
+== G-W5-CONSISTENCY: pytest -k consistency ==
+12 passed, 223 deselected in 1.22s
+== boundary artefact tests (symlink/outside/traversal) ==
+15 passed, 220 deselected in 0.65s
+== G-SPLIT-IMPORT grep (shipped surface) ==
+zero hits (PASS)
+== G-DET: w2 canonical / w3 bundle golden ==
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+OK W3 golden bundle signature (32 rows) matches pin
+== G-SCOPE: changed paths vs START_HEAD (exclude .agents) ==
+rdx-tea/evidence/logs/W5/
+rdx-tea/implementation/WAVE_INDEX.md
+rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/rdx_tea_wrapper.py
+rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/workspace_delta.py
+rdx-tea/tests/integration/test_l3_w5_finalize_consistency.py
+rdx-tea/tests/unit/test_l1_w5_binder_sidecar.py
+rdx-tea/tests/unit/test_l1_w5_workspace_delta.py
+== FULL SUITE ==
+235 passed in 14.35s
