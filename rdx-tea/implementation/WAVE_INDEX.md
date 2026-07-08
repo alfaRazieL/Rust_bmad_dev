@@ -15,6 +15,7 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
   - W2 canonical snapshot pin: `a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8`.
   - W3 FINAL_HEAD / W4 required START: `b22ce957dcffd6486f476ee38dc01e136483ab1e`.
   - W3 golden bundle pin: `rdx-tea/evidence/hashes/w3_bundle_golden.txt`.
+  - W4 FINAL_HEAD / W5 required START: `8e024f10ba2b4788060589cd68ff0d09ee95c463`.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -25,7 +26,7 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 | **W1** | Production layout & source boundaries | meta | W0 | ☑ complete | VERSION reconciled; boundary/import test; adapter classification; install-tree README | golden hashes unchanged; boundary enforceable; FINAL_HEAD `b56e9e0`; all W1 gates PASS |
 | **W2** | Rule KB & router productionization | knowledge | W1 | ☑ complete | router parity + activation-matrix tests; canonical snapshot hash pin | FINAL_HEAD `6e1b2f346d1b8a260b8dba0401f0483656b0b57a`; canonical snapshot pin `a97d9f85…c5e8d8`; pack activation deterministic; forbidden-by-active-packs; all W2 gates PASS |
 | **W3** | Active-context bundle builder | knowledge | W2 | ☑ complete | byte-determinism + identity + schema tests; golden bundle hashes | FINAL_HEAD `b22ce957dcffd6486f476ee38dc01e136483ab1e`; bundle byte-identical; identity fail-closed; golden bundle pin `w3_bundle_golden.txt`; all W3 gates PASS |
-| **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☐ pending | external-project slice; sequential/lock/overlay tests | starts from W3 FINAL_HEAD `b22ce957dcffd6486f476ee38dc01e136483ab1e`; sequential-only; Task 0; child not simulated |
+| **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☑ complete | external-project slice; sequential/lock/overlay tests | FINAL_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; W5 START_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; sequential-only; Task 0; child not simulated; 216 passed |
 | **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☐ pending | one-sidecar test; promoted delta/consistency module + tests | reality-checked finalize; no eval import |
 | **W6** | Verifier / admission & failure semantics | admission | W5 | ☐ pending | per-check mutation tests; admission recompute tests | fail-closed; failed run never admissible |
 | **W7** | Installer / bootstrap & project settings | packaging | W6 | ☐ pending | project installer; settings template; lifecycle tests | no auth material; no CLAUDE_CONFIG_DIR override; idempotent |
