@@ -1,0 +1,24 @@
+# W6 RED -> GREEN evidence
+cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+python: Python 3.14.4
+env: RDX_TEA_ALLOW_FIXTURE_DIFF=1 RDX_TEA_ALLOW_TEST_ARTEFACT=1 (tests only); no auth env set
+
+## RED — new W6 admission module absent (admission.py moved aside; wrapper import + gate cannot resolve)
+                ^^^^^^^
+rdx-tea/tests/unit/test_l1_w6_admission_recompute.py:30: in _load
+    spec.loader.exec_module(m)
+<frozen importlib._bootstrap_external>:755: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:892: in get_code
+    ???
+<frozen importlib._bootstrap_external>:950: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/poc/install-tree/_bmad/rdx-tea/scripts/admission.py'
+=========================== short test summary info ============================
+ERROR rdx-tea/tests/unit/test_l1_w6_admission_recompute.py - FileNotFoundErro...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.05s
+
+## GREEN — admission module restored
+................................                                         [100%]
+32 passed in 1.45s

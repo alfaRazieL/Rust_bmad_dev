@@ -1,0 +1,19 @@
+# W6 gates — cwd /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev — python Python 3.14.4
+
+## G-W6-VERIFIER : pytest rdx-tea/tests -k verifier -q
+...............                                                          [100%]
+15 passed, 262 deselected in 2.73s
+## G-W6-ADMISSION : pytest rdx-tea/tests -k admission -q
+..........................                                               [100%]
+26 passed, 251 deselected in 0.07s
+## G-W6-FAILCLOSED : pytest rdx-tea/tests -k failclosed -q
+......                                                                   [100%]
+6 passed, 271 deselected in 2.41s
+## G-DET W2 canonical snapshot pin
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+## G-DET W3 golden bundle pin
+OK W3 golden bundle signature (32 rows) matches pin
+## G-AUTH grep (shipped surface) — expect no hits
+CLEAN
+## G-SPLIT-IMPORT grep (shipped surface) — expect no hits
+CLEAN

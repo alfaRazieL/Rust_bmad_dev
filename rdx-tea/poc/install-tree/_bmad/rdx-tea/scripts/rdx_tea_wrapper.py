@@ -78,6 +78,7 @@ import prepare  # noqa: E402
 import binder   # noqa: E402
 import rdx_tea_validator  # noqa: E402
 import workspace_delta  # noqa: E402
+import admission  # noqa: E402
 
 
 SUPPORTED_MODES = ("sequential",)
@@ -601,6 +602,17 @@ def finalize_run(
         "new_artefacts": [str(a) for a in new],
         "verify_only": verify_only,
     }
+    # W6 (ADR-006 §5-9, ADR-008) — recompute FINALIZED-admissibility from the
+    # report's own primitive fields and record it honestly. This is a
+    # RECOMPUTE, never a self-declared flag: the admission gate
+    # (`admission.admit_run`) ignores any recorded `admission` block, so a
+    # dishonest bundle cannot self-admit. The wrapper still preserves the
+    # report and records the honest verdict for a subagent-observed or
+    # verifier-failing run (finalize's exit code is the lifecycle outcome;
+    # `admission.admissible` is the authoritative FINALIZED-admissible verdict
+    # consumed downstream).
+    admission_result = admission.admit_run(report)
+    report["admission"] = admission_result.to_dict()
     report_path = (project_root / "_bmad" / "rdx-tea" / "runtime"
                    / workflow / run_id / "run-report.json")
     # Preserve the report honestly even on a consistency failure — a failed

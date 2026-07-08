@@ -129,7 +129,7 @@ def verify(
     except jsonschema.ValidationError as err:
         _record(checks, "schema", False, str(err.message))
 
-    workflow = workflow or sidecar["workflow"]
+    workflow = workflow or sidecar.get("workflow", "")
     run_id = run_id or sidecar.get("run_id", "")
     if project_root is None:
         # Recover project_root from artifact_path assumption:
@@ -149,12 +149,22 @@ def verify(
     runtime_dir = project_root / "_bmad" / "rdx-tea" / "runtime" / workflow / run_id
     manifest_path = runtime_dir / "run-manifest.json"
 
+    # Post-schema field reads are defensive (`.get`): a schema-invalid sidecar
+    # that dropped a required field yields a graceful check FAIL instead of a
+    # KeyError — strictly more fail-closed. A present field behaves identically.
+    sc_manifest_sha = sidecar.get("prepare_manifest_sha256", "")
+    sc_projection = sidecar.get("projection_hash", "")
+    sc_artifact_sha = sidecar.get("artifact_sha256", "")
+    sc_base = sidecar.get("base_sha", "")
+    sc_head = sidecar.get("head_sha", "")
+    sc_diff = sidecar.get("diff_digest", "")
+
     # 2) manifest_hash
     if manifest_path.exists():
         actual = _sha256_file(manifest_path)
         _record(checks, "manifest_hash",
-                actual == sidecar["prepare_manifest_sha256"],
-                f"disk={actual[:12]} sidecar={sidecar['prepare_manifest_sha256'][:12]}")
+                actual == sc_manifest_sha,
+                f"disk={actual[:12]} sidecar={sc_manifest_sha[:12]}")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     else:
         _record(checks, "manifest_hash", False, f"manifest missing at {manifest_path}")
@@ -164,22 +174,22 @@ def verify(
     bundle_path = runtime_dir / "active-context.md"
     if bundle_path.exists():
         actual = _sha256_file(bundle_path)
-        _record(checks, "bundle_hash", actual == sidecar["projection_hash"],
-                f"disk={actual[:12]} sidecar={sidecar['projection_hash'][:12]}")
+        _record(checks, "bundle_hash", actual == sc_projection,
+                f"disk={actual[:12]} sidecar={sc_projection[:12]}")
     else:
         _record(checks, "bundle_hash", False, "active-context.md missing")
 
     # 4) artifact_hash
-    artifact = artifact_path or Path(sidecar["artifact_path"])
-    if artifact.exists():
+    artifact = artifact_path or Path(sidecar.get("artifact_path", ""))
+    if artifact.is_file():
         actual = _sha256_file(artifact)
-        _record(checks, "artifact_hash", actual == sidecar["artifact_sha256"])
+        _record(checks, "artifact_hash", actual == sc_artifact_sha)
     else:
         _record(checks, "artifact_hash", False, f"artefact missing: {artifact}")
 
     # 5) base_head_exist (git)
-    base_ok = _git_cat_file_exists(project_root, sidecar["base_sha"])
-    head_ok = _git_cat_file_exists(project_root, sidecar["head_sha"])
+    base_ok = bool(sc_base) and _git_cat_file_exists(project_root, sc_base)
+    head_ok = bool(sc_head) and _git_cat_file_exists(project_root, sc_head)
     _record(checks, "base_head_exist", base_ok and head_ok,
             f"base_ok={base_ok} head_ok={head_ok}")
 
@@ -188,8 +198,8 @@ def verify(
     if diff_path.exists():
         recomputed = hashlib.sha256(diff_path.read_bytes()).hexdigest()
         _record(checks, "diff_digest_recomputed",
-                recomputed == sidecar["diff_digest"],
-                f"disk={recomputed[:12]} sidecar={sidecar['diff_digest'][:12]}")
+                recomputed == sc_diff,
+                f"disk={recomputed[:12]} sidecar={sc_diff[:12]}")
     else:
         _record(checks, "diff_digest_recomputed", False, "diff.patch missing")
 

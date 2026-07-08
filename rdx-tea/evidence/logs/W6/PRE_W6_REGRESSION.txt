@@ -1,0 +1,19 @@
+# Pre-W6 regression — captured BEFORE any verifier/admission/wrapper change
+# cwd: .../rdx-workspace/Rust_bmad_dev   python: 3.14.4 (rdx-tea/.venv-baseline)
+# W6 START_HEAD: feb4087a7040bd895cf0bf2b59219d4874c02c17
+# Live model calls: NONE. Tests use the env-gated deterministic fake-artefact path.
+
+router_parity or forbidden or docs_only or boundary   -> 21 passed, 214 deselected
+W2 canonical snapshot pin                              -> OK a97d9f85...c5e8d8 matches pin
+W3 golden bundle pin                                   -> OK 32 rows match pin
+identity or schema or determinism                      -> 25 passed, 210 deselected
+lifecycle                                              -> 38 passed
+bmad-tea                                               -> 29 passed
+sidecar or dedupe or delta or consistency or tamper    -> 35 passed, 200 deselected
+full suite                                             -> 235 passed
+
+All pre-W6 regression checks PASS. Matches the W5 owner handoff (235 passed).
+
+# Post-W6, the same -k selectors report higher counts because new W6 tests also
+# match some keywords (e.g. `schema`, `consistency`, `boundary`); see
+# ../W6_full_suite_GREEN.log (277 passed = 235 baseline + 42 new W6 tests).
