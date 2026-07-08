@@ -16,7 +16,14 @@ Semantics:
   * `run-manifest.json` records the identity fields the wrapper passed
     in (base_sha, head_sha, diff_digest, rdx_source_sha, tea_source_sha)
     as MANDATORY. Missing identity → prepare fails closed.
-  * Bundle bytes are deterministic (sorted iteration; no wall-clock).
+  * Bundle AND manifest bytes are byte-deterministic across processes
+    (sorted iteration; NO wall-clock/random in this generator — W3 /
+    G-W3-DETERMINISM). The manifest is the hashed verification artifact:
+    the binder records sha256(run-manifest.json) as the sidecar's
+    `prepare_manifest_sha256`, so any wall-clock here would make the whole
+    verification chain non-reproducible. Wall-clock audit stamps live in
+    the wrapper run-report (`created_at`) and the binder sidecar
+    (`bound_at`), never in this manifest.
 
 Emits atomically:
   * `<project-root>/_bmad/rdx-tea/runtime/<workflow>/active-context.md`
@@ -31,7 +38,6 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
@@ -186,11 +192,23 @@ def _render_bundle(
     return "\n".join(lines) + "\n"
 
 
-def _stable_now() -> str:
-    fake = os.environ.get("RDX_TEA_FAKE_NOW")
-    if fake:
-        return fake
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+def _prepared_at_stamp() -> str:
+    """Deterministic `prepared_at` value for the run-manifest.
+
+    prepare.py is a byte-deterministic generator (W3 / G-W3-DETERMINISM,
+    cross-cutting G-DET): it must NEVER read the wall-clock. The manifest is
+    the hashed verification artifact — the binder stamps
+    sha256(run-manifest.json) into the sidecar as `prepare_manifest_sha256`
+    — so a wall-clock reading here would make two identical runs produce
+    different manifest bytes and a non-reproducible verification chain.
+
+    An explicit `RDX_TEA_FAKE_NOW` (a deterministic, caller-injected value)
+    is honoured so tests/callers may stamp a fixed timestamp; with no such
+    injection the field is empty. Honest wall-clock audit stamps live in the
+    wrapper run-report (`created_at`) and the binder sidecar (`bound_at`),
+    which are NOT hashed into the verification chain.
+    """
+    return os.environ.get("RDX_TEA_FAKE_NOW", "")
 
 
 def _atomic_write(target: Path, content: bytes) -> None:
@@ -395,7 +413,7 @@ def prepare(
             "rdx_source_sha": identity["rdx_source_sha"],
             "tea_source_sha": identity["tea_source_sha"],
         },
-        "prepared_at": _stable_now(),
+        "prepared_at": _prepared_at_stamp(),
     }
 
     _atomic_write(bundle_path, bundle_bytes)

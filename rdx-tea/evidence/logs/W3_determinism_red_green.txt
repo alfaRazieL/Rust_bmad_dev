@@ -1,0 +1,24 @@
+# W3 determinism RED->GREEN evidence (G-W3-DETERMINISM / G-DET)
+# cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+# python: Python 3.14.4
+# baseline START_HEAD: 6e1b2f346d1b8a260b8dba0401f0483656b0b57a
+
+## RED — revert prepare.py to committed wall-clock version, run determinism tests
+(stashed clock-free prepare.py; wall-clock version restored)
+189:def _stable_now() -> str:
+193:    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+398:        "prepared_at": _stable_now(),
+
+rdx-tea/tests/integration/test_l3_w3_bundle_builder.py:198: AssertionError
+=========================== short test summary info ============================
+FAILED rdx-tea/tests/integration/test_l3_w3_bundle_builder.py::test_w3_determinism_two_processes_bundle_and_manifest_identical
+FAILED rdx-tea/tests/integration/test_l3_w3_bundle_builder.py::test_w3_determinism_prepare_source_has_no_wallclock
+2 failed, 1 passed, 20 deselected in 0.17s
+(restored clock-free prepare.py)
+
+## GREEN — clock-free prepare.py, run determinism tests
+195:def _prepared_at_stamp() -> str:
+211:    return os.environ.get("RDX_TEA_FAKE_NOW", "")
+416:        "prepared_at": _prepared_at_stamp(),
+...                                                                      [100%]
+3 passed, 20 deselected in 0.79s
