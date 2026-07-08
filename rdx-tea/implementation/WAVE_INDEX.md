@@ -16,6 +16,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
   - W3 FINAL_HEAD / W4 required START: `b22ce957dcffd6486f476ee38dc01e136483ab1e`.
   - W3 golden bundle pin: `rdx-tea/evidence/hashes/w3_bundle_golden.txt`.
   - W4 FINAL_HEAD / W5 required START: `8e024f10ba2b4788060589cd68ff0d09ee95c463`.
+  - W5 FINAL_HEAD / W6 required START: `feb4087a7040bd895cf0bf2b59219d4874c02c17`.
+  - Full suite at W5 owner checkpoint: 235 passed.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -27,8 +29,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 | **W2** | Rule KB & router productionization | knowledge | W1 | ☑ complete | router parity + activation-matrix tests; canonical snapshot hash pin | FINAL_HEAD `6e1b2f346d1b8a260b8dba0401f0483656b0b57a`; canonical snapshot pin `a97d9f85…c5e8d8`; pack activation deterministic; forbidden-by-active-packs; all W2 gates PASS |
 | **W3** | Active-context bundle builder | knowledge | W2 | ☑ complete | byte-determinism + identity + schema tests; golden bundle hashes | FINAL_HEAD `b22ce957dcffd6486f476ee38dc01e136483ab1e`; bundle byte-identical; identity fail-closed; golden bundle pin `w3_bundle_golden.txt`; all W3 gates PASS |
 | **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☑ complete | external-project slice; sequential/lock/overlay tests | FINAL_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; W5 START_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; sequential-only; Task 0; child not simulated; 216 passed |
-| **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☐ pending | one-sidecar test; promoted delta/consistency module + tests | reality-checked finalize; no eval import |
-| **W6** | Verifier / admission & failure semantics | admission | W5 | ☐ pending | per-check mutation tests; admission recompute tests | fail-closed; failed run never admissible |
+| **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☑ complete | one-sidecar test; promoted delta/consistency module + tests | FINAL_HEAD `feb4087a7040bd895cf0bf2b59219d4874c02c17`; W6 START_HEAD `feb4087a7040bd895cf0bf2b59219d4874c02c17`; reality-checked finalize; no eval import; 235 passed |
+| **W6** | Verifier / admission & failure semantics | admission | W5 | ◐ in progress | per-check mutation tests; admission recompute tests | fail-closed; failed run never admissible |
 | **W7** | Installer / bootstrap & project settings | packaging | W6 | ☐ pending | project installer; settings template; lifecycle tests | no auth material; no CLAUDE_CONFIG_DIR override; idempotent |
 | **W8** | CI gates & source-lock | packaging | W7 | ☐ pending | CI boundary + golden-hash jobs; ci_check tests | green; no skips; scope + boundary enforced |
 | **W9** | Documentation & operator workflows | docs | W7 | ☐ pending | `rdx-tea/docs/**`; doc-lint | operator can run from docs alone |
