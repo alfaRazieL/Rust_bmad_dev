@@ -5,14 +5,15 @@ CLI context using the matching prompt in `WAVE_PROMPTS.md`. Full detail
 in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 
 - Branch: `rdx-tea-integration` (never `main`).
-- START of D4: `1cd5b11b20ba8cea92101d47967665d44cea7e97`.
+- D4 pre-plan baseline (D3.4.1): `1cd5b11b20ba8cea92101d47967665d44cea7e97`.
+- Wave-0+ execution START (D4.0 plan pack committed on top): `8b4ba3a53971f97b40cd997a77f019cf075c8ea8`.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
 
 | Wave | Goal | Plane | Depends on | Status | Expected artifact outputs | Owner checkpoint |
 |---|---|---|---|---|---|---|
-| **W0** | Plan validation & repo hygiene | meta | START_HEAD | ☐ pending | wave-index status update; validation notes | HEAD == 1cd5b11; split matches disk |
+| **W0** | Plan validation & repo hygiene | meta | START_HEAD | ☑ complete | wave-index status update; validation notes (`evidence/logs/W0_VALIDATION.md`) | HEAD == 8b4ba3a (plan-pack; `1cd5b11` = pre-plan baseline); split matches disk; all W0 gates PASS |
 | **W1** | Production layout & source boundaries | meta | W0 | ☐ pending | VERSION reconciled; boundary/import test; adapter classification; install-tree README | golden hashes unchanged; boundary enforceable |
 | **W2** | Rule KB & router productionization | knowledge | W1 | ☐ pending | router parity + activation-matrix tests; canonical snapshot hash pin | pack activation deterministic; forbidden-by-active-packs |
 | **W3** | Active-context bundle builder | knowledge | W2 | ☐ pending | byte-determinism + identity + schema tests; golden bundle hashes | bundle byte-identical; identity fail-closed |
