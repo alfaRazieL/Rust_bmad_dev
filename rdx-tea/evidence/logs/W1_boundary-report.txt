@@ -1,0 +1,15 @@
+# W1 boundary report (G-W1-BOUNDARY / G-SPLIT-IMPORT)
+# generated: deterministic re-runnable; no wallclock recorded intentionally
+# repo: rdx-workspace/Rust_bmad_dev   branch: rdx-tea-integration
+# START_HEAD (pre-commit): bed1b30babd3ad71b3894ff631e60154f820c18f
+# cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+
+## Command 1 (verbatim G-SPLIT-IMPORT grep over shipped surface):
+$ grep -rnE "import (live_harness|evals)|live-harness/|evals/|evidence/" rdx-tea/poc/install-tree | grep -v __pycache__
+grep_exit=1 (no output => ZERO HITS => PASS)
+
+## Command 2 (boundary pytest, gate command):
+$ python -m pytest rdx-tea/tests/ -k boundary -q
+...........                                                              [100%]
+11 passed, 126 deselected in 0.09s
+pytest_exit=0

@@ -3,10 +3,11 @@
 # tested against. Consumed by rdx_tea_wrapper.py to stamp the
 # identity block in every prepare manifest.
 #
-# When bumping any SHA, update:
-#   - this file
-#   - rdx-tea/research/D3_SOURCE_LOCK_ADDENDUM.md (§9 addendum)
-#   - rdx-tea/evidence/final/D3_FINAL_VERIFICATION.json
+# When bumping any SHA, also update the matching dev-repo audit records:
+# the D3 source-lock addendum and the D3 final-verification record. Those
+# records live outside the shipped install-tree and are deliberately not
+# named by path here — the shipped surface must not reference eval or
+# audit paths (production/eval boundary; see PRODUCTION_EVAL_SPLIT.md).
 
 rdx_source_sha: "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d"    # RDX (this repo main)
 rdx_source_tag: "v1.1.0"
