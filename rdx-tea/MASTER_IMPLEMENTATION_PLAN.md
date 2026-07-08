@@ -6,7 +6,8 @@ real BMAD TEA workflows. It is written to be executed by CLI agents in
 **separate fresh context windows**, one wave at a time.
 
 - Branch: `rdx-tea-integration` (never touch `main`).
-- START of D4: `1cd5b11b20ba8cea92101d47967665d44cea7e97`.
+- D4 pre-plan / D3.4.1 proof baseline (historical): `1cd5b11b20ba8cea92101d47967665d44cea7e97`.
+- Wave-0 execution START (D4.0 plan final head, plan-pack committed on top): `8b4ba3a53971f97b40cd997a77f019cf075c8ea8`.
 - `origin/main`: `d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d`.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1). See §2.
 - Companion artifacts: `implementation/WAVE_INDEX.md`,
@@ -50,7 +51,8 @@ real BMAD TEA workflows. It is written to be executed by CLI agents in
 Exact identities (verified against `evidence/final/` at START_HEAD):
 
 ```
-START of D4:          1cd5b11b20ba8cea92101d47967665d44cea7e97
+D4 pre-plan baseline: 1cd5b11b20ba8cea92101d47967665d44cea7e97  (D3.4.1 proof; historical)
+Wave-0 exec START:    8b4ba3a53971f97b40cd997a77f019cf075c8ea8  (D4.0 plan final head)
 origin/main:          d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d
 
 D3.4.1: RULE_OPERATION_PASS / D3_RULE_OPERATION_PROVEN
@@ -402,7 +404,9 @@ Copy-ready per-wave prompts are in `implementation/WAVE_PROMPTS.md`
   `implementation/PRODUCTION_EVAL_SPLIT.md`; `evidence/final/D3_4_1_FINAL_VERIFICATION.json`.
 - **Allowed to change:** `implementation/WAVE_INDEX.md` (status),
   optional `implementation/*` notes. No runtime files.
-- **Tasks:** verify `git rev-parse HEAD == 1cd5b11…`; confirm working
+- **Tasks:** verify `git rev-parse HEAD == 8b4ba3a…` (D4.0 plan final head;
+  `1cd5b11…` is the historical pre-plan baseline, not the exec START);
+  confirm working
   tree clean within `rdx-tea/**`; run the D4.0 artifact-presence check;
   run `pytest rdx-tea/live-harness/tests/test_harness_v4.py -q`; confirm
   the PRODUCTION_EVAL_SPLIT classification matches disk.

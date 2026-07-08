@@ -12,6 +12,12 @@ if any, is a justified future-wave decision.
 Classes: `PRODUCTION` · `EVAL-ONLY` · `HISTORICAL` · `TEST-ONLY` ·
 `TO-MIGRATE` · `TO-RETIRE-LATER`.
 
+**Tracked-file counts are stated _as of `b56e9e0` (W1 FINAL_HEAD)_** to
+avoid churn; treat them as indicative, not gates. W0/W1 added only
+evidence logs, golden-hash artifacts, a boundary test, and two READMEs —
+no runtime-dir was added or reclassified, and the production/eval
+boundary (§5) is unchanged.
+
 ## 1. Directory-level classification
 
 | Path | Class | Notes |
@@ -21,20 +27,22 @@ Classes: `PRODUCTION` · `EVAL-ONLY` · `HISTORICAL` · `TEST-ONLY` ·
 | `poc/install-tree/_bmad/rdx-tea/bootstrap/**` | **PRODUCTION** | `bootstrap.py` + `sources.lock`; upstream source bootstrap + `--verify-only`. |
 | `poc/install-tree/_bmad/rdx-tea/VERSION` | **PRODUCTION** | reconcile `0.3.1` vs `sources.lock:adapter_version 0.3.2` (Wave 1). |
 | `poc/install-tree/.claude/skills/rdx-tea-*/SKILL.md` | **PRODUCTION** | wrapper Skills (LLM-facing contract). |
-| `poc/adapter/**` | **TO-MIGRATE** | legacy dev-coupled PoC (imports `rdx_validator` directly). Superseded by install-tree (self-contained, vendored router). Classify keep-as-reference or retire-later in Wave 1; **not deleted in D4.0**. |
+| `poc/install-tree/README.md` | **NON-SHIPPED (repo pointer)** | W1 top-level pointer to the install-tree; documentation only. Not part of the shipped surface (§2); never installed. |
+| `poc/adapter/**` | **TO-MIGRATE (keep-as-reference)** | legacy dev-coupled PoC (imports `rdx_validator` directly). Superseded by install-tree (self-contained, vendored router). W1 decided **keep-as-reference** (L0/L1 projection/parser oracle; dev-coupled; never ships) — see `poc/adapter/README.md`; **not deleted in D4.0**. |
 | `poc/projections/**` (`knowledge/`, `rdx-tea-index.csv`) | **TO-MIGRATE** | early metadata-only projection PoC; superseded by `prepare.py` semantic bundle (ADR-002). Reference only. |
 | `poc/overlays/`, `poc/patches/`, `poc/schemas/` | **TO-RETIRE-LATER** | empty (0 tracked files). Confirm empty and retire in a future cleanup. |
 | `live-harness/**` | **EVAL-ONLY** | live pilot harness (`run_live.py` ~100 KB, `rule_operation.py`, `invoke_runtime.py`, `prepare_workspace.py`, `collect_evidence.py`, `runtime_discovery.py`, `schemas/live-evidence.v{1..4}`, `policies/`, `fixtures/`, `tests/`). **Never installed.** |
 | `live-harness/ci_check.py` | **EVAL-ONLY (CI tooling)** | repo-side CI helper (refuse-skips, unique-count). Runs in CI, not installed into a user project. |
 | `live-harness/rule_operation.py` | **EVAL-ONLY → source for TO-MIGRATE** | `collect_workspace_delta` / `check_artifact_consistency` are the *reference* logic to **re-implement** in production finalize (Wave 5). Do not import this module from runtime. |
-| `evals/**` | **EVAL-ONLY** | schedules (`runs/*.json`), criteria (`D3_4_RULE_OPERATION_CRITERIA.v1.yaml`), rubrics, `run_pilot.py`, `run_rule_operation.py`, `grading/**`, `results/**` (incl. `_d3_4_1_preserved_failed_attempts/`). 401 tracked files. |
-| `evidence/**` | **HISTORICAL** | 100 tracked files: `final/` verifications, `live/` smokes, `hashes/`, `logs/`, `commands/`, `artifacts/`. Read-only audit trail. |
-| `research/**` | **HISTORICAL** | 32 D-stage reports/audits/blockers incl. `D4_0_MASTER_PLAN_PRECONDITION_AUDIT.md`. |
+| `evals/**` | **EVAL-ONLY** | schedules (`runs/*.json`), criteria (`D3_4_RULE_OPERATION_CRITERIA.v1.yaml`), rubrics, `run_pilot.py`, `run_rule_operation.py`, `grading/**`, `results/**` (incl. `_d3_4_1_preserved_failed_attempts/`). ~401 tracked files. |
+| `evidence/**` | **HISTORICAL** | ~107 tracked files: `final/` verifications, `live/` smokes, `hashes/`, `logs/`, `commands/`, `artifacts/`. Read-only audit trail. Includes W0/W1 additions: `logs/W0_VALIDATION.md`, `logs/W1_VERIFICATION.md`, `logs/W1_boundary-report.txt`, `logs/W1_full_suite_GREEN.log`, and `hashes/w1_bundle_golden.{py,txt}` (deterministic golden-bundle signature + its verification helper; **eval/verification tooling — never shipped, never imported by runtime**). |
+| `research/**` | **HISTORICAL** | ~33 D-stage reports/audits/blockers incl. `D4_0_MASTER_PLAN_PRECONDITION_AUDIT.md`. |
+| `rdx-tea/.gitignore`, `evals/results/.gitignore` | **NON-SHIPPED (repo hygiene)** | git ignore rules for the dev repo; never installed into a user project; boundary-irrelevant (not runtime, not eval logic). |
 | `architecture/**` | **HISTORICAL (+1 PRODUCTION mirror)** | ADR-001/002/004/005/006/007, `WORKFLOW_OBLIGATION_MATRIX.csv`, schemas. `rdx-tea-run.v1.schema.json` here mirrors the **PRODUCTION** copy in `canonical/`; keep one canonical (Wave 3 decides which is authoritative). |
 | `implementation-plan/**` | **HISTORICAL** | D3-era proof plan (STAGE-01..09, guardrails); superseded but retained. |
 | `implementation/**` | **HISTORICAL (planning)** | this D4.0 wave pack. |
 | `test-design/**` | **HISTORICAL (test strategy)** | `MASTER_TEST_STRATEGY.md`, `BEHAVIORAL_EVAL_PLAN.md`, `RELEASE_GATES.md`, `TEST_CASES.yaml`, `TEST_TRACEABILITY_MATRIX.md`. Planning/reference. |
-| `tests/**` | **TEST-ONLY** | 14 tracked: `unit/`, `integration/`, `lifecycle/`, `bmad-tea/`, `contracts/`, `mutation/`, plus empty `acceptance/`, `ci/`, `evals/`, `fixtures/` (to fill in Waves 8/10). Repo tests, not installed. |
+| `tests/**` | **TEST-ONLY** | ~15 tracked: `unit/`, `integration/`, `lifecycle/`, `bmad-tea/`, `contracts/`, `mutation/`, plus empty `acceptance/`, `ci/`, `evals/`, `fixtures/` (to fill in Waves 8/10). Repo tests, not installed. Includes W1 boundary test `contracts/test_l0_boundary_split_import.py` (executable G-SPLIT-IMPORT). |
 | `fixtures/**` | **TEST-ONLY** | 0 tracked files on disk (real fixtures live under `live-harness/fixtures/` (eval) and `tests/fixtures/` (test)). Confirm/consolidate in Wave 1. |
 | `README.md`, `MASTER_IMPLEMENTATION_PLAN.md` | **HISTORICAL (docs)** | repo-level docs. |
 | `.venv-baseline/` | **not tracked** | local venv; untracked/ignored; never committed or shipped. |
@@ -64,7 +72,7 @@ copied into a user project.
 |---|---|---|---|---|
 | Declared-file validation + artifact-consistency detectors | `live-harness/rule_operation.py` | new `scripts/workspace_delta.py` (re-implemented, not imported) | W5 | production must not import `live-harness`. |
 | Arm-specific skill install + project `.claude/settings.json` | `live-harness/prepare_workspace.py` (reference) | `installer/**` | W7 | reuse the *pattern*, not the eval module. |
-| `poc/adapter/` logic | dev-coupled PoC | none (install-tree is canonical) | W1 | keep as reference or retire-later; document. |
+| `poc/adapter/` logic | dev-coupled PoC | none (install-tree is canonical) | W1 | **kept as reference (W1 decision)**; documented in `poc/adapter/README.md`; never ships. |
 
 ## 4. Layout disposition (create / keep / move / rename)
 

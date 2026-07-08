@@ -49,7 +49,9 @@ Non-negotiable rules (all waves):
 
 First action: `git fetch origin --prune; git rev-parse HEAD;
 git branch --show-current; git status --porcelain` and confirm HEAD is
-the handoff SHA from the previous wave (or 1cd5b11… for Wave 0/1).
+the previous wave's FINAL_HEAD / owner-authoritative handoff SHA (Wave 0
+starts from the D4.0 plan final head 8b4ba3a…; `1cd5b11…` is the historical
+pre-plan / D3.4.1 proof baseline, never a wave execution start).
 
 Final response format (end of wave):
   WAVE: <id>
@@ -70,8 +72,10 @@ Final response format (end of wave):
 [Inline the shared preamble.]
 
 WAVE 0 GOAL: Validate this plan against the repo. Produce NO production
-code. Confirm HEAD == 1cd5b11b20ba8cea92101d47967665d44cea7e97 and branch
-== rdx-tea-integration. Confirm the working tree is clean within rdx-tea/**
+code. Confirm HEAD == 8b4ba3a53971f97b40cd997a77f019cf075c8ea8 (D4.0 plan
+final head; `1cd5b11…` is the historical pre-plan / D3.4.1 proof baseline,
+not the execution start) and branch == rdx-tea-integration. Confirm the
+working tree is clean within rdx-tea/**
 (only .agents/ untracked is acceptable). Reconcile
 implementation/PRODUCTION_EVAL_SPLIT.md against `find rdx-tea -maxdepth 2`.
 

@@ -22,7 +22,7 @@ runtime, and enforced in CI (Wave 8).
 
 | Gate | Description | Wave | Test command | Evidence path | Pass criteria | Blocking? |
 |---|---|---|---|---|---|---|
-| **G-W0-HEAD** | HEAD/branch match expected START | W0 | `git rev-parse HEAD; git branch --show-current` | (log) | HEAD == `1cd5b11…`, branch == `rdx-tea-integration` | **YES** |
+| **G-W0-HEAD** | HEAD/branch match expected START | W0 | `git rev-parse HEAD; git branch --show-current` | (log) | HEAD == `8b4ba3a…` (D4.0 plan-pack; `1cd5b11…` = historical pre-plan baseline), branch == `rdx-tea-integration` | **YES** |
 | **G-W0-SPLIT** | PRODUCTION_EVAL_SPLIT matches disk | W0 | manual reconcile vs `find rdx-tea -maxdepth 2` | `implementation/PRODUCTION_EVAL_SPLIT.md` | every top dir classified; no unlisted runtime dir | **YES** |
 | **G-W0-TESTS** | D4.0 artifact-presence + cheap harness test | W0 | presence check (§10 of the prompt) + `pytest rdx-tea/live-harness/tests/test_harness_v4.py -q` | `evidence/logs/` | presence check prints OK; harness test green | non-blocking (planning) |
 

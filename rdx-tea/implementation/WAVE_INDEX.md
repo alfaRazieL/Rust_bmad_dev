@@ -6,7 +6,11 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 
 - Branch: `rdx-tea-integration` (never `main`).
 - D4 pre-plan baseline (D3.4.1): `1cd5b11b20ba8cea92101d47967665d44cea7e97`.
-- Wave-0+ execution START (D4.0 plan pack committed on top): `8b4ba3a53971f97b40cd997a77f019cf075c8ea8`.
+- Wave-0 execution START (D4.0 plan final head): `8b4ba3a53971f97b40cd997a77f019cf075c8ea8`.
+- Owner-authoritative wave handoff chain (local; not yet pushed at W2 start):
+  - W0 FINAL_HEAD: `bed1b30babd3ad71b3894ff631e60154f820c18f`.
+  - W1 FINAL_HEAD / W2 required START: `b56e9e0c18be5583643327612744054516b7cf8e`.
+  - W2 starts from the pre-W2 hygiene commit layered on `b56e9e0…`.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -14,8 +18,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 | Wave | Goal | Plane | Depends on | Status | Expected artifact outputs | Owner checkpoint |
 |---|---|---|---|---|---|---|
 | **W0** | Plan validation & repo hygiene | meta | START_HEAD | ☑ complete | wave-index status update; validation notes (`evidence/logs/W0_VALIDATION.md`) | HEAD == 8b4ba3a (plan-pack; `1cd5b11` = pre-plan baseline); split matches disk; all W0 gates PASS |
-| **W1** | Production layout & source boundaries | meta | W0 | ☐ pending | VERSION reconciled; boundary/import test; adapter classification; install-tree README | golden hashes unchanged; boundary enforceable |
-| **W2** | Rule KB & router productionization | knowledge | W1 | ☐ pending | router parity + activation-matrix tests; canonical snapshot hash pin | pack activation deterministic; forbidden-by-active-packs |
+| **W1** | Production layout & source boundaries | meta | W0 | ☑ complete | VERSION reconciled; boundary/import test; adapter classification; install-tree README | golden hashes unchanged; boundary enforceable; FINAL_HEAD `b56e9e0`; all W1 gates PASS |
+| **W2** | Rule KB & router productionization | knowledge | W1 | ☐ pending | router parity + activation-matrix tests; canonical snapshot hash pin | starts from W1 FINAL_HEAD `b56e9e0c18be5583643327612744054516b7cf8e` (+ pre-W2 hygiene commit); pack activation deterministic; forbidden-by-active-packs |
 | **W3** | Active-context bundle builder | knowledge | W2 | ☐ pending | byte-determinism + identity + schema tests; golden bundle hashes | bundle byte-identical; identity fail-closed |
 | **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☐ pending | external-project slice; sequential/lock/overlay tests | sequential-only; Task 0; child not simulated |
 | **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☐ pending | one-sidecar test; promoted delta/consistency module + tests | reality-checked finalize; no eval import |
