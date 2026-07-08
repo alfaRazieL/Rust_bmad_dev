@@ -11,6 +11,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
   - W0 FINAL_HEAD: `bed1b30babd3ad71b3894ff631e60154f820c18f`.
   - W1 FINAL_HEAD / W2 required START: `b56e9e0c18be5583643327612744054516b7cf8e`.
   - W2 starts from the pre-W2 hygiene commit layered on `b56e9e0…`.
+  - W2 FINAL_HEAD / W3 required START: `6e1b2f346d1b8a260b8dba0401f0483656b0b57a`.
+  - W2 canonical snapshot pin: `a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8`.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -19,8 +21,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 |---|---|---|---|---|---|---|
 | **W0** | Plan validation & repo hygiene | meta | START_HEAD | ☑ complete | wave-index status update; validation notes (`evidence/logs/W0_VALIDATION.md`) | HEAD == 8b4ba3a (plan-pack; `1cd5b11` = pre-plan baseline); split matches disk; all W0 gates PASS |
 | **W1** | Production layout & source boundaries | meta | W0 | ☑ complete | VERSION reconciled; boundary/import test; adapter classification; install-tree README | golden hashes unchanged; boundary enforceable; FINAL_HEAD `b56e9e0`; all W1 gates PASS |
-| **W2** | Rule KB & router productionization | knowledge | W1 | ☐ pending | router parity + activation-matrix tests; canonical snapshot hash pin | starts from W1 FINAL_HEAD `b56e9e0c18be5583643327612744054516b7cf8e` (+ pre-W2 hygiene commit); pack activation deterministic; forbidden-by-active-packs |
-| **W3** | Active-context bundle builder | knowledge | W2 | ☐ pending | byte-determinism + identity + schema tests; golden bundle hashes | bundle byte-identical; identity fail-closed |
+| **W2** | Rule KB & router productionization | knowledge | W1 | ☑ complete | router parity + activation-matrix tests; canonical snapshot hash pin | FINAL_HEAD `6e1b2f346d1b8a260b8dba0401f0483656b0b57a`; canonical snapshot pin `a97d9f85…c5e8d8`; pack activation deterministic; forbidden-by-active-packs; all W2 gates PASS |
+| **W3** | Active-context bundle builder | knowledge | W2 | ☐ pending | byte-determinism + identity + schema tests; golden bundle hashes | starts from W2 FINAL_HEAD `6e1b2f346d1b8a260b8dba0401f0483656b0b57a`; bundle byte-identical; identity fail-closed |
 | **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☐ pending | external-project slice; sequential/lock/overlay tests | sequential-only; Task 0; child not simulated |
 | **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☐ pending | one-sidecar test; promoted delta/consistency module + tests | reality-checked finalize; no eval import |
 | **W6** | Verifier / admission & failure semantics | admission | W5 | ☐ pending | per-check mutation tests; admission recompute tests | fail-closed; failed run never admissible |
