@@ -57,7 +57,13 @@ HALT on non-zero exit. The command writes:
 ### Step 5 — Invoke the child skill
 Dispatch the standard `bmad-testarch-test-design` skill (child) with the sequential-mode hint. The child reads its `persistent_facts`, which now include the active-context bundle written in Step 4 (via the `_bmad/custom/bmad-testarch-test-design.toml` overlay installed by `rdx-tea-setup`).
 
-Do NOT simulate the child skill.
+Invoke the child in the SAME session, non-interactively, with subagent/Task
+dispatch disabled: pass `--disallowedTools Task TaskOutput TaskStop`.
+Sequential mode means the child must run to completion in this one session
+without spawning any Task/subagent worker — the observed Task dispatch count
+MUST be 0.
+
+Do NOT simulate the child skill. Never dispatch it via a `Task`/subagent tool.
 
 ### Step 6 — Finalize
 Run:

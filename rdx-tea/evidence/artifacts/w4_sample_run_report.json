@@ -1,0 +1,128 @@
+{
+  "created_at": "2026-07-08T00:00:00+00:00",
+  "execution_mode": "sequential",
+  "finalized_at": "2026-07-08T00:00:00+00:00",
+  "new_artefacts": [
+    "<PROJECT-ROOT>/_bmad-output/test-design-w4-evidence-01-artifact.md"
+  ],
+  "observed_mode": "INFERRED_ABSENT",
+  "requested_mode": "sequential",
+  "resolved_mode": "sequential",
+  "run_id": "w4-evidence-01",
+  "schema_version": "rdx-tea-run.v1",
+  "sidecars": [
+    {
+      "active_packs": [
+        {
+          "pack_id": "async",
+          "rule_ids": [
+            "RP-ASYNC-001",
+            "RP-ASYNC-002",
+            "RP-ASYNC-003",
+            "RP-ASYNC-004",
+            "RP-ASYNC-005",
+            "RP-ASYNC-006",
+            "RP-ASYNC-007",
+            "RP-ASYNC-008",
+            "RP-ASYNC-009"
+          ]
+        }
+      ],
+      "artifact_path": "<PROJECT-ROOT>/_bmad-output/test-design-w4-evidence-01-artifact.md",
+      "artifact_sha256": "2e0e6eb38ada99501aa5b025c3c65dd420f103109639c3ce25907d6f28fab951",
+      "base_sha": "02b17a95a99bc479336f4359bc8b8b2772b0a018",
+      "bound_at": "2026-07-08T00:00:00+00:00",
+      "completed": true,
+      "core_rules": [
+        "CORE-001",
+        "CORE-002",
+        "CORE-003",
+        "CORE-004",
+        "CORE-005",
+        "CORE-006",
+        "CORE-007",
+        "CORE-008",
+        "CORE-009",
+        "CORE-010",
+        "CORE-011",
+        "CORE-012",
+        "CORE-013",
+        "CORE-014",
+        "CORE-015",
+        "CORE-016",
+        "CORE-017",
+        "CORE-018"
+      ],
+      "diff_digest": "b3f8926325f9fb1a6070c62c7291f6e4c0e124ab2e4ec7a91f8a0bb82413153a",
+      "execution_mode": "sequential",
+      "head_sha": "02b17a95a99bc479336f4359bc8b8b2772b0a018",
+      "prepare_manifest_sha256": "503a249edc6a10eb2b3520e2ecb0d71ee85adbe344a884177de53d4e1135d370",
+      "prepared_at": "2026-07-08T00:00:00+00:00",
+      "projection_hash": "2b488ca96a5a6c4fe5bd108fba76d9076f86e69dcb555d1a9363eee005d576cb",
+      "rdx_source_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+      "run_id": "w4-evidence-01",
+      "rust_scope": true,
+      "schema_version": "rdx-tea-run.v1",
+      "tea_source_sha": "8734d51f24071ddbcb3617390b5fcddb4128ef77",
+      "workflow": "test-design"
+    }
+  ],
+  "verifier": [
+    {
+      "checks": [
+        {
+          "check": "schema",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "manifest_hash",
+          "detail": "disk=503a249edc6a sidecar=503a249edc6a",
+          "status": "PASS"
+        },
+        {
+          "check": "bundle_hash",
+          "detail": "disk=2b488ca96a5a sidecar=2b488ca96a5a",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_hash",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "base_head_exist",
+          "detail": "base_ok=True head_ok=True",
+          "status": "PASS"
+        },
+        {
+          "check": "diff_digest_recomputed",
+          "detail": "disk=b3f8926325f9 sidecar=b3f8926325f9",
+          "status": "PASS"
+        },
+        {
+          "check": "canonical_snapshot",
+          "detail": "manifest=a97d9f8590bc current=a97d9f8590bc",
+          "status": "PASS"
+        },
+        {
+          "check": "source_lock",
+          "detail": "",
+          "status": "PASS"
+        },
+        {
+          "check": "artifact_boundary",
+          "detail": "",
+          "status": "PASS"
+        }
+      ],
+      "failed_checks": [],
+      "run_id": "w4-evidence-01",
+      "sidecar": "<PROJECT-ROOT>/_bmad-output/test-design-w4-evidence-01-artifact.md.rdx-tea.json",
+      "verdict": "PASS",
+      "workflow": "test-design"
+    }
+  ],
+  "verify_only": false,
+  "workflow": "test-design"
+}

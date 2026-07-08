@@ -553,6 +553,16 @@ def finalize_run(
     # direct proof); presence of subagent tokens = OBSERVED_SUBAGENT.
     observed_mode = _infer_observed_mode(project_root, workflow, run_id, new)
 
+    # Honest wall-clock audit stamp. The run-report is NOT hashed into the
+    # verification chain (unlike run-manifest.json, whose sha256 the binder
+    # records), so a real timestamp here never breaks determinism. `created_at`
+    # is the canonical audit field documented by prepare.py / binder.py — the
+    # honest wall-clock lives in the run-report (`created_at`) and the sidecar
+    # (`bound_at`), NEVER in the hashed manifest. `finalized_at` is retained as
+    # a backward-compatible alias. `RDX_TEA_FAKE_NOW` (a deterministic,
+    # caller-injected value) is honoured for reproducible test output.
+    audit_now = (os.environ.get("RDX_TEA_FAKE_NOW")
+                 or datetime.now(timezone.utc).replace(microsecond=0).isoformat())
     report = {
         "schema_version": "rdx-tea-run.v1",
         "workflow": workflow,
@@ -563,8 +573,8 @@ def finalize_run(
         "observed_mode": observed_mode,
         "sidecars": sidecars,
         "verifier": verifier_results,
-        "finalized_at": (os.environ.get("RDX_TEA_FAKE_NOW")
-                         or datetime.now(timezone.utc).replace(microsecond=0).isoformat()),
+        "created_at": audit_now,
+        "finalized_at": audit_now,
         "new_artefacts": [str(a) for a in new],
         "verify_only": verify_only,
     }

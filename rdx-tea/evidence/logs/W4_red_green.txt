@@ -1,0 +1,19 @@
+# W4 RED phase — new tests before wrapper/SKILL productionization
+
+## lifecycle test file
+
+rdx-tea/tests/lifecycle/test_l4_w4_lifecycle.py:435: AssertionError
+=========================== short test summary info ============================
+FAILED rdx-tea/tests/lifecycle/test_l4_w4_lifecycle.py::test_l4_w4_skills_document_disallowed_tools_and_no_prod_test_flags
+FAILED rdx-tea/tests/lifecycle/test_l4_w4_lifecycle.py::test_l4_w4_run_report_created_at_is_audit_stamp_outside_hashed_manifest
+2 failed, 22 passed in 3.67s
+
+## bmad-tea sequential slice file
+E        +    where <built-in method get of dict object at 0x1070f1180> = {'execution_mode': 'sequential', 'finalized_at': '2026-07-08T16:30:18+00:00', 'new_artefacts': ['/private/var/folders/..._sequential_slice_en0/proj/_bmad-output/test-design-w4-slice-01-artifact.md'], 'observed_mode': 'INFERRED_ABSENT', ...}.get
+
+rdx-tea/tests/bmad-tea/test_l4_w4_sequential_slice.py:124: AssertionError
+=========================== short test summary info ============================
+FAILED rdx-tea/tests/bmad-tea/test_l4_w4_sequential_slice.py::test_l4_w4_sequential_slice_end_to_end
+1 failed, 2 passed in 0.79s
+
+RED = (a) SKILL.md lacks --disallowedTools Task TaskOutput TaskStop; (b) run-report lacks created_at audit stamp.

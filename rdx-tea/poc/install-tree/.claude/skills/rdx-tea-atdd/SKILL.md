@@ -60,6 +60,12 @@ HALT on non-zero exit. The command:
 ### Step 5 — Invoke the child skill
 Dispatch the standard `bmad-testarch-atdd` skill (child) with a sequential-mode hint. The child reads its `persistent_facts`, which now include the RDX active-context bundle written in Step 4 (via the overlay from Step 4).
 
+Invoke the child in the SAME session, non-interactively, with subagent/Task
+dispatch disabled: pass `--disallowedTools Task TaskOutput TaskStop`. ATDD's
+step-c files construct subagent payloads; the sequential guard plus this
+disallow-list keep the run in one session — the observed Task dispatch count
+MUST be 0. Never dispatch the child via a `Task`/subagent tool.
+
 Do NOT simulate the child skill. If you cannot dispatch the child in this session, HALT and report `NOT_RUN` — do NOT run `--test-write-fake-artefact` in a production session.
 
 ### Step 6 — Finalize

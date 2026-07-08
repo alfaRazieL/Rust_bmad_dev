@@ -1,0 +1,29 @@
+# Wave 4 — pre-implementation regression baseline (GREEN before any change)
+
+- Repo/branch: rdx-workspace/Rust_bmad_dev @ rdx-tea-integration
+- HEAD (W4 START_HEAD): b22ce957dcffd6486f476ee38dc01e136483ab1e
+- origin/rdx-tea-integration: b22ce957dcffd6486f476ee38dc01e136483ab1e
+- working tree: clean except untracked .agents/
+- Python: 3.14.4 (rdx-tea/.venv-baseline)
+- cwd: repo root .../rdx-workspace/Rust_bmad_dev
+
+## Required pre-W4 regression checks (all PASS)
+
+R1  pytest rdx-tea/tests -k "router_parity or forbidden or docs_only or boundary" -q
+    -> 21 passed, 168 deselected
+R2  python rdx-tea/evidence/hashes/w2_canonical_snapshot.py
+    -> OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+R3  python rdx-tea/evidence/hashes/w3_bundle_golden.py
+    -> OK W3 golden bundle signature (32 rows) matches pin
+R4  pytest rdx-tea/tests -k "identity or schema or determinism" -q
+    -> 24 passed, 165 deselected
+
+## Full suite baseline
+    pytest rdx-tea/tests -q  -> 189 passed in 8.12s
+
+## W4 gate commands (pre-change state, all pass; new W4 tests added on top)
+    pytest rdx-tea/tests/bmad-tea -q          -> 26 passed   (G-W4-LIFECYCLE dir)
+    pytest rdx-tea/tests -k sequential -q      -> 7 passed    (G-W4-SEQUENTIAL)
+    pytest rdx-tea/tests/lifecycle -q          -> 14 passed   (G-W4-NOTASK dir)
+
+Verdict: baseline GREEN. Safe to begin W4 (RED->GREEN).
