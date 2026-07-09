@@ -1,0 +1,209 @@
+{
+  "all_rungs_green": true,
+  "git_head": "011960aff01f2df5df5e0f0201676c5ecd5bd1a2",
+  "notes": [
+    "Rungs 1-5 (deterministic) green before any live smoke; rung 6 live-model child is separately owner-authorized and NOT run here.",
+    "source-lock verify (bootstrap --verify-only) requires the upstream clone and runs in GitHub Actions on push; last verified PASS at W8 CI.",
+    "This is a local surrogate for the offline-capable CI gates; the authoritative GitHub Actions run executes on push."
+  ],
+  "python": "/Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev/rdx-tea/.venv-baseline/bin/python",
+  "rung_count": 14,
+  "rungs": [
+    {
+      "command": "python rdx-tea/evidence/hashes/w2_canonical_snapshot.py",
+      "cwd": "<repo-root>",
+      "description": "canonical snapshot hash matches pin",
+      "exit_code": 0,
+      "gates": "G-W2-CANON/G-DET",
+      "pytest_counts": null,
+      "result": "PASS",
+      "rung": "W2-canonical-pin",
+      "stdout_tail": "OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin"
+    },
+    {
+      "command": "python rdx-tea/evidence/hashes/w3_bundle_golden.py",
+      "cwd": "<repo-root>",
+      "description": "golden bundle signature matches pin",
+      "exit_code": 0,
+      "gates": "G-W3-DETERMINISM/G-DET",
+      "pytest_counts": null,
+      "result": "PASS",
+      "rung": "W3-bundle-golden",
+      "stdout_tail": "OK W3 golden bundle signature (32 rows) matches pin"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests -k router_parity or forbidden or docs_only -q",
+      "cwd": "<repo-root>",
+      "description": "router parity + forbidden/docs-only pack activation",
+      "exit_code": 0,
+      "gates": "G-W2-PARITY/G-W2-FORBIDDEN",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 31,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W2-router",
+      "stdout_tail": "...............................                                          [100%]\n31 passed, 332 deselected in 0.38s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests -k identity or schema -q",
+      "cwd": "<repo-root>",
+      "description": "bundle identity fail-closed + schema validation",
+      "exit_code": 0,
+      "gates": "G-W3-IDENTITY/G-W3-SCHEMA",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 25,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W3-schema-identity",
+      "stdout_tail": ".........................                                                [100%]\n25 passed, 338 deselected in 1.22s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests/bmad-tea rdx-tea/tests/lifecycle -q",
+      "cwd": "<repo-root>",
+      "description": "wrapper prepare->child->finalize slice + sequential + no-Task",
+      "exit_code": 0,
+      "gates": "G-W4-LIFECYCLE/G-W4-SEQUENTIAL/G-W4-NOTASK",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 89,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W4-lifecycle",
+      "stdout_tail": "........................................................................ [ 80%]\n.................                                                        [100%]\n89 passed in 14.64s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests -k sidecar or dedupe or delta or consistency -q",
+      "cwd": "<repo-root>",
+      "description": "one sidecar/artefact, workspace delta, artifact consistency",
+      "exit_code": 0,
+      "gates": "G-W5-SIDECAR/G-W5-DELTA/G-W5-CONSISTENCY",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 43,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W5-sidecar-delta-consistency",
+      "stdout_tail": "...........................................                              [100%]\n43 passed, 320 deselected in 2.67s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests -k verifier or admission or failclosed -q",
+      "cwd": "<repo-root>",
+      "description": "verifier per-check mutation, admission recompute, fail-closed",
+      "exit_code": 0,
+      "gates": "G-W6-VERIFIER/G-W6-ADMISSION/G-W6-FAILCLOSED",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 45,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W6-verifier-admission-failclosed",
+      "stdout_tail": ".............................................                            [100%]\n45 passed, 318 deselected in 3.82s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests/lifecycle/test_l4_w7_installer.py -q",
+      "cwd": "<repo-root>",
+      "description": "installer install/update/uninstall + no-auth + idempotent",
+      "exit_code": 0,
+      "gates": "G-W7-INSTALL/G-W7-NOAUTH/G-W7-IDEMPOTENT",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 22,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W7-installer",
+      "stdout_tail": "......................                                                   [100%]\n22 passed in 0.88s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests/ci -q",
+      "cwd": "<repo-root>",
+      "description": "ci_check boundary/auth unit tests",
+      "exit_code": 0,
+      "gates": "G-W8-CI/G-SPLIT-IMPORT/G-AUTH",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 21,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W8-ci-boundary-auth",
+      "stdout_tail": ".....................                                                    [100%]\n21 passed in 0.36s"
+    },
+    {
+      "command": "python rdx-tea/live-harness/ci_check.py boundary-check rdx-tea/poc/install-tree rdx-tea/installer",
+      "cwd": "<repo-root>",
+      "description": "ci_check boundary-check over shipped surface",
+      "exit_code": 0,
+      "gates": "G-SPLIT-IMPORT",
+      "pytest_counts": null,
+      "result": "PASS",
+      "rung": "W8-boundary-check",
+      "stdout_tail": "    \"live-harness/\",\n    \"evals/\",\n    \"evidence/\",\n    \"research/\"\n  ]\n}"
+    },
+    {
+      "command": "python rdx-tea/live-harness/ci_check.py auth-check rdx-tea/poc/install-tree rdx-tea/installer",
+      "cwd": "<repo-root>",
+      "description": "ci_check auth-check over shipped surface",
+      "exit_code": 0,
+      "gates": "G-AUTH",
+      "pytest_counts": null,
+      "result": "PASS",
+      "rung": "W8-auth-check",
+      "stdout_tail": "    \"apiKeyHelper\",\n    \"setup-token\",\n    \".credentials.json\",\n    \"CLAUDE_CONFIG_DIR\"\n  ]\n}"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests/docs -q",
+      "cwd": "<repo-root>",
+      "description": "operator docs copy-run + doc-lint",
+      "exit_code": 0,
+      "gates": "G-W9-DOCS/G-W9-NOEVALFLAGS",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 31,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W9-docs",
+      "stdout_tail": "...............................                                          [100%]\n31 passed in 0.36s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests/acceptance -q",
+      "cwd": "<repo-root>",
+      "description": "clean-install E2E, lifecycle smoke admissible, rollback",
+      "exit_code": 0,
+      "gates": "G-W10-E2E/G-W10-ROLLBACK",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 12,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "W10-acceptance",
+      "stdout_tail": "............                                                             [100%]\n12 passed in 0.68s"
+    },
+    {
+      "command": "python -m pytest rdx-tea/tests -q",
+      "cwd": "<repo-root>",
+      "description": "entire rdx-tea/tests suite (single canonical collection)",
+      "exit_code": 0,
+      "gates": "ALL",
+      "pytest_counts": {
+        "failed": 0,
+        "passed": 363,
+        "skipped": 0
+      },
+      "result": "PASS",
+      "rung": "full-suite",
+      "stdout_tail": "........................................................................ [ 39%]\n........................................................................ [ 59%]\n........................................................................ [ 79%]\n........................................................................ [ 99%]\n...                                                                      [100%]\n363 passed in 17.98s"
+    }
+  ],
+  "schema": "rdx-tea-acceptance-ladder.v1",
+  "stage": "W10 acceptance ladder (MASTER_IMPLEMENTATION_PLAN \u00a76.9)"
+}

@@ -1,0 +1,69 @@
+{
+  "auth": {
+    "api_key_helper_used": false,
+    "api_key_used": false,
+    "claude_code_oauth_token_used": false,
+    "claude_config_dir_overridden": false,
+    "setup_token_used": false
+  },
+  "child_kind": "env-gated deterministic fake artefact (RDX_TEA_ALLOW_TEST_ARTEFACT=1); NO live model; NO subagent/Task dispatch",
+  "install_source": "installer/project_installer.py -> clean disposable project",
+  "live_model_call": false,
+  "live_smoke_status": "NOT_RUN_OWNER_AUTH_REQUIRED",
+  "schema": "rdx-tea-w10-e2e-smoke.v1",
+  "smoke_admissible": true,
+  "stage": "W10 bounded non-interactive E2E smoke (G-W10-E2E)",
+  "steps": [
+    {
+      "adapter_version": "0.3.2",
+      "file_count": 23,
+      "installed_scripts": [
+        "admission.py",
+        "binder.py",
+        "diff.py",
+        "obligation_matrix.py",
+        "prepare.py",
+        "rdx_parser.py",
+        "rdx_tea_validator.py",
+        "rdx_tea_wrapper.py",
+        "router.py",
+        "workspace_delta.py"
+      ],
+      "mode": "install",
+      "settings_json_present": true,
+      "step": "clean_install"
+    },
+    {
+      "command": "python _bmad/rdx-tea/scripts/rdx_tea_wrapper.py prepare-run --workflow test-design ...",
+      "exit_code": 0,
+      "step": "prepare_run"
+    },
+    {
+      "command": "python _bmad/rdx-tea/scripts/rdx_tea_wrapper.py finalize-run --workflow test-design ... --test-write-fake-artefact",
+      "execution_mode": "sequential",
+      "exit_code": 0,
+      "observed_mode": "INFERRED_ABSENT",
+      "recorded_admission": {
+        "admissible": true,
+        "reasons": [
+          "all admission checks passed"
+        ],
+        "run_id": "w10-e2e-smoke",
+        "run_outcome": "SUCCESS",
+        "workflow": "test-design"
+      },
+      "sidecar_count": 1,
+      "step": "finalize_run",
+      "verifier_all_pass": true,
+      "workflow": "test-design"
+    },
+    {
+      "admissible": true,
+      "command": "python _bmad/rdx-tea/scripts/admission.py admit --report <run-report.json> --state <run-state.json>",
+      "exit_code": 0,
+      "run_outcome": "SUCCESS",
+      "step": "admission_recompute"
+    }
+  ],
+  "verdict": "E2E_SMOKE_ADMISSIBLE"
+}

@@ -1,0 +1,195 @@
+{
+  "schema_version": "rdx-tea-d4-release-readiness.v1",
+  "stage": "D4_RELEASE_READINESS",
+  "goal_framing": "release-readiness verification of the PROVEN sequential wrapper-driven RDX->TEA rule-operation lifecycle (D3.4.1 D3_RULE_OPERATION_PROVEN), productionized across Waves 0-10. Knowledge/packaging plane only. NOT a benefit-vs-baseline benchmark (G7 out of scope, not claimed).",
+
+  "branch": "rdx-tea-integration",
+  "origin_main_sha": "d8140a25f8166bf0ca5ce5fc19f7cb1bd06a3d6d",
+  "start_head": "fc7833d6253c2e0c820e55c6ff24121b822cf1a9",
+  "pre_w10_owner_checkpoint_commit": "bc47a069dad842ace26f9c433bfd920e5353530d",
+  "tested_subject_sha": "011960aff01f2df5df5e0f0201676c5ecd5bd1a2",
+  "evidence_commit_sha": "PENDING_POINTER_CLOSURE",
+  "final_head": "PENDING_POINTER_CLOSURE",
+  "two_commit_identity_note": "Mirrors the D3.4.x/D4.0 pattern. tested_subject_sha is the commit holding the W10 acceptance tests + evidence drivers + merge strategy. evidence_commit_sha is this publish commit (evidence JSON outputs + this verification). A file cannot contain its own commit hash, so the pointer-closure commit (the branch tip) fills evidence_commit_sha and final_head; final_head denotes the evidence/publish head and the literal tip is its pointer-closure child, reported in the stage final response and equal to origin/rdx-tea-integration after push. No PENDING sentinel survives in the final HEAD's copy of this file.",
+
+  "d3_4_1_basis": {
+    "overall_d3": "D3_RULE_OPERATION_PROVEN",
+    "d3_4_1_verdict": "D3_4_1_PASS",
+    "rule_operation_verdict": "RULE_OPERATION_PASS",
+    "tested_subject_sha": "135b5ed24c419d8e135698bb3b41dd55b1a0c33d",
+    "evidence_commit_sha": "4be4d3e1cff6f0b6ee8bacff11e1ee63c3525c94",
+    "note": "Authoritative proof evidence; NOT re-run in D4. The 12-run pilot and mass evals were not repeated."
+  },
+
+  "source_lock": {
+    "rdx_source_tag": "v1.1.0",
+    "bmad_source_tag": "v6.8.0",
+    "tea_source_tag": "v1.19.0",
+    "adapter_version": "0.3.2",
+    "changed_this_wave": false
+  },
+
+  "wave_results": {
+    "W0": {"goal": "plan validation & repo hygiene", "status": "complete", "final_head": "bed1b30babd3ad71b3894ff631e60154f820c18f"},
+    "W1": {"goal": "production layout & source boundaries", "status": "complete", "final_head": "b56e9e0c18be5583643327612744054516b7cf8e"},
+    "W2": {"goal": "rule KB & router productionization", "status": "complete", "final_head": "6e1b2f346d1b8a260b8dba0401f0483656b0b57a", "canonical_snapshot_pin": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8"},
+    "W3": {"goal": "active-context bundle builder", "status": "complete", "final_head": "b22ce957dcffd6486f476ee38dc01e136483ab1e", "golden_bundle_pin": "rdx-tea/evidence/hashes/w3_bundle_golden.txt"},
+    "W4": {"goal": "wrapper Skills & non-interactive lifecycle", "status": "complete", "final_head": "8e024f10ba2b4788060589cd68ff0d09ee95c463", "full_suite": 216},
+    "W5": {"goal": "binder, sidecars, workspace delta, artifact consistency", "status": "complete", "final_head": "feb4087a7040bd895cf0bf2b59219d4874c02c17", "full_suite": 235},
+    "W6": {"goal": "verifier / admission & failure semantics", "status": "complete", "final_head": "e722d17df155e32d4f56e13edd35c89667366614", "full_suite": 277},
+    "W7": {"goal": "installer / bootstrap & project settings", "status": "complete", "final_head": "6d63b4f7e6f050ad723243670589445c55b51882", "full_suite": 299},
+    "W8": {"goal": "CI gates & source-lock", "status": "complete", "final_head": "bad98a9c7d8679f0f3d7d36c44a673cc0fac4132", "full_suite": 320, "ci_gates": ["production-boundary-check", "auth-preservation-check", "golden-hash-verification", "installer-surface-smoke"]},
+    "W9": {"goal": "documentation & operator workflows", "status": "complete", "final_head": "fc7833d6253c2e0c820e55c6ff24121b822cf1a9", "full_suite": 351},
+    "W10": {"goal": "end-to-end acceptance & release/merge plan", "status": "complete", "tested_subject_sha": "011960aff01f2df5df5e0f0201676c5ecd5bd1a2", "full_suite": 363}
+  },
+
+  "full_suite_result": {
+    "command": "rdx-tea/.venv-baseline/bin/python -m pytest rdx-tea/tests -q",
+    "passed": 363,
+    "failed": 0,
+    "skipped": 0,
+    "pytest_version": "9.1.1",
+    "python": "3.14.4"
+  },
+
+  "acceptance_ladder": {
+    "evidence": "rdx-tea/evidence/logs/W10/ACCEPTANCE_LADDER.json",
+    "all_rungs_green": true,
+    "rung_count": 14,
+    "git_head_ran_against": "011960aff01f2df5df5e0f0201676c5ecd5bd1a2",
+    "rungs": [
+      {"rung": "W2-canonical-pin", "result": "PASS"},
+      {"rung": "W3-bundle-golden", "result": "PASS"},
+      {"rung": "W2-router", "result": "PASS", "passed": 31},
+      {"rung": "W3-schema-identity", "result": "PASS", "passed": 25},
+      {"rung": "W4-lifecycle", "result": "PASS", "passed": 89},
+      {"rung": "W5-sidecar-delta-consistency", "result": "PASS", "passed": 43},
+      {"rung": "W6-verifier-admission-failclosed", "result": "PASS", "passed": 45},
+      {"rung": "W7-installer", "result": "PASS", "passed": 22},
+      {"rung": "W8-ci-boundary-auth", "result": "PASS", "passed": 21},
+      {"rung": "W8-boundary-check", "result": "PASS"},
+      {"rung": "W8-auth-check", "result": "PASS"},
+      {"rung": "W9-docs", "result": "PASS", "passed": 31},
+      {"rung": "W10-acceptance", "result": "PASS", "passed": 12},
+      {"rung": "full-suite", "result": "PASS", "passed": 363}
+    ]
+  },
+
+  "installer_e2e_result": {
+    "gate": "G-W10-E2E",
+    "status": "PASS",
+    "evidence": "rdx-tea/evidence/live/W10_E2E_SMOKE.json",
+    "clean_install": "installer/project_installer.py -> disposable project; 23 files; all 10 production scripts + wrapper Skills + .claude/settings.json (isolation-only)",
+    "installed_scripts": ["admission.py", "binder.py", "diff.py", "obligation_matrix.py", "prepare.py", "rdx_parser.py", "rdx_tea_validator.py", "rdx_tea_wrapper.py", "router.py", "workspace_delta.py"],
+    "bounded_smoke": "clean install -> prepare-run -> (env-gated fake child) -> finalize-run -> admission recompute = ADMISSIBLE (run_outcome SUCCESS) on the INSTALLED scripts",
+    "surface_exclusions_verified": "no eval/evidence/research/test-only paths; no auth/config-dir material; G-SPLIT-IMPORT clean over installed surface"
+  },
+
+  "rollback_result": {
+    "gate": "G-W10-ROLLBACK",
+    "status": "PASS",
+    "evidence": "rdx-tea/tests/acceptance/test_w10_acceptance.py::-k rollback (5 tests)",
+    "adapter_files_removed": true,
+    "user_toml_preserved_verbatim": true,
+    "user_artifacts_preserved": true,
+    "user_settings_keys_restored": true,
+    "run_evidence_preserved": true,
+    "manifest_adapter_files_all_removed": true
+  },
+
+  "docs_result": {
+    "gate": "G-W9-DOCS / G-W9-NOEVALFLAGS",
+    "status": "PASS",
+    "evidence": "rdx-tea/docs/** ; rdx-tea/tests/docs (31 passed: doc-command copy-run + doc-lint)",
+    "no_eval_or_test_only_flags_in_docs": true
+  },
+
+  "auth_result": {
+    "gate": "G-AUTH",
+    "status": "PASS",
+    "api_key_used": false,
+    "claude_code_oauth_token_used": false,
+    "setup_token_used": false,
+    "api_key_helper_used": false,
+    "claude_config_dir_overridden": false,
+    "evidence": "ci_check auth-check over poc/install-tree + installer = PASS; no auth material written/read this wave; existing CLI OAuth preserved by doing nothing with it"
+  },
+
+  "source_lock_result": {
+    "gate": "G-W8-SOURCELOCK",
+    "status": "PASS_AT_W8_CI_UNCHANGED_SINCE",
+    "changed_this_wave": false,
+    "note": "bootstrap.py --verify-only requires the upstream clone and runs in GitHub Actions on push (last verified PASS at W8 CI). W10 changed no source-lock values; sources.lock is byte-identical to W8."
+  },
+
+  "golden_hash_result": {
+    "gate": "G-DET / G-W2-CANON / G-W3-DETERMINISM",
+    "status": "PASS",
+    "w2_canonical_snapshot": "a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 (matches pin)",
+    "w3_bundle_golden": "32-row signature matches pin",
+    "no_generator_drift": true
+  },
+
+  "scope_result": {
+    "gate": "G-SCOPE",
+    "status": "PASS",
+    "note": "Every W10 change is under rdx-tea/**. No changes to main, rdx-validator/rdx_tea/**, or .github/workflows/rdx-tea-*.yml this wave. .agents/ never staged."
+  },
+
+  "ci_status_or_local_ci_surrogate": {
+    "local_surrogate": "PASS",
+    "local_surrogate_gates": {
+      "canonical_deterministic_suite": "363 passed / 0 failed / 0 skipped",
+      "production_boundary_check": "PASS (ci_check boundary-check over poc/install-tree + installer)",
+      "auth_preservation_check": "PASS (ci_check auth-check)",
+      "golden_hash_verification": "PASS (w2 canonical + w3 bundle golden)",
+      "installer_surface_smoke": "PASS (test_l4_w7_installer.py, 22 passed)",
+      "refuse_mandatory_skips": "0 skips across the suite"
+    },
+    "authoritative_ci": "GitHub Actions 'rdx-tea-integration branch check' runs on push; conclusion reported in the stage final response. source-lock --verify-only (upstream clone) runs there.",
+    "ci_run_id": "reported_in_stage_final_response_after_push",
+    "ci_conclusion": "reported_in_stage_final_response_after_push"
+  },
+
+  "gates_summary": {
+    "G-W10-E2E": "PASS",
+    "G-W10-ROLLBACK": "PASS",
+    "G-W10-RELEASE": "PASS",
+    "G-AUTH": "PASS",
+    "G-SCOPE": "PASS",
+    "G-DET": "PASS",
+    "G-SPLIT-IMPORT": "PASS",
+    "all_prior_blocking_gates_W0_W9": "PASS (re-verified by the acceptance ladder)"
+  },
+
+  "release_readiness_verdict": "D4_V1_RELEASE_READY_PENDING_OWNER_MERGE_AUTHORIZATION",
+
+  "merge_strategy": {
+    "document": "rdx-tea/implementation/D4_MERGE_STRATEGY.md",
+    "status": "PROPOSED_NOT_EXECUTED",
+    "merge_performed": false,
+    "pr_opened": false,
+    "main_touched": false,
+    "note": "Owner must explicitly authorize any merge/PR later. Recommended: --no-ff merge preserving wave history; alternative curated squash. No force-push."
+  },
+
+  "deferred_backlog": [
+    "rdx-tea-validate enforcement verdict in rdx-validator/rdx_tea/** (STAGE-08)",
+    "Modes MODE_0..4 / hooks / rdx-tea-gate.yml required check / judgment / Cat-4 approval (STAGE-09)",
+    "Subagent / agent-team worker propagation (G6F); sequential-only is the proven v1",
+    "G7 behavioural benefit vs baseline (out of scope, NOT claimed)",
+    "Live-model E2E child smoke (rung 6 of the acceptance ladder) — NOT_RUN_OWNER_AUTH_REQUIRED; the deterministic surrogate exercises install+lifecycle+admission on the installed surface"
+  ],
+
+  "honesty_notes": [
+    "This is a release-readiness VERIFICATION on rdx-tea-integration. No merge to main was performed, no PR opened, main untouched. Merge awaits explicit owner authorization.",
+    "The bounded non-interactive E2E smoke used the env-gated deterministic fake-artefact child (RDX_TEA_ALLOW_TEST_ARTEFACT=1): no live Claude model call, no subagent/Task dispatch. It exercises the INSTALLED wrapper + admission end-to-end and is admissible.",
+    "LIVE_SMOKE_STATUS = NOT_RUN_OWNER_AUTH_REQUIRED: this exact W10 prompt did not unambiguously authorize a live Claude model call, and the prompt's live-smoke boundary directs the default-deny path (continue deterministically). No live model call was made.",
+    "The 12-run pilot and mass evals were NOT re-run; D3.4.1 evidence is authoritative and cited.",
+    "Auth policy honored: no API key / OAuth token / setup-token / apiKeyHelper; CLAUDE_CONFIG_DIR not set or overridden. Existing CLI OAuth preserved by doing nothing with it.",
+    "source-lock values were not changed. --verify-only (upstream clone) is authoritative in GitHub Actions on push; last verified PASS at W8 CI and sources.lock is unchanged since.",
+    "No production runtime logic was modified in W10; no release-blocking compatibility fix was required.",
+    "G7 behavioural benefit vs baseline is deliberately NOT claimed.",
+    "The enforcement plane (rdx-tea-validate, modes/hooks/CI-gate, subagent propagation) remains deferred backlog, not part of D4 v1."
+  ]
+}
