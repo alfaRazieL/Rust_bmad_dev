@@ -1,0 +1,28 @@
+# W7 GATES — command outputs (cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev)
+# SHA (pre-commit): 28cbfc6ef16878a9a6a089718b1e237dc6a296c2  branch: rdx-tea-integration
+# python: Python 3.14.4  venv: rdx-tea/.venv-baseline
+
+## G-W7-INSTALL — pytest rdx-tea/tests/lifecycle -k install
+......................                                                   [100%]
+22 passed, 38 deselected in 0.17s
+
+## G-W7-NOAUTH — pytest rdx-tea/tests/lifecycle -k noauth
+...                                                                      [100%]
+3 passed, 57 deselected in 0.03s
+
+## G-W7-IDEMPOTENT — pytest rdx-tea/tests/lifecycle -k idempot
+...                                                                      [100%]
+3 passed, 57 deselected in 0.98s
+
+## G-AUTH — grep auth/config-dir over install-tree + installer (expect zero)
+ZERO HITS (PASS)
+
+## G-SPLIT-IMPORT — grep boundary over install-tree + installer (expect zero)
+ZERO HITS (PASS)
+
+## G-SCOPE — git diff --name-only origin/main..HEAD outside allowed prefixes (expect empty)
+EMPTY (PASS)
+
+## W5/W6 generator invariants unchanged (no generator touched)
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+OK W3 golden bundle signature (32 rows) matches pin

@@ -1,0 +1,11 @@
+{
+  "wave": "W7",
+  "gate": ["G-AUTH", "G-W7-NOAUTH"],
+  "grep_pattern": "ANTHROPIC_API_KEY|CLAUDE_CODE_OAUTH_TOKEN|setup-token|apiKeyHelper|CLAUDE_CONFIG_DIR",
+  "installer_source_hits": 0,
+  "installed_surface_hits": 0,
+  "settings_json_keys": ["autoMemoryEnabled", "disableBundledSkills", "disableClaudeAiConnectors"],
+  "config_dir_overridden": false,
+  "credentials_copied": false,
+  "verdict": "PASS"
+}
