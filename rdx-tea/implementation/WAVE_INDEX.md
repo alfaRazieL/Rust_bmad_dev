@@ -20,6 +20,8 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
   - Full suite at W5 owner checkpoint: 235 passed.
   - W6 FINAL_HEAD / W7 required START: `e722d17df155e32d4f56e13edd35c89667366614`.
   - Full suite at W6 owner checkpoint: 277 passed.
+  - W7 FINAL_HEAD / W8 required START: `6d63b4f7e6f050ad723243670589445c55b51882`.
+  - Full suite at W7 owner checkpoint: 299 passed.
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -33,7 +35,7 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 | **W4** | Wrapper Skills & non-interactive lifecycle | knowledge | W3 | ☑ complete | external-project slice; sequential/lock/overlay tests | FINAL_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; W5 START_HEAD `8e024f10ba2b4788060589cd68ff0d09ee95c463`; sequential-only; Task 0; child not simulated; 216 passed |
 | **W5** | Binder, sidecars, workspace delta, artifact consistency | knowledge | W4 | ☑ complete | one-sidecar test; promoted delta/consistency module + tests | FINAL_HEAD `feb4087a7040bd895cf0bf2b59219d4874c02c17`; W6 START_HEAD `feb4087a7040bd895cf0bf2b59219d4874c02c17`; reality-checked finalize; no eval import; 235 passed |
 | **W6** | Verifier / admission & failure semantics | admission | W5 | ☑ complete | per-check mutation tests; admission recompute tests | FINAL_HEAD `e722d17df155e32d4f56e13edd35c89667366614`; W7 START_HEAD `e722d17df155e32d4f56e13edd35c89667366614`; fail-closed; failed run never admissible; 277 passed |
-| **W7** | Installer / bootstrap & project settings | packaging | W6 | ◐ in progress | project installer; settings template; lifecycle tests | no auth material; no CLAUDE_CONFIG_DIR override; idempotent |
+| **W7** | Installer / bootstrap & project settings | packaging | W6 | ☑ complete | project installer; settings template; lifecycle tests | FINAL_HEAD `6d63b4f7e6f050ad723243670589445c55b51882`; W8 START_HEAD `6d63b4f7e6f050ad723243670589445c55b51882`; no auth material; no CLAUDE_CONFIG_DIR override; idempotent; 299 passed |
 | **W8** | CI gates & source-lock | packaging | W7 | ☐ pending | CI boundary + golden-hash jobs; ci_check tests | green; no skips; scope + boundary enforced |
 | **W9** | Documentation & operator workflows | docs | W7 | ☐ pending | `rdx-tea/docs/**`; doc-lint | operator can run from docs alone |
 | **W10** | End-to-end acceptance & release/merge plan | release | W8, W9 | ☐ pending | acceptance + rollback tests; D4 release-readiness verification; merge proposal | all gates PASS; awaits owner merge authorization |
