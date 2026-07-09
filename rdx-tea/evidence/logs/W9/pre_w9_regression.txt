@@ -1,0 +1,15 @@
+# W9 pre-implementation regression evidence
+date_utc: 2026-07-09T04:18:57Z
+cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+HEAD: bad98a9c7d8679f0f3d7d36c44a673cc0fac4132
+branch: rdx-tea-integration
+interpreter: rdx-tea/.venv-baseline/bin/python (Python 3.14.4)
+pytest: pytest 9.1.1
+
+## Results
+- pytest rdx-tea/tests -q : 320 passed
+- w2_canonical_snapshot.py : OK matches pin a97d9f85...c5e8d8 (exit 0)
+- w3_bundle_golden.py : OK 32 rows match pin (exit 0)
+- test_l4_w7_installer.py : 22 passed
+- test_ci_check_boundary_auth.py : 21 passed
+- workflow yaml parse : OK

@@ -1,0 +1,23 @@
+# W9 acceptance-gate evidence
+date_utc: 2026-07-09T04:29:10Z
+branch: rdx-tea-integration
+checkpoint_commit(HEAD before W9 impl): 3b8cb0ca104f5ec3a71113e7fbc252445c6169b4
+
+## Gates
+- G-W9-DOCS  : PASS  (5 operator guides present; copy-run check: installer/wrapper/admission --help exit 0; 31 tests in rdx-tea/tests/docs)
+- G-W9-NOEVALFLAGS : PASS  (grep 'simulate-child|test-write-fake-artefact|allow-fixture-diff' rdx-tea/docs -> zero hits; full forbidden-token scan -> zero)
+- G-SCOPE    : PASS  (only rdx-tea/** changed; untracked .agents/ never staged)
+- G-AUTH     : PASS  (shipped surface untouched; docs contain no auth token / no config-dir override instruction)
+- G-DET      : PASS  (w2 canonical snapshot + w3 golden bundle match pins; docs-only wave, no generator change)
+
+## Tests
+- pytest rdx-tea/tests -q : 351 passed (W8 baseline 320 + 31 new doc tests)
+- pytest rdx-tea/tests -k 'doc or docs or lint' : 39 passed, 312 deselected
+- doc-lint RED/GREEN on real docs dir: FAIL with probe, PASS after removal (see doc_lint_red_green.txt)
+- w2_canonical_snapshot.py : OK matches pin (exit 0)
+- w3_bundle_golden.py : OK matches pin (exit 0)
+
+## Docs created (rdx-tea/docs/)
+- README.md, INSTALL.md, RUN_WORKFLOWS.md, EVIDENCE_INSPECTION.md, TROUBLESHOOTING.md
+## Tests created (rdx-tea/tests/docs/)
+- test_doc_lint.py (doc-lint, RED+GREEN), test_doc_commands.py (copy-run check)

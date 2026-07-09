@@ -1,0 +1,11 @@
+# W9 doc-lint RED/GREEN evidence
+date_utc: 2026-07-09T04:26:19Z
+test: rdx-tea/tests/docs/test_doc_lint.py
+
+RED  (temp rdx-tea/docs/_RED_PROBE.md with '--test-write-fake-artefact'):
+  - gate grep 'simulate-child|test-write-fake-artefact|allow-fixture-diff' -> HIT
+  - test_real_operator_docs_are_clean -> FAIL (status PASS->FAIL)
+GREEN (probe removed):
+  - gate grep -> zero hits
+  - test_real_operator_docs_are_clean -> PASS
+  - full doc-lint module -> 21 passed (15 forbidden tokens + deferred-marker + fail-closed + real-docs-clean)
