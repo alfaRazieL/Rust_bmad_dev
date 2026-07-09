@@ -1,0 +1,26 @@
+# W7 PRE-REGRESSION (before any installer code) — all PASS
+# cwd: /Users/m33tball/bmad_module_builder/rdx-workspace/Rust_bmad_dev
+# SHA: 28cbfc6ef16878a9a6a089718b1e237dc6a296c2  (== W7 START_HEAD e722d17 + owner-checkpoint 28cbfc6)
+# python: Python 3.14.4  venv: rdx-tea/.venv-baseline
+# RDX_TEA_UPSTREAM_ROOT unset -> default ../upstream (../upstream)
+# No live model calls. D3.4.1 evidence cited; pilot NOT re-run.
+
+## 1) pytest -k "router_parity or forbidden or docs_only or boundary"
+......................                                                   [100%]
+22 passed, 255 deselected in 1.04s
+## 2) python rdx-tea/evidence/hashes/w2_canonical_snapshot.py
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+## 3) python rdx-tea/evidence/hashes/w3_bundle_golden.py
+OK W3 golden bundle signature (32 rows) matches pin
+## 4) pytest -k "identity or schema or determinism"
+28 passed, 249 deselected in 1.41s
+## 5) pytest rdx-tea/tests/lifecycle
+38 passed in 5.53s
+## 6) pytest rdx-tea/tests/bmad-tea
+29 passed in 7.76s
+## 7) pytest -k "sidecar or dedupe or delta or consistency or tamper"
+44 passed, 233 deselected in 2.90s
+## 8) pytest -k "verifier or admission or failclosed"
+43 passed, 234 deselected in 3.45s
+## 9) pytest rdx-tea/tests  (FULL SUITE)
+277 passed in 18.37s
