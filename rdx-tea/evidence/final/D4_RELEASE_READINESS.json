@@ -8,8 +8,8 @@
   "start_head": "fc7833d6253c2e0c820e55c6ff24121b822cf1a9",
   "pre_w10_owner_checkpoint_commit": "bc47a069dad842ace26f9c433bfd920e5353530d",
   "tested_subject_sha": "011960aff01f2df5df5e0f0201676c5ecd5bd1a2",
-  "evidence_commit_sha": "PENDING_POINTER_CLOSURE",
-  "final_head": "PENDING_POINTER_CLOSURE",
+  "evidence_commit_sha": "5dae89964570c223c6150735776bca633ea2f912",
+  "final_head": "5dae89964570c223c6150735776bca633ea2f912",
   "two_commit_identity_note": "Mirrors the D3.4.x/D4.0 pattern. tested_subject_sha is the commit holding the W10 acceptance tests + evidence drivers + merge strategy. evidence_commit_sha is this publish commit (evidence JSON outputs + this verification). A file cannot contain its own commit hash, so the pointer-closure commit (the branch tip) fills evidence_commit_sha and final_head; final_head denotes the evidence/publish head and the literal tip is its pointer-closure child, reported in the stage final response and equal to origin/rdx-tea-integration after push. No PENDING sentinel survives in the final HEAD's copy of this file.",
 
   "d3_4_1_basis": {

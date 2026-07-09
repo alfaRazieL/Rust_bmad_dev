@@ -26,6 +26,12 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
   - Full suite at W8 owner checkpoint: 320 passed.
   - W9 FINAL_HEAD / W10 required START: `fc7833d6253c2e0c820e55c6ff24121b822cf1a9`.
   - Full suite at W9 owner checkpoint: 351 passed.
+  - W10 two-commit identity: tested_subject `011960aff01f2df5df5e0f0201676c5ecd5bd1a2`;
+    evidence/publish `5dae89964570c223c6150735776bca633ea2f912`; the branch tip
+    is the pointer-closure child of the evidence commit (this commit).
+  - Full suite at W10: 363 passed. Release verdict:
+    `D4_V1_RELEASE_READY_PENDING_OWNER_MERGE_AUTHORIZATION`
+    (`evidence/final/D4_RELEASE_READINESS.json`).
 - Basis: `D3_RULE_OPERATION_PROVEN` (D3.4.1).
 - Plane order: knowledge plane (W2–W5) → admission/runtime (W6) →
   packaging/CI/docs/e2e (W7–W10). Enforcement plane is deferred backlog.
@@ -42,7 +48,7 @@ in `../MASTER_IMPLEMENTATION_PLAN.md` §6.6. Gates in `ACCEPTANCE_GATES.md`.
 | **W7** | Installer / bootstrap & project settings | packaging | W6 | ☑ complete | project installer; settings template; lifecycle tests | FINAL_HEAD `6d63b4f7e6f050ad723243670589445c55b51882`; W8 START_HEAD `6d63b4f7e6f050ad723243670589445c55b51882`; no auth material; no CLAUDE_CONFIG_DIR override; idempotent; 299 passed |
 | **W8** | CI gates & source-lock | packaging | W7 | ☑ complete | CI boundary + golden-hash jobs; ci_check tests | FINAL_HEAD `bad98a9c7d8679f0f3d7d36c44a673cc0fac4132`; W9 START_HEAD `bad98a9c7d8679f0f3d7d36c44a673cc0fac4132`; CI gates production-boundary-check + auth-preservation-check + golden-hash-verification + installer-surface-smoke; green; no skips; scope + boundary enforced; 320 passed |
 | **W9** | Documentation & operator workflows | docs | W7 | ☑ complete | `rdx-tea/docs/**`; doc-lint | FINAL_HEAD `fc7833d6253c2e0c820e55c6ff24121b822cf1a9`; W10 START_HEAD `fc7833d6253c2e0c820e55c6ff24121b822cf1a9`; operator can install/run/inspect from docs alone; doc-lint + doc-command copy-run green; 351 passed |
-| **W10** | End-to-end acceptance & release/merge plan | release | W8, W9 | ☐ pending | acceptance + rollback tests; D4 release-readiness verification; merge proposal | all gates PASS; awaits owner merge authorization |
+| **W10** | End-to-end acceptance & release/merge plan | release | W8, W9 | ☑ complete | acceptance + rollback tests; D4 release-readiness verification; merge proposal | tested_subject `011960a`; evidence/publish `5dae899`; 363 passed; all blocking gates PASS; `D4_V1_RELEASE_READY_PENDING_OWNER_MERGE_AUTHORIZATION`; merge/PR NOT executed — awaits explicit owner authorization |
 
 Status legend: ☐ pending · ◐ in progress · ☑ complete · ✗ blocked.
 

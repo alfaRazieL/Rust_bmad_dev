@@ -114,3 +114,23 @@ runtime, and enforced in CI (Wave 8).
 
 Blocking gates must be PASS before the dependent wave starts. A gate that
 cannot pass halts the wave with an honest status — never promoted to PASS.
+
+## W10 status record (status only; gate definitions unchanged)
+
+At W10 (tested_subject `011960a`, evidence/publish `5dae899`) the full
+acceptance ladder is green (14 rungs; full suite 363 passed / 0 failed /
+0 skipped) and every blocking gate W0–W10 is PASS, re-verified by
+`evidence/logs/W10/ACCEPTANCE_LADDER.json`:
+
+- G-W10-E2E — **PASS** (clean install + bounded non-interactive lifecycle
+  smoke admissible on the installed surface; `evidence/live/W10_E2E_SMOKE.json`).
+- G-W10-ROLLBACK — **PASS** (`tests/acceptance -k rollback`; user content,
+  `.user.toml`, and user settings restored; adapter files removed).
+- G-W10-RELEASE — **PASS** (`evidence/final/D4_RELEASE_READINESS.json`;
+  honest, no PENDING in final HEAD; merge proposal awaits owner authorization).
+- Cross-cutting G-AUTH / G-DET / G-SPLIT-IMPORT / G-SCOPE — **PASS**.
+
+The live-model E2E child run (ladder rung 6) is
+`NOT_RUN_OWNER_AUTH_REQUIRED`; the deterministic surrogate exercises
+install + lifecycle + admission end-to-end. G-W8-SOURCELOCK is verified in
+GitHub Actions on push (upstream clone); unchanged since W8.
