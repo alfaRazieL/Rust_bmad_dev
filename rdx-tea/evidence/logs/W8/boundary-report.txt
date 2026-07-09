@@ -1,0 +1,17 @@
+{
+  "check": "boundary",
+  "hits": [],
+  "status": "PASS",
+  "surfaces": [
+    "rdx-tea/installer",
+    "rdx-tea/poc/install-tree"
+  ],
+  "tokens": [
+    "import live_harness",
+    "import evals",
+    "live-harness/",
+    "evals/",
+    "evidence/",
+    "research/"
+  ]
+}

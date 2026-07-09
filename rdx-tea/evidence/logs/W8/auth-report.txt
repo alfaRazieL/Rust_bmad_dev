@@ -1,0 +1,17 @@
+{
+  "check": "auth",
+  "hits": [],
+  "status": "PASS",
+  "surfaces": [
+    "rdx-tea/installer",
+    "rdx-tea/poc/install-tree"
+  ],
+  "tokens": [
+    "ANTHROPIC_API_KEY",
+    "CLAUDE_CODE_OAUTH_TOKEN",
+    "apiKeyHelper",
+    "setup-token",
+    ".credentials.json",
+    "CLAUDE_CONFIG_DIR"
+  ]
+}

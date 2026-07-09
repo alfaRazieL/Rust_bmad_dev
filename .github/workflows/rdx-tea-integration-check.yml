@@ -157,6 +157,79 @@ jobs:
           fi
           echo "branch OK: $BRANCH"
 
+  production-boundary:
+    name: production boundary + golden-hash + installer surface
+    needs: guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: set-up-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install-deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest jsonschema pyyaml
+      - name: production-boundary-check
+        run: |
+          set -euo pipefail
+          # G-SPLIT-IMPORT — the shipped/distribution surface must never
+          # import the live-harness/eval planes nor reference an
+          # evidence/eval/research path. Fail-closed: a missing surface is
+          # an error, so a rename cannot silently pass the gate.
+          mkdir -p rdx-tea/ci-artifacts
+          python rdx-tea/live-harness/ci_check.py boundary-check \
+              rdx-tea/poc/install-tree \
+              rdx-tea/installer \
+              | tee rdx-tea/ci-artifacts/boundary-report.txt
+      - name: auth-preservation-check
+        run: |
+          set -euo pipefail
+          # G-AUTH — the shipped surface carries no auth material and never
+          # sets/overrides CLAUDE_CONFIG_DIR. Preserved by shipping nothing
+          # that touches auth.
+          python rdx-tea/live-harness/ci_check.py auth-check \
+              rdx-tea/poc/install-tree \
+              rdx-tea/installer \
+              | tee rdx-tea/ci-artifacts/auth-report.txt
+      - name: golden-hash-verification
+        run: |
+          set -euo pipefail
+          # G-DET / G-W2-CANON / G-W3-DETERMINISM — re-verify the pinned
+          # canonical snapshot and golden bundle signatures. Any generator
+          # drift moves a hash and fails this step (no re-pin in CI).
+          python rdx-tea/evidence/hashes/w2_canonical_snapshot.py \
+              | tee rdx-tea/ci-artifacts/w2-canonical-snapshot.txt
+          python rdx-tea/evidence/hashes/w3_bundle_golden.py \
+              | tee rdx-tea/ci-artifacts/w3-bundle-golden.txt
+      - name: installer-surface-smoke
+        run: |
+          set -euo pipefail
+          # G-W7-INSTALL — installer lifecycle (install/update/uninstall),
+          # installed-surface completeness (all 10 production scripts plus
+          # admission.py and workspace_delta.py) and exclusion of
+          # eval/evidence/research/test-only paths, run as a dedicated gate.
+          python -m pytest rdx-tea/tests/lifecycle/test_l4_w7_installer.py \
+              -q --tb=short --no-header \
+              --junitxml=rdx-tea/ci-artifacts/pytest-installer-surface.junit.xml
+      - name: refuse-mandatory-skips-installer
+        run: |
+          set -euo pipefail
+          # The dedicated installer gate must not silently skip either.
+          python rdx-tea/live-harness/ci_check.py refuse-skips \
+              rdx-tea/ci-artifacts/pytest-installer-surface.junit.xml
+      - name: upload-boundary-artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdx-tea-boundary-artifacts-${{ github.run_id }}
+          path: rdx-tea/ci-artifacts/**
+          if-no-files-found: error
+          retention-days: 30
+
   no-main-modifications:
     name: no changes outside rdx-tea and .github
     needs: guard

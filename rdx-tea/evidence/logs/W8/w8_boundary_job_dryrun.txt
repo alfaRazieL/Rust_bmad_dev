@@ -1,0 +1,55 @@
+# W8 production-boundary job dry-run — 2026-07-09T04:06:26Z
+
+=== production-boundary-check ===
+{
+  "check": "boundary",
+  "hits": [],
+  "status": "PASS",
+  "surfaces": [
+    "rdx-tea/installer",
+    "rdx-tea/poc/install-tree"
+  ],
+  "tokens": [
+    "import live_harness",
+    "import evals",
+    "live-harness/",
+    "evals/",
+    "evidence/",
+    "research/"
+  ]
+}
+boundary EXIT=0
+=== auth-preservation-check ===
+{
+  "check": "auth",
+  "hits": [],
+  "status": "PASS",
+  "surfaces": [
+    "rdx-tea/installer",
+    "rdx-tea/poc/install-tree"
+  ],
+  "tokens": [
+    "ANTHROPIC_API_KEY",
+    "CLAUDE_CODE_OAUTH_TOKEN",
+    "apiKeyHelper",
+    "setup-token",
+    ".credentials.json",
+    "CLAUDE_CONFIG_DIR"
+  ]
+}
+auth EXIT=0
+=== golden-hash-verification ===
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+w2 EXIT=0
+OK W3 golden bundle signature (32 rows) matches pin
+w3 EXIT=0
+=== installer-surface-smoke ===
+......................                                                   [100%]
+22 passed in 0.15s
+installer EXIT=0
+=== refuse-mandatory-skips-installer ===
+{
+  "status": "PASS",
+  "unauthorised_skips": []
+}
+refuse-skips EXIT=0

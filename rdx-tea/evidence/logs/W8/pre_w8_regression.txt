@@ -1,0 +1,16 @@
+=== 1) pytest rdx-tea/tests ===
+........................................................................ [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+299 passed in 17.44s
+EXIT=
+=== 2) w2 canonical snapshot ===
+OK canonical snapshot a97d9f8590bc9e3a68ec7926c4b2887a219c71b783aa0821d6b339f6bfc5e8d8 matches pin
+EXIT=0
+=== 3) w3 bundle golden ===
+OK W3 golden bundle signature (32 rows) matches pin
+EXIT=0
+=== 4) installer lifecycle ===
+......................                                                   [100%]
+22 passed in 0.16s
+EXIT=0
